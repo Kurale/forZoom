@@ -1,0 +1,334 @@
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Baloo 2', cursive;
+    background-color: #f0f8ff;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+#app {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Content Box */
+.content-box {
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 48px;
+    color: #e74c3c;
+}
+
+h2 {
+    font-size: 40px;
+}
+
+/* Start Screen */
+.input-group {
+    margin: 30px 0;
+}
+
+.input-group label {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #3498db;
+}
+
+.large-input {
+    font-size: 40px;
+    padding: 15px 20px;
+    width: 100%;
+    border: 3px solid #3498db;
+    border-radius: 15px;
+    font-family: 'Baloo 2', cursive;
+    text-align: center;
+}
+
+.difficulty-buttons {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.difficulty-buttons h2 {
+    font-size: 36px;
+    color: #2c3e50;
+}
+
+.difficulty-btn {
+    font-size: 40px;
+    padding: 20px 40px;
+    margin: 15px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Baloo 2', cursive;
+    font-weight: bold;
+    transition: all 0.3s;
+    color: white;
+    min-width: 250px;
+}
+
+.easy {
+    background-color: #2ecc71;
+}
+
+.medium {
+    background-color: #f39c12;
+}
+
+.hard {
+    background-color: #e74c3c;
+}
+
+.difficulty-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Task Screen */
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 32px;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+#question {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.answer-input {
+    margin-bottom: 40px;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.keyboard-key {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+    border: none;
+    border-radius: 20px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    font-family: 'Baloo 2', cursive;
+    transition: all 0.2s;
+}
+
+.keyboard-key:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.keyboard-key.num {
+    background-color: #3498db;
+}
+
+.keyboard-key.backspace {
+    background-color: #e74c3c;
+    font-size: 36px;
+}
+
+.keyboard-key.reset {
+    background-color: #95a5a6;
+    font-size: 32px;
+    flex: 1;
+}
+
+.keyboard-key.check {
+    background-color: #2ecc71;
+    font-size: 32px;
+    flex: 1;
+}
+
+.actions {
+    margin-top: 20px;
+}
+
+/* Feedback Screen */
+.feedback {
+    text-align: center;
+}
+
+.feedback h2 {
+    font-size: 48px;
+    margin-bottom: 30px;
+}
+
+.feedback p {
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+.feedback .next-btn {
+    font-size: 36px;
+    padding: 20px 40px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Baloo 2', cursive;
+}
+
+.correct {
+    color: #2ecc71;
+}
+
+.wrong {
+    color: #e74c3c;
+}
+
+/* Results Screen */
+.results-info {
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+.results-info p {
+    margin-bottom: 20px;
+}
+
+.results-chart {
+    display: flex;
+    height: 60px;
+    margin: 40px 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.chart-bar {
+    height: 100%;
+}
+
+.correct-bar {
+    background-color: #2ecc71;
+}
+
+.wrong-bar {
+    background-color: #e74c3c;
+}
+
+.restart-btn {
+    font-size: 36px;
+    padding: 20px 40px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Baloo 2', cursive;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 36px;
+    }
+    
+    h2 {
+        font-size: 32px;
+    }
+    
+    .large-input {
+        font-size: 32px;
+    }
+    
+    .difficulty-btn {
+        font-size: 32px;
+        padding: 15px 30px;
+        min-width: 200px;
+    }
+    
+    .keyboard-key {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+    }
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s;
+    border-color: #e74c3c !important;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-30px); }
+    60% { transform: translateY(-15px); }
+}
+
+.bounce {
+    animation: bounce 0.5s;
+}
+
+/* Добавить в раздел Feedback Screen */
+.feedback .back-btn {
+    font-size: 36px;
+    padding: 20px 40px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Baloo 2', cursive;
+    margin-top: 20px;
+}

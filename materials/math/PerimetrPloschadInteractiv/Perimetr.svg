@@ -1,0 +1,120 @@
+<svg width="595" height="842" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Perimetr">
+<rect width="595" height="842" fill="white"/>
+<text id="annotation" fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="-0.011em"><tspan x="140.409" y="52.2031">&#x41f;&#x43b;&#x43e;&#x449;&#x430;&#x434;&#x44c; (S) &#x438; &#x43f;&#x435;&#x440;&#x438;&#x43c;&#x435;&#x442;&#x440; (P).</tspan></text>
+<g id="formula1" filter="url(#filter0_d_227_466)">
+<rect x="12.5" y="90.5" width="281" height="101" rx="9.5" stroke="#666666" shape-rendering="crispEdges"/>
+<text id="&#208;&#167;&#209;&#130;&#208;&#190;&#208;&#177;&#209;&#139; &#208;&#189;&#208;&#176;&#208;&#185;&#209;&#130;&#208;&#184; &#208;&#191;&#208;&#187;&#208;&#190;&#209;&#137;&#208;&#176;&#208;&#180;&#209;&#140; &#208;&#191;&#209;&#128;&#209;&#143;&#208;&#188;&#208;&#190;&#209;&#131;&#208;&#179;&#208;&#190;&#208;&#187;&#209;&#140;&#208;&#189;&#208;&#184;&#208;&#186;&#208;&#176;, &#208;&#189;&#209;&#131;&#208;&#182;&#208;&#189;&#208;&#190; &#208;&#181;&#208;&#179;&#208;&#190; &#208;&#180;&#208;&#187;&#208;&#184;&#208;&#189;&#209;&#131; &#209;&#131;&#208;&#188;&#208;&#189;&#208;&#190;&#208;&#182;&#208;&#184;&#209;&#130;&#209;&#140; &#208;&#189;&#208;&#176; &#209;&#136;&#208;&#184;&#209;&#128;&#208;&#184;&#208;&#189;&#209;&#131;: S = a * b" fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="22" y="124.785">&#x427;&#x442;&#x43e;&#x431;&#x44b; &#x43d;&#x430;&#x439;&#x442;&#x438; &#x43f;&#x43b;&#x43e;&#x449;&#x430;&#x434;&#x44c; &#x43f;&#x440;&#x44f;&#x43c;&#x43e;&#x443;&#x433;&#x43e;&#x43b;&#x44c;&#x43d;&#x438;&#x43a;&#x430;, &#10;</tspan><tspan x="22" y="145.785">&#x43d;&#x443;&#x436;&#x43d;&#x43e; &#x435;&#x433;&#x43e; &#x434;&#x43b;&#x438;&#x43d;&#x443; &#x443;&#x43c;&#x43d;&#x43e;&#x436;&#x438;&#x442;&#x44c; &#x43d;&#x430; &#x448;&#x438;&#x440;&#x438;&#x43d;&#x443;: &#10;</tspan><tspan x="22" y="166.785">S = a * b </tspan></text>
+</g>
+<g id="formula2" filter="url(#filter1_d_227_466)">
+<rect x="303.5" y="90.5" width="279" height="101" rx="9.5" stroke="#666666" shape-rendering="crispEdges"/>
+<text id="&#208;&#159;&#208;&#181;&#209;&#128;&#208;&#184;&#208;&#188;&#208;&#181;&#209;&#130;&#209;&#128; &#208;&#191;&#209;&#128;&#209;&#143;&#208;&#188;&#208;&#190;&#209;&#131;&#208;&#179;&#208;&#190;&#208;&#187;&#209;&#140;&#208;&#189;&#208;&#184;&#208;&#186;&#208;&#176;, &#209;&#128;&#208;&#176;&#208;&#178;&#208;&#181;&#208;&#189; &#208;&#191;&#209;&#128;&#208;&#190;&#208;&#184;&#208;&#183;&#208;&#178;&#208;&#181;&#208;&#180;&#208;&#181;&#208;&#189;&#208;&#184;&#209;&#142; &#209;&#129;&#209;&#131;&#208;&#188;&#208;&#188; &#208;&#181;&#208;&#179;&#208;&#190; &#209;&#129;&#208;&#190;&#209;&#129;&#208;&#181;&#208;&#180;&#208;&#189;&#208;&#184;&#209;&#133; &#209;&#129;&#209;&#130;&#208;&#190;&#209;&#128;&#208;&#190;&#208;&#189;: P = (a + b) * 2" fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="318" y="116.785">&#x41f;&#x435;&#x440;&#x438;&#x43c;&#x435;&#x442;&#x440; &#x43f;&#x440;&#x44f;&#x43c;&#x43e;&#x443;&#x433;&#x43e;&#x43b;&#x44c;&#x43d;&#x438;&#x43a;&#x430;, &#x440;&#x430;&#x432;&#x435;&#x43d; &#10;</tspan><tspan x="318" y="137.785">&#x43f;&#x440;&#x43e;&#x438;&#x437;&#x432;&#x435;&#x434;&#x435;&#x43d;&#x438;&#x44e; &#x441;&#x443;&#x43c;&#x43c; &#x435;&#x433;&#x43e; &#x441;&#x43e;&#x441;&#x435;&#x434;&#x43d;&#x438;&#x445; </tspan><tspan x="318" y="158.785">&#x441;&#x442;&#x43e;&#x440;&#x43e;&#x43d;:   P = (a + b) * 2 </tspan></text>
+</g>
+<g id="example1">
+<text id="8 &#209;&#129;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="132" y="263.285">8 &#x441;&#x43c;</tspan></text>
+<text id="4 &#209;&#129;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="232" y="310.285">4 &#x441;&#x43c;</tspan></text>
+<rect id="Rectangle 1" x="66.5" y="266.5" width="159" height="79" stroke="black"/>
+</g>
+<g id="example4">
+<text id="7 &#208;&#180;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="407" y="519.285">7 &#x434;&#x43c;</tspan></text>
+<text id="5 &#208;&#180;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="507" y="583.285">5 &#x434;&#x43c;</tspan></text>
+<rect id="Rectangle 1_2" x="342.5" y="524.5" width="159" height="109" stroke="black"/>
+</g>
+<g id="example2">
+<text id="5 &#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="447" y="292.285">5 &#x43c;</tspan></text>
+<rect id="Rectangle 1_3" x="390.5" y="224.5" width="53" height="122" stroke="black"/>
+<text id="2 &#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="406" y="221.285">2 &#x43c;</tspan></text>
+</g>
+<g id="example3">
+<text id="5 &#208;&#186;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="153" y="582.285">5 &#x43a;&#x43c;</tspan></text>
+<rect id="Rectangle 1_4" x="122.5" y="514.5" width="27" height="122" stroke="black"/>
+<text id="1 &#208;&#186;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="122" y="511.285">1 &#x43a;&#x43c;</tspan></text>
+</g>
+<g id="Frame 29">
+<rect x="117" y="790" width="80" height="21" rx="4" fill="#25D669"/>
+<text id="&#208;&#191;&#209;&#128;&#208;&#190;&#208;&#178;&#208;&#181;&#209;&#128;&#208;&#184;&#209;&#130;&#209;&#140;" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="122" y="805.285">&#x43f;&#x440;&#x43e;&#x432;&#x435;&#x440;&#x438;&#x442;&#x44c;</tspan></text>
+</g>
+<g id="Frame 30">
+<rect x="386" y="790" width="81" height="21" rx="4" fill="#259ED6"/>
+<text id="&#208;&#180;&#208;&#176;&#208;&#187;&#209;&#140;&#209;&#136;&#208;&#181;" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="401" y="805.285">&#x434;&#x430;&#x43b;&#x44c;&#x448;&#x435;</tspan></text>
+</g>
+<g id="block1">
+<text id="S =" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82.3125" y="387.203">S = </tspan></text>
+<g id="answerInputS">
+<rect x="120.5" y="361.5" width="35" height="32" stroke="#A4A4A4"/>
+<text id="plaseholder" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="132.328" y="385.703">?</tspan></text>
+</g>
+<text id="&#209;&#129;&#208;&#188;&#194;&#178;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="387.203">&#x441;&#x43c;&#xb2;</tspan></text>
+<text id="P =" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82" y="428.203">P = </tspan></text>
+<g id="answerInputP">
+<rect x="121.5" y="402.5" width="34" height="33" stroke="#A4A4A4"/>
+<text id="plaseholder_2" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="132.828" y="427.703">?</tspan></text>
+</g>
+<text id="&#209;&#129;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="428.203">&#x441;&#x43c;</tspan></text>
+</g>
+<g id="block4">
+<text id="S =_2" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="365.312" y="686.203">S = </tspan></text>
+<g id="answerInputS_2">
+<rect x="403.5" y="660.5" width="35" height="32" stroke="#A4A4A4"/>
+<text id="plaseholder_3" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="415.328" y="684.703">?</tspan></text>
+</g>
+<text id="&#208;&#180;&#208;&#188;&#194;&#178;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="443" y="686.203">&#x434;&#x43c;&#xb2;</tspan></text>
+<text id="P =_2" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="365" y="727.203">P = </tspan></text>
+<g id="answerInputP_2">
+<rect x="404.5" y="701.5" width="34" height="33" stroke="#A4A4A4"/>
+<text id="plaseholder_4" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="415.828" y="726.703">?</tspan></text>
+</g>
+<text id="&#208;&#180;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="443" y="727.203">&#x434;&#x43c;</tspan></text>
+</g>
+<g id="block2">
+<text id="S =_3" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="364.312" y="387.203">S = </tspan></text>
+<g id="answerInputS_3">
+<rect x="402.5" y="361.5" width="35" height="32" stroke="#A4A4A4"/>
+<text id="plaseholder_5" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="414.328" y="385.703">?</tspan></text>
+</g>
+<text id="&#208;&#188;&#194;&#178;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="442" y="387.203">&#x43c;&#xb2;</tspan></text>
+<text id="P =_3" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="364" y="428.203">P = </tspan></text>
+<g id="answerInputP_3">
+<rect x="403.5" y="402.5" width="34" height="33" stroke="#A4A4A4"/>
+<text id="plaseholder_6" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="414.828" y="427.703">?</tspan></text>
+</g>
+<text id="&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="442" y="428.203">&#x43c;</tspan></text>
+</g>
+<g id="block3">
+<text id="S =_4" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82.3125" y="686.203">S = </tspan></text>
+<g id="answerInputS_4">
+<rect x="120.5" y="660.5" width="35" height="32" stroke="#A4A4A4"/>
+<text id="plaseholder_7" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="132.328" y="684.703">?</tspan></text>
+</g>
+<text id="&#208;&#186;&#208;&#188;&#194;&#178;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="686.203">&#x43a;&#x43c;&#xb2;</tspan></text>
+<text id="P =_4" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82" y="727.203">P = </tspan></text>
+<g id="answerInputP_4">
+<rect x="121.5" y="701.5" width="34" height="33" stroke="#A4A4A4"/>
+<text id="plaseholder_8" opacity="0.23" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="132.828" y="726.703">?</tspan></text>
+</g>
+<text id="&#208;&#186;&#208;&#188;" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="727.203">&#x43a;&#x43c;</tspan></text>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_227_466" x="8" y="90" width="290" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_227_466"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_227_466" result="shape"/>
+</filter>
+<filter id="filter1_d_227_466" x="299" y="90" width="288" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_227_466"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_227_466" result="shape"/>
+</filter>
+</defs>
+</svg>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математический тренажёр для 3-4 классов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --correct-color: #4caf50;
+            --incorrect-color: #f44336;
+            --border-color: #e0e0e0;
+            --hover-color: #f5f5f5;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 8px rgba(74, 111, 165, 0.3);
+            --correct-glow: 0 0 8px rgba(76, 175, 80, 0.5);
+            --incorrect-glow: 0 0 8px rgba(244, 67, 54, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .task-selector {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-type {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            background-color: white;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: var(--glow);
+        }
+
+        button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .task-description {
+            background-color: #f5f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f2f6ff;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--glow);
+        }
+
+        .correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            box-shadow: var(--correct-glow);
+        }
+
+        .incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            box-shadow: var(--incorrect-glow);
+        }
+
+        .unit {
+            font-style: italic;
+            color: #666;
+        }
+
+        .next-step {
+            display: block;
+            margin: 20px auto;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .next-step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .next-step:hover {
+            box-shadow: var(--glow);
+        }
+
+        .feedback {
+            text-align: center;
+            margin: 10px 0;
+            min-height: 24px;
+            font-weight: 500;
+        }
+
+        .correct-feedback {
+            color: var(--correct-color);
+        }
+
+        .incorrect-feedback {
+            color: var(--incorrect-color);
+        }
+
+        .task-complete {
+            text-align: center;
+            color: var(--correct-color);
+            font-weight: 500;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .check-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .check-btn:hover {
+            box-shadow: var(--glow);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Математический тренажёр</h1>
+        
+        <div class="task-selector">
+            <div class="task-type">
+                <button id="movement-btn" class="active">Задачи на движение</button>
+                <button id="price-btn">Задачи на цену/количество</button>
+            </div>
+        </div>
+        
+        <div id="movement-tasks">
+            <div class="task-description" id="movement-description">
+                Выберите величину, которую нужно найти, введите известные значения и единицы измерения.
+            </div>
+            
+            <table id="movement-table">
+                <thead>
+                    <tr>
+                        <th>Величина</th>
+                        <th>Что найти</th>
+                        <th>Значение</th>
+                        <th>Единицы измерения</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Скорость 1</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="speed1">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="km_h">км/ч</option>
+                                <option value="m_s">м/с</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Скорость 2</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="speed2">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="km_h">км/ч</option>
+                                <option value="m_s">м/с</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Время</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="time">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="h">ч</option>
+                                <option value="min">мин</option>
+                                <option value="s">с</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Расстояние</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="distance">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="km">км</option>
+                                <option value="m">м</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <button class="check-btn" id="movement-check-btn">Проверить</button>
+            <div class="feedback" id="movement-feedback"></div>
+            <button class="next-step" id="movement-next-step">Перейти к следующему действию</button>
+            <div class="task-complete hidden" id="movement-complete">Задача решена правильно! Молодец!</div>
+        </div>
+        
+        <div id="price-tasks" class="hidden">
+            <div class="task-description" id="price-description">
+                Выберите величину, которую нужно найти, введите известные значения и единицы измерения.
+            </div>
+            
+            <table id="price-table">
+                <thead>
+                    <tr>
+                        <th>Величина</th>
+                        <th>Что найти</th>
+                        <th>Значение</th>
+                        <th>Единицы измерения</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Цена</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="price">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="rub">руб.</option>
+                                <option value="kop">коп.</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Количество</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="quantity">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="pcs">шт.</option>
+                                <option value="kg">кг</option>
+                                <option value="l">л</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Стоимость</td>
+                        <td>
+                            <select class="find-select">
+                                <option value="none">Не искать</option>
+                                <option value="cost">Найти</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="value-input"></td>
+                        <td>
+                            <select class="unit-select">
+                                <option value="rub">руб.</option>
+                                <option value="kop">коп.</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <button class="check-btn" id="price-check-btn">Проверить</button>
+            <div class="feedback" id="price-feedback"></div>
+            <button class="next-step" id="price-next-step">Перейти к следующему действию</button>
+            <div class="task-complete hidden" id="price-complete">Задача решена правильно! Молодец!</div>
+        </div>
+    </div>
+
+    <script>
+        // Данные задач
+        const tasks = {
+            movement: [
+                {
+                    description: "Два велосипедиста выехали навстречу друг другу. Скорость первого - 15 км/ч, второго - 20 км/ч. Через какое время они встретятся, если расстояние между ними было 70 км?",
+                    steps: [
+                        {
+                            description: "Введите данные из условия и найдите время встречи",
+                            given: [
+                                { name: "speed1", value: 15, unit: "km_h" },
+                                { name: "speed2", value: 20, unit: "km_h" },
+                                { name: "distance", value: 70, unit: "km" }
+                            ],
+                            find: "time",
+                            formula: (values) => {
+                                const totalSpeed = values.speed1 + values.speed2;
+                                return values.distance / totalSpeed;
+                            },
+                            expectedUnit: "h",
+                            feedback: {
+                                correct: "Правильно! Время встречи вычисляется как расстояние, делённое на сумму скоростей.",
+                                incorrect: "Неверно. Время встречи вычисляется как расстояние, делённое на сумму скоростей."
+                            }
+                        }
+                    ]
+                },
+                {
+                    description: "Из двух городов одновременно выехали два автомобиля в противоположных направлениях. Скорость первого - 80 км/ч, второго - 90 км/ч. Какое расстояние будет между ними через 2 часа?",
+                    steps: [
+                        {
+                            description: "Введите данные из условия и найдите расстояние между автомобилями через 2 часа",
+                            given: [
+                                { name: "speed1", value: 80, unit: "km_h" },
+                                { name: "speed2", value: 90, unit: "km_h" },
+                                { name: "time", value: 2, unit: "h" }
+                            ],
+                            find: "distance",
+                            formula: (values) => {
+                                const totalSpeed = values.speed1 + values.speed2;
+                                return totalSpeed * values.time;
+                            },
+                            expectedUnit: "km",
+                            feedback: {
+                                correct: "Правильно! Расстояние вычисляется как сумма скоростей, умноженная на время.",
+                                incorrect: "Неверно. Расстояние вычисляется как сумма скоростей, умноженная на время."
+                            }
+                        }
+                    ]
+                }
+            ],
+            price: [
+                {
+                    description: "Мама купила 5 кг яблок по цене 60 руб. за килограмм. Какова общая стоимость покупки?",
+                    steps: [
+                        {
+                            description: "Введите данные из условия и найдите общую стоимость",
+                            given: [
+                                { name: "price", value: 60, unit: "rub" },
+                                { name: "quantity", value: 5, unit: "kg" }
+                            ],
+                            find: "cost",
+                            formula: (values) => values.price * values.quantity,
+                            expectedUnit: "rub",
+                            feedback: {
+                                correct: "Правильно! Общая стоимость вычисляется как цена, умноженная на количество.",
+                                incorrect: "Неверно. Общая стоимость вычисляется как цена, умноженная на количество."
+                            }
+                        }
+                    ]
+                },
+                {
+                    description: "За 3 одинаковые тетради заплатили 75 руб. Какова цена одной тетради?",
+                    steps: [
+                        {
+                            description: "Введите данные из условия и найдите цену одной тетради",
+                            given: [
+                                { name: "cost", value: 75, unit: "rub" },
+                                { name: "quantity", value: 3, unit: "pcs" }
+                            ],
+                            find: "price",
+                            formula: (values) => values.cost / values.quantity,
+                            expectedUnit: "rub",
+                            feedback: {
+                                correct: "Правильно! Цена одной тетради вычисляется как общая стоимость, делённая на количество.",
+                                incorrect: "Неверно. Цена одной тетради вычисляется как общая стоимость, делённая на количество."
+                            }
+                        }
+                    ]
+                },
+                {
+                    description: "Хлеб стоит 35 руб. Сколько буханок хлеба можно купить на 140 руб.?",
+                    steps: [
+                        {
+                            description: "Введите данные из условия и найдите количество буханок",
+                            given: [
+                                { name: "price", value: 35, unit: "rub" },
+                                { name: "cost", value: 140, unit: "rub" }
+                            ],
+                            find: "quantity",
+                            formula: (values) => values.cost / values.price,
+                            expectedUnit: "pcs",
+                            feedback: {
+                                correct: "Правильно! Количество буханок вычисляется как общая сумма, делённая на цену одной буханки.",
+                                incorrect: "Неверно. Количество буханок вычисляется как общая сумма, делённая на цену одной буханки."
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Текущее состояние
+        let currentTaskType = 'movement';
+        let currentTaskIndex = 0;
+        let currentStep = 0;
+
+        // DOM элементы
+        const movementBtn = document.getElementById('movement-btn');
+        const priceBtn = document.getElementById('price-btn');
+        const movementTasks = document.getElementById('movement-tasks');
+        const priceTasks = document.getElementById('price-tasks');
+        const movementDescription = document.getElementById('movement-description');
+        const priceDescription = document.getElementById('price-description');
+        const movementFeedback = document.getElementById('movement-feedback');
+        const priceFeedback = document.getElementById('price-feedback');
+        const movementNextStep = document.getElementById('movement-next-step');
+        const priceNextStep = document.getElementById('price-next-step');
+        const movementComplete = document.getElementById('movement-complete');
+        const priceComplete = document.getElementById('price-complete');
+        const movementCheckBtn = document.getElementById('movement-check-btn');
+        const priceCheckBtn = document.getElementById('price-check-btn');
+
+        // Инициализация
+        function init() {
+            loadTask(currentTaskType, currentTaskIndex);
+            
+            // Обработчики кнопок выбора типа задачи
+            movementBtn.addEventListener('click', () => switchTaskType('movement'));
+            priceBtn.addEventListener('click', () => switchTaskType('price'));
+            
+            // Обработчики кнопок "следующий шаг"
+            movementNextStep.addEventListener('click', () => nextStep('movement'));
+            priceNextStep.addEventListener('click', () => nextStep('price'));
+            
+            // Обработчики кнопок "проверить"
+            movementCheckBtn.addEventListener('click', () => checkAnswers('movement'));
+            priceCheckBtn.addEventListener('click', () => checkAnswers('price'));
+            
+            // Обработчики изменения полей ввода
+            document.querySelectorAll('#movement-table .find-select').forEach(select => {
+                select.addEventListener('change', (e) => handleFindChange(e, 'movement'));
+            });
+            
+            document.querySelectorAll('#price-table .find-select').forEach(select => {
+                select.addEventListener('change', (e) => handleFindChange(e, 'price'));
+            });
+        }
+
+        // Переключение типа задачи
+        function switchTaskType(type) {
+            currentTaskType = type;
+            currentTaskIndex = 0;
+            currentStep = 0;
+            
+            if (type === 'movement') {
+                movementBtn.classList.add('active');
+                priceBtn.classList.remove('active');
+                movementTasks.classList.remove('hidden');
+                priceTasks.classList.add('hidden');
+            } else {
+                movementBtn.classList.remove('active');
+                priceBtn.classList.add('active');
+                movementTasks.classList.add('hidden');
+                priceTasks.classList.remove('hidden');
+            }
+            
+            loadTask(type, 0);
+        }
+
+        // Загрузка задачи
+        function loadTask(type, index) {
+            const task = tasks[type][index];
+            const descriptionElement = type === 'movement' ? movementDescription : priceDescription;
+            const feedbackElement = type === 'movement' ? movementFeedback : priceFeedback;
+            const nextStepButton = type === 'movement' ? movementNextStep : priceNextStep;
+            const completeElement = type === 'movement' ? movementComplete : priceComplete;
+            
+            descriptionElement.textContent = task.description + " " + task.steps[currentStep].description;
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            nextStepButton.classList.remove('visible');
+            completeElement.classList.add('hidden');
+            
+            // Сброс всех полей
+            const table = type === 'movement' ? document.getElementById('movement-table') : document.getElementById('price-table');
+            table.querySelectorAll('.find-select').forEach(select => {
+                select.value = 'none';
+            });
+            
+            table.querySelectorAll('.value-input').forEach(input => {
+                input.value = '';
+                input.parentElement.classList.remove('correct', 'incorrect');
+            });
+            
+            // Установка поля, которое нужно найти
+            const findValue = task.steps[currentStep].find;
+            const findRow = findRowByValue(table, findValue);
+            if (findRow) {
+                findRow.querySelector('.find-select').value = findValue;
+            }
+        }
+
+        // Поиск строки таблицы по имени значения
+        function findRowByValue(table, valueName) {
+            const rows = table.querySelectorAll('tbody tr');
+            for (let row of rows) {
+                const select = row.querySelector('.find-select');
+                if (select && select.querySelector(`option[value="${valueName}"]`)) {
+                    return row;
+                }
+            }
+            return null;
+        }
+
+        // Обработчик изменения поля "найти"
+        function handleFindChange(event, type) {
+            const select = event.target;
+            const row = select.closest('tr');
+            
+            // Сброс стилей при изменении выбора
+            row.querySelector('.value-input').parentElement.classList.remove('correct', 'incorrect');
+        }
+
+        // Проверка ответов
+        function checkAnswers(type) {
+            const task = tasks[type][currentTaskIndex];
+            const step = task.steps[currentStep];
+            const table = type === 'movement' ? document.getElementById('movement-table') : document.getElementById('price-table');
+            const feedbackElement = type === 'movement' ? movementFeedback : priceFeedback;
+            const nextStepButton = type === 'movement' ? movementNextStep : priceNextStep;
+            const completeElement = type === 'movement' ? movementComplete : priceComplete;
+            
+            let allCorrect = true;
+            let hasEmptyFields = false;
+            
+            // Проверка введённых данных из условия
+            step.given.forEach(item => {
+                const row = findRowByValue(table, item.name);
+                if (row) {
+                    const input = row.querySelector('.value-input');
+                    const unit = row.querySelector('.unit-select').value;
+                    const value = parseFloat(input.value);
+                    
+                    if (isNaN(value)) {
+                        input.parentElement.classList.add('incorrect');
+                        hasEmptyFields = true;
+                        allCorrect = false;
+                        return;
+                    }
+                    
+                    const isCorrect = Math.abs(value - item.value) < 0.01 && unit === item.unit;
+                    
+                    if (isCorrect) {
+                        input.parentElement.classList.add('correct');
+                        input.parentElement.classList.remove('incorrect');
+                    } else {
+                        input.parentElement.classList.add('incorrect');
+                        input.parentElement.classList.remove('correct');
+                        allCorrect = false;
+                    }
+                }
+            });
+            
+            // Проверка искомого значения
+            const findRow = findRowByValue(table, step.find);
+            if (findRow) {
+                const input = findRow.querySelector('.value-input');
+                const unit = findRow.querySelector('.unit-select').value;
+                const value = parseFloat(input.value);
+                
+                if (isNaN(value)) {
+                    input.parentElement.classList.add('incorrect');
+                    hasEmptyFields = true;
+                    allCorrect = false;
+                } else {
+                    // Собираем значения для формулы
+                    const values = {};
+                    step.given.forEach(item => {
+                        const row = findRowByValue(table, item.name);
+                        if (row) {
+                            const val = parseFloat(row.querySelector('.value-input').value);
+                            values[item.name] = val;
+                        }
+                    });
+                    
+                    const expectedValue = step.formula(values);
+                    const isCorrect = Math.abs(value - expectedValue) < 0.01 && unit === step.expectedUnit;
+                    
+                    if (isCorrect) {
+                        input.parentElement.classList.add('correct');
+                        input.parentElement.classList.remove('incorrect');
+                    } else {
+                        input.parentElement.classList.add('incorrect');
+                        input.parentElement.classList.remove('correct');
+                        allCorrect = false;
+                    }
+                }
+            }
+            
+            // Отображение обратной связи
+            if (hasEmptyFields) {
+                feedbackElement.textContent = "Пожалуйста, заполните все поля.";
+                feedbackElement.className = "feedback incorrect-feedback";
+            } else if (allCorrect) {
+                feedbackElement.textContent = step.feedback.correct;
+                feedbackElement.className = "feedback correct-feedback";
+                
+                if (currentStep < task.steps.length - 1) {
+                    nextStepButton.classList.add('visible');
+                } else {
+                    completeElement.classList.remove('hidden');
+                }
+            } else {
+                feedbackElement.textContent = step.feedback.incorrect;
+                feedbackElement.className = "feedback incorrect-feedback";
+            }
+        }
+
+        // Переход к следующему шагу
+        function nextStep(type) {
+            const task = tasks[type][currentTaskIndex];
+            
+            if (currentStep < task.steps.length - 1) {
+                currentStep++;
+                loadTask(type, currentTaskIndex);
+                
+                const nextStepButton = type === 'movement' ? movementNextStep : priceNextStep;
+                nextStepButton.classList.remove('visible');
+                
+                const feedbackElement = type === 'movement' ? movementFeedback : priceFeedback;
+                feedbackElement.textContent = '';
+                feedbackElement.className = 'feedback';
+            } else {
+                // Задача завершена, можно перейти к следующей
+                currentTaskIndex = (currentTaskIndex + 1) % tasks[type].length;
+                currentStep = 0;
+                loadTask(type, currentTaskIndex);
+            }
+        }
+
+        // Запуск приложения
+        init();
+    </script>
+</body>
+</html>

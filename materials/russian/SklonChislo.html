@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Определи лицо и число глагола</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; border: none; }
+        .person-btn {   
+            background-color: #299182;
+            border: none;
+            color: white;
+            padding: 16px 107px;
+            text-align: center;
+            font-size: 24px;
+            margin: 4px 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer; 
+        }
+        .number-btn {   
+            background-color: #299182;
+            border: none;
+            color: white;
+            padding: 16px 98px;
+            text-align: center;
+            font-size: 24px;
+            margin: 4px 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer; 
+        }
+        .selected { background-color: lightblue; color: #299182; }
+        #instruction {
+            font-size: 18px;
+            color: gray;
+            font-style: italic;
+        }
+        #word {
+            font-size: 52px;
+            color: #4E7815;
+            font-weight: bold;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #start {
+            background-color: #FCE995;
+            border: none;
+            color: #4E7815;
+            padding: 16px 400px;
+            text-align: center;
+            font-size: 25px;
+            margin: 4px 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #check {
+            background-color: #4E7815;
+            border: none;
+            color: white;
+            padding: 18px 380px;
+            text-align: center;
+            font-size: 24px;
+            margin: 4px 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #h1 {
+            font-size: 46px;
+            color: #FF9400;
+            font-weight: bold;
+        }
+        #result {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        /* Анимация для правильного ответа */
+        .pulse-correct {
+            animation: pulseCorrect 1s infinite;
+        }
+        @keyframes pulseCorrect {
+            0% { color: #299182; }
+            50% { color: #4CAF50; } /* Более яркий зеленый */
+            100% { color: #299182; }
+        }
+        /* Анимация для ошибки */
+        .pulse-error {
+            animation: pulseError 1s infinite;
+        }
+        @keyframes pulseError {
+            0% { color: #D32F2F; } /* Красный */
+            50% { color: #FF5722; } /* Более яркий красный */
+            100% { color: #D32F2F; }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="h1">Определи лицо и число глагола</h1>
+    <button id="start">Начать</button>
+    <p id="instruction">Нажмите "Начать" для появления глагола</p>
+    <p id="word"></p>
+    <div>
+        <button class="btn person-btn" id="btn1">1 лицо</button>
+        <button class="btn person-btn" id="btn2">2 лицо</button>
+        <button class="btn person-btn" id="btn3">3 лицо</button>
+    </div>
+    <div>
+        <button class="btn number-btn" id="btnSingular">Единственное число</button>
+        <button class="btn number-btn" id="btnPlural">Множественное число</button>
+    </div>
+    <button id="check">Проверить</button>
+    <p id="result"></p>
+    <p>Отвечено: <span id="answered">0</span></p>
+    <p>Ошибок: <span id="errors">0</span></p>
+    
+    <script>
+        const verbs = {
+            '1s': ['иду', 'пишу', 'читаю', 'пою', 'лежу', 'летаю'],
+            '1p': ['идем', 'пишем', 'читаем', 'поём', 'лежим', 'летаем'],
+            '2s': ['идёшь', 'пишешь', 'читаешь', 'поёшь', 'лежишь', 'летаешь'],
+            '2p': ['идёте', 'пишете', 'читаете', 'поёте', 'лежите', 'летаете'],
+            '3s': ['идёт', 'пишет', 'читает', 'поёт', 'лежит', 'летает'],
+            '3p': ['идут', 'пишут', 'читают', 'поют', 'лежат', 'летают']
+        };
+
+        let currentWord = '';
+        let correctKey = '';
+        let selectedPerson = '';
+        let selectedNumber = '';
+        let answered = 0;
+        let errors = 0;
+
+        function getRandomVerb() {
+            const keys = Object.keys(verbs);
+            correctKey = keys[Math.floor(Math.random() * keys.length)];
+            currentWord = verbs[correctKey][Math.floor(Math.random() * verbs[correctKey].length)];
+            const wordElement = document.getElementById('word');
+            wordElement.style.opacity = '0';
+            setTimeout(() => {
+                wordElement.innerText = currentWord;
+                wordElement.style.opacity = '1';
+            }, 500);
+            selectedPerson = '';
+            selectedNumber = '';
+            resetButtonSelection();
+            document.getElementById('result').classList.remove('pulse-correct', 'pulse-error');
+            document.getElementById('result').innerText = '';
+        }
+
+        function resetButtonSelection() {
+            document.querySelectorAll('.person-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        document.getElementById('start').addEventListener('click', function () {
+            getRandomVerb();
+            this.style.display = 'none';
+            document.getElementById('instruction').style.display = 'none';
+        });
+
+        document.querySelectorAll('.person-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.person-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedPerson = this.id.replace('btn', '');
+            });
+        });
+
+        document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedNumber = this.id === 'btnSingular' ? 's' : 'p';
+            });
+        });
+
+        document.getElementById('check').addEventListener('click', function () {
+            const resultElement = document.getElementById('result');
+            if (!selectedPerson || !selectedNumber) {
+                resultElement.innerText = 'Выберите лицо и число!';
+                resultElement.classList.remove('pulse-correct', 'pulse-error');
+                return;
+            }
+            const selectedKey = selectedPerson + selectedNumber;
+            if (selectedKey === correctKey) {
+                resultElement.innerText = 'Правильно!';
+                resultElement.classList.remove('pulse-error');
+                resultElement.classList.add('pulse-correct');
+                setTimeout(getRandomVerb, 1000); // Задержка перед новым глаголом
+            } else {
+                resultElement.innerText = 'Ошибка!';
+                resultElement.classList.remove('pulse-correct');
+                resultElement.classList.add('pulse-error');
+                errors++;
+                document.getElementById('errors').innerText = errors;
+            }
+            answered++;
+            document.getElementById('answered').innerText = answered;
+        });
+    </script>
+</body>
+</html>

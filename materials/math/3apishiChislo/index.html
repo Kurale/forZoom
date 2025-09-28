@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математический тренажёр</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="content-box">
+                <h1>Математический тренажёр</h1>
+                <div class="input-group">
+                    <label for="name">Твоё имя:</label>
+                    <input type="text" id="name" placeholder="Введи своё имя" class="large-input">
+                </div>
+                <div class="difficulty-buttons">
+                    <h2>Выбери уровень сложности:</h2>
+                    <button class="difficulty-btn easy" data-level="easy">Лёгкий</button>
+                    <button class="difficulty-btn medium" data-level="medium">Средний</button>
+                    <button class="difficulty-btn hard" data-level="hard">Сложный</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Screen -->
+        <div id="task-screen" class="screen">
+            <div class="content-box">
+                <div class="progress-info">
+                    <span id="progress">Вопрос 1/10</span>
+                    <span id="timer">00:00</span>
+                </div>
+                <h2 id="question">Загружаем вопрос...</h2>
+                <div class="answer-input">
+                    <input type="text" id="user-answer" class="large-input" readonly>
+                </div>
+                <div class="keyboard">
+                    <div class="keyboard-row">
+                        <button class="keyboard-key num" data-value="7">7</button>
+                        <button class="keyboard-key num" data-value="8">8</button>
+                        <button class="keyboard-key num" data-value="9">9</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="keyboard-key num" data-value="4">4</button>
+                        <button class="keyboard-key num" data-value="5">5</button>
+                        <button class="keyboard-key num" data-value="6">6</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="keyboard-key num" data-value="1">1</button>
+                        <button class="keyboard-key num" data-value="2">2</button>
+                        <button class="keyboard-key num" data-value="3">3</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="keyboard-key num" data-value="0">0</button>
+                        <button class="keyboard-key num" data-value=".">.</button>
+                        <button class="keyboard-key backspace">←</button>
+                    </div>
+                    <div class="keyboard-row actions">
+                        <button class="keyboard-key reset">Сброс</button>
+                        <button class="keyboard-key check">Проверить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Screen -->
+        <div id="feedback-screen" class="screen">
+            <div class="content-box feedback-content">
+                <div id="correct-feedback" class="feedback">
+                    <h2 class="correct">Правильно! 👍</h2>
+                    <p>Молодец, <span class="user-name"></span>!</p>
+                    <button class="next-btn">Следующий вопрос</button>
+                </div>
+                <!-- В блоке feedback-screen -->
+               <div id="wrong-feedback" class="feedback">
+                    <h2 class="wrong">Попробуй ещё раз 👎</h2>
+                    <p>Неверный ответ. Попробуй снова!</p>
+    <button class="back-btn">Назад к вопросу</button>
+</div>
+            </div>
+
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="content-box">
+                <h1>Результаты</h1>
+                <div class="results-info">
+                    <p>Имя: <span id="result-name"></span></p>
+                    <p>Уровень: <span id="result-level"></span></p>
+                    <p>Правильных ответов: <span id="result-correct"></span> из 10</p>
+                    <p>Время: <span id="result-time"></span></p>
+                </div>
+                <div class="results-chart">
+                    <div class="chart-bar correct-bar"></div>
+                    <div class="chart-bar wrong-bar"></div>
+                </div>
+                <button class="restart-btn">Начать заново</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

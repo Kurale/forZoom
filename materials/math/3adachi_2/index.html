@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математический тренажёр</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1a73e8;
+        }
+        .task-description {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #1a73e8;
+            color: #fff;
+        }
+        select, input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 5px rgba(26, 115, 232, 0.3);
+        }
+        .unit-cell {
+            min-width: 100px;
+        }
+        .button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .button:hover {
+            background: #1557b0;
+            box-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
+        }
+        .correct {
+            animation: glowCorrect 0.5s ease-in-out;
+        }
+        .incorrect {
+            animation: glowIncorrect 0.5s ease-in-out;
+        }
+        @keyframes glowCorrect {
+            0% { background: #fff; }
+            50% { background: #d4edda; }
+            100% { background: #fff; }
+        }
+        @keyframes glowIncorrect {
+            0% { background: #fff; }
+            50% { background: #f8d7da; }
+            100% { background: #fff; }
+        }
+        .result {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Математический тренажёр</h1>
+        <div class="task-description" id="task-description"></div>
+        <table id="input-table">
+            <thead>
+                <tr>
+                    <th>Величина</th>
+                    <th>Выбор</th>
+                    <th>Значение</th>
+                    <th>Единицы</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <button class="button" id="check-button" onclick="checkStep()">Проверить</button>
+        <button class="button" id="next-button" style="display: none;" onclick="nextStep()">Следующий шаг</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Задачи в формате JSON
+        const tasks = [
+            {
+                id: 1,
+                type: "motion",
+                description: "Два поезда движутся навстречу друг другу. Скорость первого поезда 60 км/ч, второго — 40 км/ч. Начальное расстояние между ними 200 км. Через сколько часов они встретятся?",
+                steps: [
+                    {
+                        fields: [
+                            { name: "Скорость 1", value: 60, unit: "км/ч" },
+                            { name: "Скорость 2", value: 40, unit: "км/ч" },
+                            { name: "Расстояние", value: 200, unit: "км" }
+                        ]
+                    },
+                    {
+                        fields: [
+                            { name: "Скорость сближения", value: 100, unit: "км/ч" }
+                        ]
+                    },
+                    {
+                        fields: [
+                            { name: "Время", value: 2, unit: "ч" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                type: "cost",
+                description: "В магазине 1 кг яблок стоит 80 рублей, а 1 кг груш — 120 рублей. Сколько стоят 2 кг яблок и 3 кг груш?",
+                steps: [
+                    {
+                        fields: [
+                            { name: "Цена яблок", value: 80, unit: "руб/кг" },
+                            { name: "Цена груш", value: 120, unit: "руб/кг" },
+                            { name: "Количество яблок", value: 2, unit: "кг" },
+                            { name: "Количество груш", value: 3, unit: "кг" }
+                        ]
+                    },
+                    {
+                        fields: [
+                            { name: "Стоимость яблок", value: 160, unit: "руб" },
+                            { name: "Стоимость груш", value: 360, unit: "руб" }
+                        ]
+                    },
+                    {
+                        fields: [
+                            { name: "Общая стоимость", value: 520, unit: "руб" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let currentTask = tasks[0];
+        let currentStep = 0;
+
+        // Инициализация интерфейса
+        function init() {
+            document.getElementById('task-description').textContent = currentTask.description;
+            renderStep();
+        }
+
+        // Рендеринг текущего шага
+        function renderStep() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            const step = currentTask.steps[currentStep];
+            const availableQuantities = [...new Set(currentTask.steps.flatMap(s => s.fields.map(f => f.name)))];
+
+            step.fields.forEach((field, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${field.name}</td>
+                    <td>
+                        <select id="quantity-${index}">
+                            <option value="">Выберите величину</option>
+                            ${availableQuantities.map(q => `<option value="${q}" ${q === field.name ? 'selected' : ''}>${q}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" id="value-${index}" min="0" step="any"></td>
+                    <td class="unit-cell">
+                        <select id="unit-${index}">
+                            <option value="">Выберите единицу</option>
+                            ${getUnits(currentTask.type).map(u => `<option value="${u}" ${u === field.unit ? 'selected' : ''}>${u}</option>`).join('')}
+                        </select>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('check-button').style.display = 'block';
+            document.getElementById('next-button').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        // Получение доступных единиц измерения в зависимости от типа задачи
+        function getUnits(taskType) {
+            if (taskType === "motion") {
+                return ["км/ч", "км", "ч"];
+            } else if (taskType === "cost") {
+                return ["руб/кг", "кг", "руб"];
+            }
+            return [];
+        }
+
+        // Проверка введённых данных
+        function checkStep() {
+            const step = currentTask.steps[currentStep];
+            let allCorrect = true;
+
+            step.fields.forEach((field, index) => {
+                const quantity = document.getElementById(`quantity-${index}`).value;
+                const value = parseFloat(document.getElementById(`value-${index}`).value);
+                const unit = document.getElementById(`unit-${index}`).value;
+                const row = document.getElementById(`quantity-${index}`).closest('tr');
+
+                const isCorrect = quantity === field.name && value === field.value && unit === field.unit;
+                row.classList.remove('correct', 'incorrect');
+                row.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+                if (!isCorrect) allCorrect = false;
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = allCorrect ? 'Все ответы верные!' : 'Есть ошибки, попробуйте ещё раз.';
+
+            if (allCorrect && currentStep < currentTask.steps.length - 1) {
+                document.getElementById('check-button').style.display = 'none';
+                document.getElementById('next-button').style.display = 'block';
+            } else if (allCorrect) {
+                resultDiv.textContent = 'Задача решена!';
+            }
+        }
+
+        // Переход к следующему шагу
+        function nextStep() {
+            currentStep++;
+            renderStep();
+        }
+
+        // Инициализация при загрузке страницы
+        init();
+    </script>
+</body>
+</html>

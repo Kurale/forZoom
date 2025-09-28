@@ -1,0 +1,92 @@
+[
+    {
+        "question": "Сколько всего сотен в числе 120 500?",
+        "options": [
+            {"text": "20", "correct": false},
+            {"text": "120", "correct": false},
+            {"text": "1 205", "correct": true},
+            {"text": "12 050", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число в 100 раз меньше чем 705 000?",
+        "options": [
+            {"text": "7 050", "correct": true},
+            {"text": "70 500", "correct": false},
+            {"text": "705", "correct": false},
+            {"text": "7 005", "correct": false}
+        ]
+    },
+    {
+        "question": "В каком числе цифра 5 имеет наибольший разряд?",
+        "options": [
+            {"text": "450 321", "correct": false},
+            {"text": "543 210", "correct": true},
+            {"text": "304 152", "correct": false},
+            {"text": "123 405", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число следует записать вместо ★ в неравенстве: 56 ★09 < 56 309?",
+        "options": [
+            {"text": "5", "correct": false},
+            {"text": "4", "correct": false},
+            {"text": "2", "correct": true},
+            {"text": "3", "correct": false}
+        ]
+    },
+    {
+        "question": "Сумма какого набора чисел равна 100 000?",
+        "options": [
+            {"text": "90 000 + 10 000", "correct": true},
+            {"text": "75 000 + 15 000 + 5 000", "correct": false},
+            {"text": "50 000 + 30 000 + 10 000 + 5 000", "correct": false},
+            {"text": "99 999 + 1", "correct": true}
+        ]
+    },
+    {
+        "question": "Какое число содержит: 7 сотен тысяч, 3 десятка тысяч, 4 сотни, 5 десятков и 9 единиц?",
+        "options": [
+            {"text": "730 459", "correct": true},
+            {"text": "73 459", "correct": false},
+            {"text": "73 459", "correct": false},
+            {"text": "704 359", "correct": false}
+        ]
+    },
+    {
+        "question": "На сколько нужно увеличить 99 999 чтобы получить 100 000?",
+        "options": [
+            {"text": "На 1", "correct": true},
+            {"text": "На 10", "correct": false},
+            {"text": "На 100", "correct": false},
+            {"text": "На 1 000", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число является предыдущим для 200 000?",
+        "options": [
+            {"text": "199 999", "correct": true},
+            {"text": "199 000", "correct": false},
+            {"text": "100 000", "correct": false},
+            {"text": "19 999", "correct": false}
+        ]
+    },
+    {
+        "question": "Разность между наибольшим пятизначным и наибольшим четырёхзначным числом равна:",
+        "options": [
+            {"text": "1", "correct": false},
+            {"text": "90 000", "correct": true},
+            {"text": "89 999", "correct": false},
+            {"text": "99 999", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое утверждение о числе 405 030 верно?",
+        "options": [
+            {"text": "Содержит 405 тысяч и 30 единиц", "correct": true},
+            {"text": "Следующее число - 405 031", "correct": false},
+            {"text": "В нём 45 сотен", "correct": false},
+            {"text": "Это чётное число", "correct": true}
+        ]
+    }
+]

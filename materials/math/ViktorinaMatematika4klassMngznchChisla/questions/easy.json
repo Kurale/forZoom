@@ -1,0 +1,92 @@
+[
+    {
+        "question": "Сколько цифр в числе 5 000?",
+        "options": [
+            {"text": "1", "correct": false},
+            {"text": "2", "correct": false},
+            {"text": "3", "correct": false},
+            {"text": "4", "correct": true}
+        ]
+    },
+    {
+        "question": "Какое число следует за 999?",
+        "options": [
+            {"text": "100", "correct": false},
+            {"text": "1 000", "correct": true},
+            {"text": "9 990", "correct": false},
+            {"text": "10 000", "correct": false}
+        ]
+    },
+    {
+        "question": "Как называется разряд, который находится третьим справа в числе?",
+        "options": [
+            {"text": "Единицы", "correct": false},
+            {"text": "Десятки", "correct": false},
+            {"text": "Сотни", "correct": true},
+            {"text": "Тысячи", "correct": false}
+        ]
+    },
+    {
+        "question": "Как записывается число 'семь тысяч триста пять'?",
+        "options": [
+            {"text": "735", "correct": false},
+            {"text": "700 305", "correct": false},
+            {"text": "7 305", "correct": true},
+            {"text": "7 350", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число на 1 больше, чем 4 999?",
+        "options": [
+            {"text": "500", "correct": false},
+            {"text": "5 000", "correct": true},
+            {"text": "4 990", "correct": false},
+            {"text": "5 100", "correct": false}
+        ]
+    },
+    {
+        "question": "Как называется число, в котором 5 разрядов?",
+        "options": [
+            {"text": "Десяток", "correct": false},
+            {"text": "Сотня", "correct": false},
+            {"text": "Тысяча", "correct": false},
+            {"text": "Десяток тысяч", "correct": true}
+        ]
+    },
+    {
+        "question": "Какое из этих чисел самое большое?",
+        "options": [
+            {"text": "3 456", "correct": false},
+            {"text": "4 356", "correct": false},
+            {"text": "4 563", "correct": true},
+            {"text": "4 536", "correct": false}
+        ]
+    },
+    {
+        "question": "Сколько сотен в числе 8 200?",
+        "options": [
+            {"text": "2", "correct": false},
+            {"text": "20", "correct": false},
+            {"text": "200", "correct": false},
+            {"text": "82", "correct": true}
+        ]
+    },
+    {
+        "question": "Как правильно прочитать число 6 070?",
+        "options": [
+            {"text": "Шесть тысяч семь", "correct": false},
+            {"text": "Шесть тысяч семьдесят", "correct": true},
+            {"text": "Шесть тысяч семьсот", "correct": false},
+            {"text": "Шестьсот семьдесят", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число состоит из 3 тысяч, 5 десятков и 2 единиц?",
+        "options": [
+            {"text": "3 052", "correct": true},
+            {"text": "3 502", "correct": false},
+            {"text": "3 520", "correct": false},
+            {"text": "3 250", "correct": false}
+        ]
+    }
+]

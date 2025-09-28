@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тренажёр по русскому языку</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        svg {
+            display: block;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            border: 1px solid #8B245C;
+            background-color: #BF538E;
+            
+            border-radius: 9px;
+            z-index: 1;
+            font-family: Roboto, sans-serif;
+            font-size: 27px;
+            color: #93FFDD;
+            display: flex; /* Горизонтальное расположение */
+            flex-direction: row; /* Элементы в строку */
+            justify-content: center; /* Центрирование элементов внутри */
+        }
+        .dropdown div {
+            
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .dropdown div:hover {
+            background-color: #5371BF;
+        }
+        .smile-group {
+            display: none;
+        }
+        #clickZone {
+            cursor: pointer;
+        }
+        #resetButton {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-family: Roboto, sans-serif;
+            font-size: 18px;
+            background-color: #5371BF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #resetButton:hover {
+            background-color: #3E5A9A;
+        }
+    </style>
+</head>
+<body>
+    <svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Prilagatelnoe" clip-path="url(#clip0_132_2)">
+            <rect width="1200" height="600" fill="white"/>
+            <g id="background">
+                <rect id="Rectangle 65" y="145" width="643" height="165" fill="#5371BF"/>
+                <rect id="Rectangle 66" x="643" y="145" width="557" height="165" fill="#a83972"/>
+                <rect id="Rectangle 67" x="1.5" y="1.5" width="1197" height="142" fill="#53BF9D" stroke="#CCFB92" stroke-width="3"/>
+                <rect id="Rectangle 68" y="310" width="345" height="300" fill="#4AB1D7"/>
+                <rect id="Rectangle 69" x="346.5" y="311.5" width="587" height="297" fill="#AD77CD" stroke="white" stroke-width="3"/>
+                <rect id="Rectangle 72" x="152" y="343" width="340" height="233" fill="#F4BB1E" stroke="#FDE7AA" stroke-width="2"/>
+                <rect id="Rectangle 70" x="935" y="310" width="265" height="300" fill="#7AA839"/>
+                <path id="Ellipse 13" d="M1046 609.5C1046 568.789 1062.17 529.746 1090.96 500.959C1119.75 472.172 1158.79 456 1199.5 456L1199.5 609.5L1046 609.5Z" fill="#FFEA76" fill-opacity="0.83"/>
+                <rect id="Rectangle 71" x="765" y="343" width="340" height="233" fill="#216C9A" stroke="#3EB4FD" stroke-width="2"/>
+                <path id="Ellipse 11" d="M1.16864e-06 207C25.9912 207 50.9179 217.325 69.2965 235.704C87.675 254.082 98 279.009 98 305C98 330.991 87.675 355.918 69.2965 374.296C50.9179 392.675 25.9912 403 1.3629e-05 403L0 305L1.16864e-06 207Z" fill="#FF7979" fill-opacity="0.7"/>
+                <circle id="Ellipse 12" cx="1134.5" cy="143.5" r="42.5" fill="#4655FF" fill-opacity="0.7"/>
+            </g>
+            <g id="example-text">
+                <text fill="#93FFDD" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="48" letter-spacing="0em" text-anchor="end"><tspan x="765" y="244.406">Жадность (волк) – жадн</tspan></text>
+                <text fill="#93FFDD" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="48" letter-spacing="0em"><tspan x="835" y="244.406"> волк.</tspan></text>
+            </g>
+            <text id="input" fill="#93FFDD" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="48" letter-spacing="0em"><tspan x="769" y="244.406"></tspan></text>
+            <rect id="inputZone" x="768" y="204" width="69" height="49" rx="9" stroke="#d361d1" stroke-width="4"/>
+            <rect id="clickZone" x="758" y="194" width="89" height="69" fill="transparent"/>
+            <text id="instruction" fill="#3e5dad" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="32" letter-spacing="0em" text-anchor="middle">
+                <tspan x="675" y="60">От данных существительных образуй имена прилагательные.</tspan>
+                <tspan x="660" y="100"> Выбери правильное родовое окончание имени прилагательного.</tspan>
+            </text>
+            <g id="SmileCorrect1" class="smile-group">
+                <circle id="Ellipse 14" cx="210.5" cy="398.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15" cx="197" cy="388" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16" cx="224" cy="388" r="5" fill="#5371BF"/>
+                <path id="Vector 9" d="M197 409C204.485 417.156 218.069 416.842 225 409" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect2" class="smile-group">
+                <circle id="Ellipse 14_2" cx="205.5" cy="494.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_2" cx="192" cy="484" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_2" cx="219" cy="484" r="5" fill="#5371BF"/>
+                <path id="Vector 9_2" d="M192 505C199.485 513.156 213.069 512.842 220 505" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect3" class="smile-group">
+                <circle id="Ellipse 14_3" cx="286.5" cy="398.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_3" cx="273" cy="388" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_3" cx="300" cy="388" r="5" fill="#5371BF"/>
+                <path id="Vector 9_3" d="M273 409C280.485 417.156 294.069 416.842 301 409" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect4" class="smile-group">
+                <circle id="Ellipse 14_4" cx="281.5" cy="494.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_4" cx="268" cy="484" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_4" cx="295" cy="484" r="5" fill="#5371BF"/>
+                <path id="Vector 9_4" d="M268 505C275.485 513.156 289.069 512.842 296 505" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect5" class="smile-group">
+                <circle id="Ellipse 14_5" cx="362.5" cy="398.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_5" cx="349" cy="388" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_5" cx="376" cy="388" r="5" fill="#5371BF"/>
+                <path id="Vector 9_5" d="M349 409C356.485 417.156 370.069 416.842 377 409" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect6" class="smile-group">
+                <circle id="Ellipse 14_6" cx="357.5" cy="494.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_6" cx="344" cy="484" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_6" cx="371" cy="484" r="5" fill="#5371BF"/>
+                <path id="Vector 9_6" d="M344 505C351.485 513.156 365.069 512.842 372 505" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect7" class="smile-group">
+                <circle id="Ellipse 14_7" cx="438.5" cy="398.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_7" cx="425" cy="388" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_7" cx="452" cy="388" r="5" fill="#5371BF"/>
+                <path id="Vector 9_7" d="M425 409C432.485 417.156 446.069 416.842 453 409" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileCorrect8" class="smile-group">
+                <circle id="Ellipse 14_8" cx="433.5" cy="494.5" r="31" stroke="#5371BF" stroke-width="5"/>
+                <circle id="Ellipse 15_8" cx="420" cy="484" r="5" fill="#5371BF"/>
+                <circle id="Ellipse 16_8" cx="447" cy="484" r="5" fill="#5371BF"/>
+                <path id="Vector 9_8" d="M420 505C427.485 513.156 441.069 512.842 448 505" stroke="#5371BF" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect1" class="smile-group">
+                <circle id="Ellipse 14_9" cx="817.5" cy="398.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_9" cx="804" cy="388" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_9" cx="831" cy="388" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_9" d="M804 415C811.485 406.844 825.069 407.158 832 415" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect2" class="smile-group">
+                <circle id="Ellipse 14_10" cx="817.5" cy="494.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_10" cx="804" cy="484" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_10" cx="831" cy="484" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_10" d="M804 511C811.485 502.844 825.069 503.158 832 511" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect3" class="smile-group">
+                <circle id="Ellipse 14_11" cx="895.5" cy="398.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_11" cx="882" cy="388" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_11" cx="909" cy="388" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_11" d="M882 415C889.485 406.844 903.069 407.158 910 415" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect4" class="smile-group">
+                <circle id="Ellipse 14_12" cx="895.5" cy="494.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_12" cx="882" cy="484" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_12" cx="909" cy="484" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_12" d="M882 511C889.485 502.844 903.069 503.158 910 511" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect5" class="smile-group">
+                <circle id="Ellipse 14_13" cx="973.5" cy="398.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_13" cx="960" cy="388" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_13" cx="987" cy="388" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_13" d="M960 415C967.485 406.844 981.069 407.158 988 415" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect6" class="smile-group">
+                <circle id="Ellipse 14_14" cx="973.5" cy="494.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_14" cx="960" cy="484" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_14" cx="987" cy="484" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_14" d="M960 511C967.485 502.844 981.069 503.158 988 511" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect7" class="smile-group">
+                <circle id="Ellipse 14_15" cx="1051.5" cy="398.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_15" cx="1038" cy="388" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_15" cx="1065" cy="388" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_15" d="M1038 415C1045.49 406.844 1059.07 407.158 1066 415" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="SmileIncorrect8" class="smile-group">
+                <circle id="Ellipse 14_16" cx="1051.5" cy="494.5" r="31" stroke="#F4BB1E" stroke-width="5"/>
+                <circle id="Ellipse 15_16" cx="1038" cy="484" r="5" fill="#F4BB1E"/>
+                <circle id="Ellipse 16_16" cx="1065" cy="484" r="5" fill="#F4BB1E"/>
+                <path id="Vector 9_16" d="M1038 511C1045.49 502.844 1059.07 503.158 1066 511" stroke="#F4BB1E" stroke-width="6" stroke-linecap="round"/>
+                </g>
+        </g>
+        <defs>
+            <clipPath id="clip0_132_2">
+                <rect width="1200" height="600" fill="white"/>
+            </clipPath>
+        </defs>
+    </svg>
+
+    <div id="dropdown" class="dropdown"></div>
+    <audio id="correctSound" src="flute_notification_4.wav"></audio>
+    <audio id="incorrectSound" src="error_fail1_6.wav"></audio>
+    <button id="resetButton">Начать заново</button>
+
+    <script>
+        const exercises = [
+            { noun: "Жадность (волк)", base: "жадн", ending: "ый", animal: "волк" },
+            { noun: "Хитрость (лиса)", base: "хитр", ending: "ая", animal: "лиса" },
+            { noun: "Робость (заяц)", base: "робк", ending: "ий", animal: "заяц" },
+            { noun: "Резвость (белка)", base: "резв", ending: "ая", animal: "белка" },
+            { noun: "Упрямство (осёл)", base: "упрям", ending: "ый", animal: "осёл" },
+            { noun: "Верность (собака)", base: "верн", ending: "ая", animal: "собака" },
+            { noun: "Голос (соловей)", base: "голосист", ending: "ый", animal: "соловей" },
+            { noun: "Сила (лошадь)", base: "сильн", ending: "ая", animal: "лошадь" }
+        ];
+
+        const endings = ["ый", "ий", "ой", "ая", "яя", "ое", "ее"];
+        let currentExercise = 0;
+        let totalAttempts = 0;
+
+        const clickZone = document.getElementById("clickZone");
+        const inputText = document.getElementById("input").getElementsByTagName("tspan")[0];
+        const exampleTextNounBase = document.getElementById("example-text").getElementsByTagName("text")[0].getElementsByTagName("tspan")[0];
+        const exampleTextAnimal = document.getElementById("example-text").getElementsByTagName("text")[1].getElementsByTagName("tspan")[0];
+        const dropdown = document.getElementById("dropdown");
+        const correctSound = document.getElementById("correctSound");
+        const incorrectSound = document.getElementById("incorrectSound");
+        const resetButton = document.getElementById("resetButton");
+        const svg = document.querySelector("svg");
+
+        function updateExercise() {
+            exampleTextNounBase.textContent = exercises[currentExercise].noun + " – " + exercises[currentExercise].base;
+            exampleTextAnimal.textContent = " " + exercises[currentExercise].animal + ".";
+            inputText.textContent = "";
+            inputText.parentElement.setAttribute("fill", "#93FFDD"); // Сброс цвета
+            resetButton.style.display = totalAttempts >= 8 ? "block" : "none";
+        }
+
+        // function createDropdown() {
+        //     if (totalAttempts >= 8) return; // Блокировка после 8 попыток
+        //     dropdown.innerHTML = "";
+        //     endings.forEach(ending => {
+        //         const div = document.createElement("div");
+        //         div.textContent = ending;
+        //         div.onclick = () => checkAnswer(ending);
+        //         dropdown.appendChild(div);
+        //     });
+
+        function createDropdown() {
+            if (totalAttempts >= 8) return; // Блокировка после 8 попыток
+            dropdown.innerHTML = "";
+            endings.forEach(ending => {
+                const div = document.createElement("div");
+                div.textContent = ending;
+                div.onclick = () => checkAnswer(ending);
+                dropdown.appendChild(div);
+            });
+
+            // Центрирование по горизонтали и фиксированная высота на y=320
+            const svgRect = svg.getBoundingClientRect();
+            dropdown.style.left = (svgRect.left + (svgRect.width - dropdown.offsetWidth) / 2) + "px";
+            dropdown.style.top = (svgRect.top + 270) + "px"; // Верх дропдауна на y=320
+            dropdown.style.display = "flex"; // Включаем flex для отображения в строку
+        }
+
+        function checkAnswer(selectedEnding) {
+            dropdown.style.display = "none";
+            inputText.textContent = selectedEnding;
+            const isCorrect = selectedEnding === exercises[currentExercise].ending;
+            const smileId = `Smile${isCorrect ? "Correct" : "Incorrect"}${totalAttempts + 1}`;
+            const smile = document.getElementById(smileId);
+
+            if (smile && totalAttempts < 8) {
+                smile.style.display = "block";
+                totalAttempts++;
+
+                if (isCorrect) {
+                    correctSound.play();
+                    setTimeout(() => {
+                        currentExercise = (currentExercise + 1) % exercises.length;
+                        updateExercise();
+                    }, 1500);
+                } else {
+                    incorrectSound.play();
+                    inputText.parentElement.setAttribute("fill", "red");
+                    setTimeout(() => {
+                        inputText.textContent = exercises[currentExercise].ending;
+                        inputText.parentElement.setAttribute("fill", "#93FFDD");
+                        setTimeout(() => {
+                            currentExercise = (currentExercise + 1) % exercises.length;
+                            updateExercise();
+                        }, 1500);
+                    }, 1500);
+                }
+            }
+        }
+
+        function resetGame() {
+            currentExercise = 0;
+            totalAttempts = 0;
+            document.querySelectorAll(".smile-group").forEach(smile => {
+                smile.style.display = "none";
+            });
+            updateExercise();
+            resetButton.style.display = "none";
+        }
+
+        clickZone.onclick = createDropdown;
+        resetButton.onclick = resetGame;
+        updateExercise();
+    </script>
+</body>
+</html>

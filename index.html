@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Образовательные материалы 3–4 класс</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #f8f8f8; display: flex; flex-direction: column; height: 100vh; }
+    header { background-color: #4CAF50; color: white; padding: 10px; text-align: center; font-size: 1.5em; }
+    nav { display: flex; justify-content: center; background-color: #333; flex-wrap: wrap; }
+    nav button { background: none; border: none; color: white; padding: 14px 20px; cursor: pointer; font-size: 1em; }
+    nav button:hover { background-color: #575757; }
+    #content { display: flex; flex-direction: row; flex: 1; overflow: hidden; }
+    #materials { background-color: #fff; padding: 15px; width: 250px; border-right: 1px solid #ccc; overflow-y: auto; }
+    #materials h2 { font-size: 1.2em; margin-top: 0; }
+    #materials ul { list-style: none; padding: 0; }
+    #materials li { margin-bottom: 10px; display: flex; }
+    #materials a { text-decoration: none; color: #333; background-color: #e6e6e6; padding: 8px; display: block; border-radius: 5px; flex: 1; }
+    #materials a:hover { background-color: #ccc; }
+    #materials button.fullscreen-btn { 
+        background-color: #4CAF50; 
+        color: white; 
+        border: none; 
+        border-radius: 5px; 
+        padding: 8px; 
+        margin-left: 5px; 
+        cursor: pointer; 
+    }
+    #materials button.fullscreen-btn:hover { background-color: #45a049; }
+    iframe { flex: 1; border: none; width: 100%; height: 100%; background: white; }
+    .fullscreen { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100vw; 
+        height: 100vh; 
+        z-index: 1000; 
+        background: white; 
+    }
+    .exit-fullscreen-btn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1001;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    .exit-fullscreen-btn:hover {
+        background-color: #d32f2f;
+    }
+    @media (max-width: 768px) {
+        #content { flex-direction: column; }
+        #materials { width: 100%; border-right: none; border-bottom: 1px solid #ccc; }
+        iframe { height: 70vh; }
+    }
+</style>
+</head>
+<body>
+
+<header>Образовательные материалы для 3–4 классов</header>
+
+<nav>
+    <button onclick="showMaterials('math')">Математика</button>
+    <button onclick="showMaterials('russian')">Русский язык</button>
+    <button onclick="showMaterials('belarusian')">Белорусский язык</button>
+</nav>
+
+<div id="content">
+    <div id="materials">
+        <h2>Выберите раздел</h2>
+        <ul id="material-list"></ul>
+    </div>
+    <iframe id="viewer" src=""></iframe>
+</div>
+
+<script>
+let materialsData = {};
+let currentFullscreenFrame = null;
+
+fetch('materials.json')
+    .then(response => response.json())
+    .then(data => {
+        materialsData = data;
+    })
+    .catch(error => {
+        console.error("Ошибка загрузки materials.json:", error);
+    });
+
+function showMaterials(subject) {
+    const list = document.getElementById('material-list');
+    list.innerHTML = "";
+    document.querySelector("#materials h2").textContent =
+        subject === "math" ? "Математика" :
+        subject === "russian" ? "Русский язык" : "Белорусский язык";
+
+    if (!materialsData[subject]) return;
+
+    materialsData[subject].forEach(item => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = "javascript:void(0)";
+        link.textContent = item.title;
+        link.onclick = () => {
+            document.getElementById('viewer').src = item.file;
+        };
+        
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'fullscreen-btn';
+        fullscreenBtn.innerHTML = '⛶';
+        fullscreenBtn.title = 'Открыть в полный экран';
+        fullscreenBtn.onclick = (e) => {
+            e.stopPropagation();
+            openFullscreen(item.file);
+        };
+        
+        li.appendChild(link);
+        li.appendChild(fullscreenBtn);
+        list.appendChild(li);
+    });
+}
+
+function openFullscreen(file) {
+    // Создаем новый iframe для полноэкранного режима
+    const fullscreenFrame = document.createElement('iframe');
+    fullscreenFrame.src = file;
+    fullscreenFrame.className = 'fullscreen';
+    fullscreenFrame.id = 'fullscreen-viewer';
+    
+    // Создаем кнопку выхода из полноэкранного режима
+    const exitBtn = document.createElement('button');
+    exitBtn.className = 'exit-fullscreen-btn';
+    exitBtn.textContent = 'Выйти из полноэкранного режима';
+    exitBtn.onclick = closeFullscreen;
+    
+    // Добавляем элементы на страницу
+    document.body.appendChild(fullscreenFrame);
+    document.body.appendChild(exitBtn);
+    
+    // Сохраняем ссылку на текущий полноэкранный фрейм
+    currentFullscreenFrame = { frame: fullscreenFrame, btn: exitBtn };
+}
+
+function closeFullscreen() {
+    if (currentFullscreenFrame) {
+        // Удаляем элементы полноэкранного режима
+        document.body.removeChild(currentFullscreenFrame.frame);
+        document.body.removeChild(currentFullscreenFrame.btn);
+        currentFullscreenFrame = null;
+    }
+}
+
+// Закрывать полноэкранный режим по нажатию ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && currentFullscreenFrame) {
+        closeFullscreen();
+    }
+});
+</script>
+
+</body>
+</html>

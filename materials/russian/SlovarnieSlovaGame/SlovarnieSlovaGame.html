@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лёгкий тренажёр словарных слов</title>
+    <style>
+        body {
+            font-family: 'Roboto Sans MS', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            background-image: url('bgSlovarnieSlova.svg');
+            background-size:cover ;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #5f6caf;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .word-container {
+            text-align: center;
+            font-size: 3.5em;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #fff9e6;
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            border: 3px dashed #ffd166;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .word-container::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid #ffd166;
+            border-radius: 20px;
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        .missing {
+            color: #ff6b6b;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .letters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .letter-btn {
+            padding: 20px 25px;
+            font-size: 2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            background-color: #a5dff9;
+            color: #333;
+            transition: all 0.3s;
+            box-shadow: 0 5px 0 #4a8fe7;
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .letter-btn:hover {
+            background-color: #8bd3f8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #4a8fe7;
+        }
+
+        .letter-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #4a8fe7;
+        }
+
+        .letter-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255,255,255,0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .letter-btn:focus:not(:active)::after {
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0, 0); opacity: 0.5; }
+            100% { transform: scale(20, 20); opacity: 0; }
+        }
+
+        .correct {
+            animation: correctAnswer 1s;
+            background-color: #88e0a7 !important;
+            box-shadow: 0 5px 0 #4caf50;
+            color: white;
+        }
+
+        .wrong {
+            animation: wrongAnswer 0.6s;
+            background-color: #ff8888 !important;
+            box-shadow: 0 5px 0 #f44336;
+            color: white;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongAnswer {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.5em;
+            margin-top: 30px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .correct-stat {
+            color: #4caf50;
+            background-color: #e8f5e9;
+        }
+
+        .wrong-stat {
+            color: #f44336;
+            background-color: #ffebee;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confetti 3s ease-out;
+            opacity: 0;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+
+        .character {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            transition: all 0.3s;
+        }
+
+        .character:hover {
+            transform: scale(1.1);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .word-container { font-size: 2.5em; }
+            .letter-btn { padding: 15px 20px; font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Лёгкий тренажёр словарных слов</h1>
+    <div class="subtitle">Вставь пропущенную букву и стань чемпионом грамотности!</div>
+    
+    <div class="game-container">
+        <div class="word-container" id="wordContainer"></div>
+        <div class="letters-container" id="lettersContainer"></div>
+        
+        <div class="stats">
+            <div class="stat-box correct-stat">
+                Правильно: <span id="correctCount">0</span>
+            </div>
+            <div class="stat-box wrong-stat">
+                Ошибок: <span id="wrongCount">0</span>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <img src="https://img.icons8.com/color/100/000000/owl.png" class="character" id="character" title="Мудрый Совёнок">
+    </div>
+    
+    <div class="celebration" id="celebration"></div>
+
+    <audio id="correctSound" src="click_bell1_3.wav" preload="auto"></audio>
+    <audio id="wrongSound" src="error_tonal_buzz3_4.wav" preload="auto"></audio>
+    <audio id="clickSound" src="click_2.wav" preload="auto"></audio>
+    <audio id="winSound" src="human_children_yahoo_1.wav" preload="auto"></audio>
+
+    <script>
+        const wordsData = [
+            { word: "_втобус", missingIndex: 0, correct: "а" }, // автобус
+            { word: "апп_тит", missingIndex: 3, correct: "е" }, // аппетит
+            { word: "бер_г", missingIndex: 3, correct: "е" },    // берег
+            { word: "б_лото", missingIndex: 1, correct: "о" },   // болото
+            { word: "вет_р", missingIndex: 3, correct: "е" },    // ветер
+            { word: "дев_чка", missingIndex: 3, correct: "о" },  // девочка
+            { word: "дят_л", missingIndex: 3, correct: "е" },    // дятел
+            { word: "жав_ронок", missingIndex: 3, correct: "о" },// жаворонок
+            { word: "к_лендарь", missingIndex: 1, correct: "а" },// календарь
+            { word: "к_ртина", missingIndex: 1, correct: "а" }, // картина
+            { word: "к_ртофель", missingIndex: 1, correct: "а" },// картофель
+            { word: "кв_ртира", missingIndex: 2, correct: "а" },  // квартира
+            { word: "к_нфета", missingIndex: 1, correct: "о" },  // конфета
+            { word: "к_рзина", missingIndex: 1, correct: "о" },  // корзина
+            { word: "кор_дор", missingIndex: 3, correct: "и" },  // коридор
+            { word: "к_стёр", missingIndex: 1, correct: "о" },   // костер
+            { word: "кр_пива", missingIndex: 2, correct: "а" },  // крапива
+            { word: "л_донь", missingIndex: 1, correct: "а" },   // ладонь
+            { word: "м_тро", missingIndex: 1, correct: "е" },    // метро
+            { word: "м_рковь", missingIndex: 1, correct: "о" },  // морковь
+            { word: "н_деля", missingIndex: 1, correct: "е" },   // неделя
+            { word: "_гурец", missingIndex: 0, correct: "о" },  // огурец
+            { word: "_рех", missingIndex: 0, correct: "о" },     // орех
+            { word: "п_льто", missingIndex: 1, correct: "а" },   // пальто
+            { word: "пом_дор", missingIndex: 3, correct: "и" },  // помидор
+            { word: "п_суда", missingIndex: 1, correct: "о" },  // посуда
+            { word: "пш_ница", missingIndex: 2, correct: "е" },  // пшеница
+            { word: "рю_зак", missingIndex: 2, correct: "к" },   // рюкзак
+            { word: "р_бина", missingIndex: 1, correct: "я" },    // рябина
+            { word: "с_лат", missingIndex: 1, correct: "а" },    // салат
+            { word: "с_поги", missingIndex: 1, correct: "а" },   // сапоги
+            { word: "с_ница", missingIndex: 1, correct: "и" },    // синица
+            { word: "см_родина", missingIndex: 2, correct: "о" },// смородина
+            { word: "с_бака", missingIndex: 1, correct: "о" },    // собака
+            { word: "суб_ота", missingIndex: 3, correct: "б" },  // суббота
+            { word: "тел_визор", missingIndex: 3, correct: "е" },// телевизор
+            { word: "т_варищ", missingIndex: 1, correct: "о" },  // товарищ
+            { word: "тр_мвай", missingIndex: 2, correct: "а" },  // трамвай
+            { word: "ул_ца", missingIndex: 2, correct: "и" },     // улица
+            { word: "ур_жай", missingIndex: 2, correct: "о" },    // урожай
+            { word: "ч_ловек", missingIndex: 1, correct: "е" },   // человек
+            { word: "ч_рника", missingIndex: 1, correct: "е" },   // черника
+            { word: "ябл_ня", missingIndex: 3, correct: "о" }     // яблоня
+        ];
+
+        let currentWordIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        const correctSound = document.getElementById('correctSound');
+        const wrongSound = document.getElementById('wrongSound');
+        const clickSound = document.getElementById('clickSound');
+        const winSound = document.getElementById('winSound');
+        const character = document.getElementById('character');
+
+        function initGame() {
+            const currentWord = wordsData[currentWordIndex];
+            const wordContainer = document.getElementById('wordContainer');
+            const lettersContainer = document.getElementById('lettersContainer');
+            
+            // Форматируем слово с пропуском
+            const wordParts = currentWord.word.split('_');
+            wordContainer.innerHTML = `${wordParts[0]}<span class="missing">_</span>${wordParts[1]}`;
+            
+            lettersContainer.innerHTML = '';
+            const letters = shuffle([currentWord.correct, ...getRandomLetters(4, currentWord.correct)]);
+            
+            letters.forEach(letter => {
+                const button = document.createElement('button');
+                button.className = 'letter-btn';
+                button.textContent = letter.toUpperCase();
+                button.onclick = (event) => {
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+                    checkLetter(letter, currentWord, event.target);
+                };
+                lettersContainer.appendChild(button);
+            });
+            
+            updateProgress();
+        }
+
+        function checkLetter(selectedLetter, currentWord, button) {
+            if (selectedLetter === currentWord.correct) {
+                // Правильный ответ
+                correctAnswers++;
+                document.getElementById('correctCount').textContent = correctAnswers;
+                button.classList.add('correct');
+                correctSound.currentTime = 0;
+                correctSound.play();
+                
+                // Показываем правильное слово
+                const wordParts = currentWord.word.split('_');
+                const correctWord = `${wordParts[0]}<span class="correct">${currentWord.correct}</span>${wordParts[1]}`;
+                document.getElementById('wordContainer').innerHTML = correctWord;
+                
+                // Анимация персонажа
+                character.style.transform = 'scale(1.2) rotate(10deg)';
+                setTimeout(() => {
+                    character.style.transform = 'scale(1) rotate(0)';
+                }, 300);
+                
+                // Переход к следующему слову
+                setTimeout(() => {
+                    currentWordIndex = (currentWordIndex + 1) % wordsData.length;
+                    if (currentWordIndex === 0) {
+                        celebrate();
+                    }
+                    initGame();
+                }, 1500);
+            } else {
+                // Неправильный ответ
+                wrongAnswers++;
+                document.getElementById('wrongCount').textContent = wrongAnswers;
+                button.classList.add('wrong');
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+                
+                // Анимация персонажа
+                character.style.transform = 'translateX(-5px)';
+                setTimeout(() => {
+                    character.style.transform = 'translateX(5px)';
+                    setTimeout(() => {
+                        character.style.transform = 'translateX(0)';
+                    }, 100);
+                }, 100);
+                
+                setTimeout(() => {
+                    button.remove();
+                }, 1000);
+            }
+        }
+
+        function getRandomLetters(count, exclude) {
+            const alphabet = 'аоеёиотиеаиоиаекооёеиноъеаиоегоьеиоаоея';
+            const letters = [];
+            while (letters.length < count) {
+                const letter = alphabet[Math.floor(Math.random() * alphabet.length)];
+                if (letter !== exclude && !letters.includes(letter)) {
+                    letters.push(letter);
+                }
+            }
+            return letters;
+        }
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function updateProgress() {
+            const progress = Math.floor((currentWordIndex / wordsData.length) * 100);
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            celebration.style.display = 'block';
+            winSound.currentTime = 0;
+            winSound.play();
+            
+            // Создаем конфетти
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = `${2 + Math.random() * 3}s`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                celebration.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                celebration.style.display = 'none';
+                celebration.innerHTML = '';
+            }, 3000);
+        }
+
+        // Инициализация игры
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Площадь и периметр</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f0f0f0; }
+        svg { background: white; }
+        .correct { background-color: #d4edda !important; }
+        .incorrect { background-color: #f8d7da !important; }
+        #next { display: none; }
+        input { width: 100%; height: 100%; font-size: 24px; text-align: center; border: 1px solid #A4A4A4; box-sizing: border-box; }
+    .button {
+        cursor: pointer;
+    }
+    </style>
+</head>
+<body>
+    <svg width="595" height="842" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Perimetr">
+            <rect width="595" height="842" fill="white"/>
+            <text id="annotation" fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="-0.011em"><tspan x="140.409" y="52.2031">Площадь (S) и периметр (P).</tspan></text>
+            <g id="formula1" filter="url(#filter0_d_227_466)">
+                <rect x="12.5" y="90.5" width="281" height="101" rx="9.5" stroke="#666666" shape-rendering="crispEdges"/>
+                <text fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="22" y="124.785">Чтобы найти площадь прямоугольника, </tspan><tspan x="22" y="145.785">нужно его длину умножить на ширину: </tspan><tspan x="22" y="166.785">S = a * b </tspan></text>
+            </g>
+            <g id="formula2" filter="url(#filter1_d_227_466)">
+                <rect x="303.5" y="90.5" width="279" height="101" rx="9.5" stroke="#666666" shape-rendering="crispEdges"/>
+                <text fill="#555454" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="-0.011em"><tspan x="318" y="116.785">Периметр прямоугольника, равен </tspan><tspan x="318" y="137.785">произведению сумм его соседних </tspan><tspan x="318" y="158.785">сторон:   P = (a + b) * 2 </tspan></text>
+            </g>
+            <g id="example1">
+                <text id="example1-a" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="-0.011em"><tspan x="132" y="263.285"></tspan></text>
+                <text id="example1-b" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="232" y="310.285"></tspan></text>
+                <rect id="Rectangle 1" x="66.5" y="266.5" width="159" height="79" stroke="black"/>
+            </g>
+            <g id="example4">
+                <text id="example4-a" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="-0.011em"><tspan x="407" y="519.285"></tspan></text>
+                <text id="example4-b" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="507" y="583.285"></tspan></text>
+                <rect id="Rectangle 1_2" x="342.5" y="524.5" width="159" height="109" stroke="black"/>
+            </g>
+            <g id="example2">
+                <text id="example2-a" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="447" y="292.285"></tspan></text>
+                <rect id="Rectangle 1_3" x="390.5" y="224.5" width="53" height="122" stroke="black"/>
+                <text id="example2-b" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="-0.011em"><tspan x="406" y="221.285"></tspan></text>
+            </g>
+            <g id="example3">
+                <text id="example3-a" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="153" y="582.285"></tspan></text>
+                <rect id="Rectangle 1_4" x="122.5" y="514.5" width="27" height="122" stroke="black"/>
+                <text id="example3-b" fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="-0.011em"><tspan x="122" y="511.285"></tspan></text>
+            </g>
+            <g id="checkAnswer" class="button">
+                <rect x="117" y="790" width="80" height="21" rx="4" fill="#25D669"/>
+                <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="122" y="805.285">проверить</tspan></text>
+            </g>
+            <g id="next" class="button">
+                <rect x="386" y="790" width="81" height="21" rx="4" fill="#259ED6"/>
+                <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" letter-spacing="0em"><tspan x="401" y="805.285">дальше</tspan></text>
+            </g>
+            <g id="block1">
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82.3125" y="387.203">S = </tspan></text>
+                <foreignObject x="120.5" y="361.5" width="35" height="32">
+                    <input id="inputS1" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="387.203">см²</tspan></text>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82" y="428.203">P = </tspan></text>
+                <foreignObject x="121.5" y="402.5" width="34" height="33">
+                    <input id="inputP1" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="428.203">см</tspan></text>
+            </g>
+            <g id="block4">
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="365.312" y="686.203">S = </tspan></text>
+                <foreignObject x="403.5" y="660.5" width="35" height="32">
+                    <input id="inputS4" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="443" y="686.203">дм²</tspan></text>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="365" y="727.203">P = </tspan></text>
+                <foreignObject x="404.5" y="701.5" width="34" height="33">
+                    <input id="inputP4" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="443" y="727.203">дм</tspan></text>
+            </g>
+            <g id="block2">
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="364.312" y="387.203">S = </tspan></text>
+                <foreignObject x="402.5" y="361.5" width="35" height="32">
+                    <input id="inputS2" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="442" y="387.203">м²</tspan></text>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="364" y="428.203">P = </tspan></text>
+                <foreignObject x="403.5" y="402.5" width="34" height="33">
+                    <input id="inputP2" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="442" y="428.203">м</tspan></text>
+            </g>
+            <g id="block3">
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82.3125" y="686.203">S = </tspan></text>
+                <foreignObject x="120.5" y="660.5" width="35" height="32">
+                    <input id="inputS3" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="686.203">км²</tspan></text>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="82" y="727.203">P = </tspan></text>
+                <foreignObject x="121.5" y="701.5" width="34" height="33">
+                    <input id="inputP3" type="text">
+                </foreignObject>
+                <text fill="black" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="24" letter-spacing="0em"><tspan x="160" y="727.203">км</tspan></text>
+            </g>
+        </g>
+        <defs>
+            <filter id="filter0_d_227_466" x="8" y="90" width="290" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dy="4"/>
+                <feGaussianBlur stdDeviation="2"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_227_466"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_227_466" result="shape"/>
+            </filter>
+            <filter id рынка="filter1_d_227_466" x="299" y="90" width="288" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dy="4"/>
+                <feGaussianBlur stdDeviation="2"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_227_466"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_227_466" result="shape"/>
+            </filter>
+        </defs>
+    </svg>
+    <script>
+        // Массив с тремя наборами примеров, каждый содержит 4 прямоугольника
+        const exampleSets = [
+            [
+                { id: 'example1', a: 8, b: 4, unit: 'см', S: 32, P: 24 },
+                { id: 'example2', a: 5, b: 2, unit: 'м', S: 10, P: 14 },
+                { id: 'example3', a: 5, b: 1, unit: 'км', S: 5, P: 12 },
+                { id: 'example4', a: 7, b: 5, unit: 'дм', S: 35, P: 24 }
+            ],
+            [
+                { id: 'example1', a: 6, b: 3, unit: 'см', S: 18, P: 18 },
+                { id: 'example2', a: 4, b: 4, unit: 'м', S: 16, P: 16 },
+                { id: 'example3', a: 3, b: 2, unit: 'км', S: 6, P: 10 },
+                { id: 'example4', a: 9, b: 4, unit: 'дм', S: 36, P: 26 }
+            ],
+            [
+                { id: 'example1', a: 10, b: 5, unit: 'см', S: 50, P: 30 },
+                { id: 'example2', a: 7, b: 3, unit: 'м', S: 21, P: 20 },
+                { id: 'example3', a: 4, b: 3, unit: 'км', S: 12, P: 14 },
+                { id: 'example4', a: 8, b: 6, unit: 'дм', S: 48, P: 28 }
+            ]
+        ];
+
+        // Текущий набор примеров
+        let currentSetIndex = 0;
+
+        // Элементы управления
+        const checkButton = document.querySelector('#checkAnswer');
+        const nextButton = document.querySelector('#next');
+        const inputs = {
+            block1: { S: document.querySelector('#inputS1'), P: document.querySelector('#inputP1') },
+            block2: { S: document.querySelector('#inputS2'), P: document.querySelector('#inputP2') },
+            block3: { S: document.querySelector('#inputS3'), P: document.querySelector('#inputP3') },
+            block4: { S: document.querySelector('#inputS4'), P: document.querySelector('#inputP4') }
+        };
+
+        // Функция обновления примеров
+        function updateExamples() {
+            const currentSet = exampleSets[currentSetIndex];
+            currentSet.forEach((ex, index) => {
+                const block = `block${index + 1}`;
+                document.querySelector(`#${ex.id}-a tspan`).textContent = `${ex.a} ${ex.unit}`;
+                document.querySelector(`#${ex.id}-b tspan`).textContent = `${ex.b} ${ex.unit}`;
+                inputs[block].S.value = '';
+                inputs[block].P.value = '';
+                inputs[block].S.classList.remove('correct', 'incorrect');
+                inputs[block].P.classList.remove('correct', 'incorrect');
+            });
+            nextButton.style.display = 'none';
+        }
+
+        // Проверка ответов
+        checkButton.addEventListener('click', () => {
+            let allCorrect = true;
+            const currentSet = exampleSets[currentSetIndex];
+            currentSet.forEach((ex, index) => {
+                const block = `block${index + 1}`;
+                const inputS = inputs[block].S;
+                const inputP = inputs[block].P;
+                const correctS = ex.S;
+                const correctP = ex.P;
+
+                inputS.classList.remove('correct', 'incorrect');
+                inputP.classList.remove('correct', 'incorrect');
+
+                if (parseFloat(inputS.value) === correctS) {
+                    inputS.classList.add('correct');
+                } else {
+                    inputS.classList.add('incorrect');
+                    allCorrect = false;
+                }
+
+                if (parseFloat(inputP.value) === correctP) {
+                    inputP.classList.add('correct');
+                } else {
+                    inputP.classList.add('incorrect');
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                nextButton.style.display = 'block';
+            } else {
+                nextButton.style.display = 'none';
+            }
+        });
+
+        // Смена набора примеров
+        nextButton.addEventListener('click', () => {
+            currentSetIndex = (currentSetIndex + 1) % exampleSets.length;
+            updateExamples();
+        });
+
+        // Инициализация
+        updateExamples();
+
+        // Функция для добавления нового набора примеров
+        function addExampleSet(newSet) {
+            if (newSet.length === 4 && newSet.every(ex => 
+                ex.id && ex.a && ex.b && ex.unit && 
+                ex.S === ex.a * ex.b && 
+                ex.P === (ex.a + ex.b) * 2
+            )) {
+                exampleSets.push(newSet);
+                console.log('Новый набор добавлен:', newSet);
+            } else {
+                console.error('Некорректный формат набора примеров');
+            }
+        }
+
+        // Функция для редактирования существующего набора
+        function editExampleSet(index, newSet) {
+            if (index >= 0 && index < exampleSets.length && 
+                newSet.length === 4 && newSet.every(ex => 
+                    ex.id && ex.a && ex.b && ex.unit && 
+                    ex.S === ex.a * ex.b && 
+                    ex.P === (ex.a + ex.b) * 2
+                )) {
+                exampleSets[index] = newSet;
+                console.log('Набор отредактирован:', newSet);
+                if (index === currentSetIndex) {
+                    updateExamples();
+                }
+            } else {
+                console.error('Некорректный индекс или формат набора');
+            }
+        }
+    </script>
+</body>
+</html>

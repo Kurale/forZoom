@@ -1,0 +1,92 @@
+[
+    {
+        "question": "Какое число содержит 25 тысяч 30 единиц?",
+        "options": [
+            {"text": "25 030", "correct": true},
+            {"text": "25 300", "correct": false},
+            {"text": "25 003", "correct": false},
+            {"text": "250 030", "correct": false}
+        ]
+    },
+    {
+        "question": "Сколько всего десятков в числе 7 842?",
+        "options": [
+            {"text": "8", "correct": false},
+            {"text": "84", "correct": false},
+            {"text": "784", "correct": true},
+            {"text": "7", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число удовлетворяет условию: 6 000 < X < 7 000 и сумма цифр равна 9?",
+        "options": [
+            {"text": "6 040", "correct": false},
+            {"text": "6 211", "correct": false},
+            {"text": "6 201", "correct": true},
+            {"text": "6 900", "correct": false}
+        ]
+    },
+    {
+        "question": "Как правильно записать число 'сорок тысяч восемьсот пять'?",
+        "options": [
+            {"text": "40 085", "correct": false},
+            {"text": "40 805", "correct": true},
+            {"text": "4 805", "correct": false},
+            {"text": "400 805", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число предшествует числу 12 000?",
+        "options": [
+            {"text": "11 999", "correct": true},
+            {"text": "12 001", "correct": false},
+            {"text": "11 900", "correct": false},
+            {"text": "11 099", "correct": false}
+        ]
+    },
+    {
+        "question": "В каком числе цифра 8 обозначает количество сотен?",
+        "options": [
+            {"text": "8 432", "correct": false},
+            {"text": "4 825", "correct": true},
+            {"text": "3 782", "correct": false},
+            {"text": "5 089", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое из чисел является наименьшим?",
+        "options": [
+            {"text": "9 099", "correct": false},
+            {"text": "9 909", "correct": false},
+            {"text": "9 990", "correct": false},
+            {"text": "9 009", "correct": true}
+        ]
+    },
+    {
+        "question": "Разложите число 15 306 на разрядные слагаемые:",
+        "options": [
+            {"text": "10 000 + 5 000 + 300 + 6", "correct": true},
+            {"text": "15 000 + 300 + 60", "correct": false},
+            {"text": "10 000 + 500 + 30 + 6", "correct": false},
+            {"text": "1 000 + 5 000 + 300 + 6", "correct": false}
+        ]
+    },
+    {
+        "question": "На сколько 10 тысяч больше чем 9 999?",
+        "options": [
+            {"text": "На 1", "correct": true},
+            {"text": "На 10", "correct": false},
+            {"text": "На 100", "correct": false},
+            {"text": "На 1 000", "correct": false}
+        ]
+    },
+    {
+        "question": "Какое число нужно вставить: 23 456, 23 466, ____, 23 486?",
+        "options": [
+            {"text": "23 467", "correct": false},
+            {"text": "23 470", "correct": false},
+            {"text": "23 476", "correct": true},
+            {"text": "23 500", "correct": false}
+        ]
+    }
+]

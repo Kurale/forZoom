@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина по нумерации многозначных чисел</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Стартовый экран -->
+        <div id="start-screen" class="screen active">
+            <h1>Нумерация многозначных чисел</h1>
+            <p>Проверь свои знания по математике!</p>
+            
+            <div class="form-group">
+                <label for="username">Введи своё имя:</label>
+                <input type="text" id="username" placeholder="Друг" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Выберите уровень сложности:</label>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-level="easy">Легкий</button>
+                    <button class="difficulty-btn" data-level="medium">Средний</button>
+                    <button class="difficulty-btn" data-level="hard">Сложный</button>
+                </div>
+            </div>
+            
+            <button id="start-btn" class="btn">Начать викторину</button>
+        </div>
+        
+        <!-- Экран викторины -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div class="quiz-info">
+                    <span id="current-question">1/10</span>
+                    <span id="timer">00:00</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div id="question-container">
+                <h2 id="question-text">Загрузка вопроса...</h2>
+                <div id="options-container" class="options-container">
+                    <!-- Варианты ответов будут здесь -->
+                </div>
+            </div>
+            
+            <button id="next-btn" class="btn" disabled>Следующий вопрос</button>
+        </div>
+        
+        <!-- Экран результатов -->
+        <div id="result-screen" class="screen">
+            <h1>Результаты викторины</h1>
+            <div class="result-card">
+                <p id="result-username">Пользователь: </p>
+                <p id="result-score">Правильных ответов: </p>
+                <p id="result-percentage">Процент правильных ответов: </p>
+                <p id="result-time">Затраченное время: </p>
+                <p id="result-feedback">Отзыв: </p>
+            </div>
+            
+            <div class="result-actions">
+                <button id="restart-btn" class="btn">Пройти еще раз</button>
+                <button id="change-difficulty-btn" class="btn">Изменить уровень</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

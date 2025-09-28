@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Интерактивный тренажёр</title>
+    <style>
+        body {
+            background-color: #266040;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            position: relative;
+            width: 1176px;
+            height: 748px;
+            transform: scale(0.8);
+            transform-origin: center;
+        }
+        .draggable {
+            position: absolute;
+            cursor: move;
+            color: white;
+            font-size: 51.2px;
+            user-select: none;
+            transition: transform 0.2s ease;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .draggable:hover {
+            transform: scale(1.05);
+        }
+        .droppable {
+            position: absolute;
+            border: 2.4px solid #FFFFAB;
+            transition: background-color 0.2s ease;
+            z-index: 5;
+        }
+        .droppable.drag-over, .parking.drag-over {
+            background-color: rgba(255, 255, 171, 0.2);
+        }
+        .error {
+            border-color: red !important;
+            animation: shake 0.3s;
+        }
+        .parking {
+            position: absolute;
+            width: 558.4px;
+            height: 176.8px;
+            left: 308.8px;
+            top: 509.6px;
+            background: #3A8B5F;
+            border-radius: 28px;
+            z-index: 5;
+        }
+        .btn {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            z-index: 15;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        #btnCheck { left: 64px; top: 570.4px; }
+        #btnNext { 
+            left: 910.4px;
+            top: 570.4px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        #btnNext.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #score {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 15;
+        }
+        #correct { 
+            color: #FFE60A; 
+            font-size: 51.2px;
+            margin-left: 5px;
+        }
+        #incorrect { 
+            color: #0AB9FF; 
+            font-size: 51.2px;
+            margin-left: 5px;
+        }
+        #score-line {
+            position: absolute;
+            top: 90px;
+            left: 0;
+            width: 1176px;
+            height: 2.4px;
+            background: #FFFFAB;
+            z-index: 15;
+        }
+        #background {
+            position: absolute;
+            top: -80px;
+            left: 30px;
+            width: 1100px;
+            height: 748px;
+            z-index: 1; /* Самый нижний слой */
+            pointer-events: none; /* Не мешает перетаскиванию */
+        }
+        /* Анимация для счета */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .score-pulse {
+            animation: pulse 0.5s ease-in-out;
+            text-shadow: 0 0 8px currentColor; /* Легкое свечение */
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            50% { transform: translateX(4px); }
+            75% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title" style="color: white; font-size: 51.2px; margin-top: 0; margin-bottom: 20px;">Составь предложение:</h1>
+        <img id="background" src="/bgSostav/letni.svg" alt="Background">
+        <div class="parking" id="parkingForDraggable"></div>
+        
+        <!-- Droppable zones -->
+        <div class="droppable" id="droppable1" style="left: 36.4px; top: 273.2px; width: 272px; height: 64px;"></div>
+        <div class="droppable" id="droppable2" style="left: 308.4px; top: 273.2px; width: 272.8px; height: 64px;"></div>
+        <div class="droppable" id="droppable3" style="left: 580.4px; top: 273.2px; width: 272.8px; height: 64px;"></div>
+        <div class="droppable" id="droppable4" style="left: 853.2px; top: 273.2px; width: 272px; height: 64px;"></div>
+
+        <!-- Draggable elements -->
+        <div class="draggable" id="draggable1" draggable="true" style="left: 324.8px; top: 525.6px;">Летний</div>
+        <div class="draggable" id="draggable2" draggable="true" style="left: 324.8px; top: 605.6px;">дождь</div>
+        <div class="draggable" id="draggable3" draggable="true" style="left: 607.2px; top: 605.6px;">стучит</div>
+        <div class="draggable" id="draggable4" draggable="true" style="left: 607.2px; top: 525.6px;">по крышам</div>
+
+        <!-- Buttons -->
+        <div class="btn" id="btnCheck">
+            <svg width="201.6" height="64">
+                <rect width="201.6" height="64" rx="22.4" fill="#7DB934" stroke="#FEDD5B" stroke-width="4.8"/>
+                <text x="23.2" y="42.4" fill="#266040" font-size="32">проверить</text>
+            </svg>
+        </div>
+        <div class="btn" id="btnNext">
+            <svg width="201.6" height="64">
+                <rect width="201.6" height="64" rx="22.4" fill="#3479B9" stroke="#C9C329" stroke-width="4.8"/>
+                <text x="42.4" y="42.4" fill="white" font-size="32">дальше</text>
+            </svg>
+        </div>
+
+        <!-- Score with star and cross -->
+        <div id="score">
+            <svg width="60" height="60" viewBox="-5 15 50 50" style="flex-shrink: 0;">
+                <path d="M22.67 20.73L30.99 37.06C31.65 38.37 32.87 39.28 34.29 39.54L52.38 42.41C53.59 42.63 54.07 44.16 53.21 45.03L40.26 57.98C39.25 59.01 38.78 60.45 39 61.87L41.86 79.98C42.05 81.19 40.79 82.14 39.69 81.59L23.36 73.25C22.08 72.62 20.56 72.62 19.28 73.25L2.95 81.59C1.85 82.14 0.59 81.19 0.78 79.98L3.64 61.87C3.86 60.45 3.39 59.01 2.38 57.98L-10.57 45.03C-11.43 44.16 -10.95 42.63 -9.74 42.41L8.35 39.54C9.77 39.28 10.99 38.37 11.65 37.06L19.97 20.73C20.53 19.63 22.11 19.63 22.67 20.73Z" 
+                      fill="#FFE60A" stroke="#F35111" stroke-width="2.4" transform="translate(5, 5) scale(0.6)"/>
+            </svg>
+            <div id="correct">0</div>
+            <svg width="35" height="35" viewBox="-5 0 50.16 50.16" style="flex-shrink: 0;">
+                <path d="M25.31 22.74L9.63 7.06C8.45 5.88 6.55 5.88 5.37 7.06L-3.91 16.34C-5.09 17.52 -5.09 19.42 -3.91 20.6L11.77 36.28L-3.95 51.99C-5.13 53.17 -5.13 55.07 -3.95 56.25L5.33 65.53C6.51 66.71 8.41 66.71 9.59 65.53L25.31 49.82L41.02 65.53C42.2 66.71 44.1 66.71 45.28 65.53L54.56 56.25C55.74 55.07 55.74 53.17 54.56 51.99L38.85 36.28L54.53 20.6C55.71 19.42 55.71 17.52 54.53 16.34L45.25 7.06C44.07 5.88 42.17 5.88 40.99 7.06L25.31 22.74Z" 
+                      fill="#0AB9FF" stroke="#16355F" stroke-width="2.4" transform="translate(0, -5) scale(0.8)"/>
+            </svg>
+            <div id="incorrect">0</div>
+        </div>
+        <div id="score-line"></div>
+    </div>
+
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let currentSentenceIndex = 0;
+        let isChecked = false;
+
+        const sentences = [
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Летний',
+            'draggable2': 'дождь',
+            'draggable3': 'стучит',
+            'draggable4': 'по крышам'
+        },
+        background: "bgSostav/letni.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Над полем',
+            'draggable2': 'светит',
+            'draggable3': 'яркое',
+            'draggable4': 'солнце'
+        },
+        background: "bgSostav/nadPolem.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'В лесу',
+            'draggable2': 'течёт',
+            'draggable3': 'быстрый',
+            'draggable4': 'ручей'
+        },
+        background: "bgSostav/ruchei.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Кот',
+            'draggable2': 'спит',
+            'draggable3': 'на мягкой',
+            'draggable4': 'подушке'
+        },
+        background: "/bgSostav/kot.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Дети',
+            'draggable2': 'весело',
+            'draggable3': 'играют',
+            'draggable4': 'во дворе'
+        },
+        background: "bgSostav/deti.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Высоко',
+            'draggable2': 'в небе',
+            'draggable3': 'летит',
+            'draggable4': 'самолёт'
+        },
+        background: "bgSostav/samolet.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'Старая',
+            'draggable2': 'собака',
+            'draggable3': 'лежит',
+            'draggable4': 'у порога'
+        },
+        background: "bgSostav/sobaka.svg"
+    },
+    {
+        correctOrder: {
+            'droppable1': 'draggable1',
+            'droppable2': 'draggable2',
+            'droppable3': 'draggable3',
+            'droppable4': 'draggable4'
+        },
+        words: {
+            'draggable1': 'По реке',
+            'draggable2': 'плывёт',
+            'draggable3': 'большая',
+            'draggable4': 'лодка'
+        },
+        background: "bgSostav/lodka.svg"
+    }
+];
+
+        const initialPositions = {
+            'draggable1': { x: 324.8, y: 525.6 },
+            'draggable2': { x: 324.8, y: 605.6 },
+            'draggable3': { x: 607.2, y: 605.6 },
+            'draggable4': { x: 607.2, y: 525.6 }
+        };
+
+        // Drag and Drop functionality
+        const draggables = document.querySelectorAll('.draggable');
+        const droppables = document.querySelectorAll('.droppable');
+        const parking = document.getElementById('parkingForDraggable');
+        const btnNext = document.getElementById('btnNext');
+        const background = document.getElementById('background');
+        const correctScore = document.getElementById('correct');
+        const incorrectScore = document.getElementById('incorrect');
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', draggable.id);
+                setTimeout(() => draggable.style.opacity = '0.5', 0);
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.style.opacity = '1';
+            });
+        });
+
+        droppables.forEach(droppable => {
+            droppable.addEventListener('dragover', e => {
+                e.preventDefault();
+                droppable.classList.add('drag-over');
+            });
+
+            droppable.addEventListener('dragleave', () => {
+                droppable.classList.remove('drag-over');
+            });
+
+            droppable.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggableId = e.dataTransfer.getData('text');
+                const draggable = document.getElementById(draggableId);
+                droppable.appendChild(draggable);
+                droppable.classList.remove('drag-over');
+                
+                const droppableRect = droppable.getBoundingClientRect();
+                const draggableRect = draggable.getBoundingClientRect();
+                draggable.style.left = ((droppableRect.width - draggableRect.width) / 2) + 'px';
+                draggable.style.top = ((droppableRect.height - draggableRect.height) / 2) + 'px';
+            });
+        });
+
+        parking.addEventListener('dragover', e => {
+            e.preventDefault();
+            parking.classList.add('drag-over');
+        });
+
+        parking.addEventListener('dragleave', () => {
+            parking.classList.remove('drag-over');
+        });
+
+        parking.addEventListener('drop', e => {
+            e.preventDefault();
+            const draggableId = e.dataTransfer.getData('text');
+            const draggable = document.getElementById(draggableId);
+            parking.appendChild(draggable);
+            parking.classList.remove('drag-over');
+            const pos = initialPositions[draggable.id];
+            draggable.style.left = pos.x - parking.offsetLeft + 'px';
+            draggable.style.top = pos.y - parking.offsetTop + 'px';
+            isChecked = false;
+            btnNext.classList.remove('active');
+        });
+
+        // Check button functionality
+        document.getElementById('btnCheck').addEventListener('click', () => {
+            const allInDroppables = Array.from(droppables).every(droppable => droppable.querySelector('.draggable'));
+            if (!allInDroppables || isChecked) return;
+
+            let allCorrect = true;
+            const currentSentence = sentences[currentSentenceIndex];
+            
+            droppables.forEach(droppable => {
+                const draggable = droppable.querySelector('.draggable');
+                const isCorrect = draggable && draggable.id === currentSentence.correctOrder[droppable.id];
+                
+                if (!isCorrect) {
+                    droppable.classList.add('error');
+                    allCorrect = false;
+                    setTimeout(() => {
+                        droppable.classList.remove('error');
+                        if (draggable) {
+                            parking.appendChild(draggable);
+                            const pos = initialPositions[draggable.id];
+                            draggable.style.left = pos.x - parking.offsetLeft + 'px';
+                            draggable.style.top = pos.y - parking.offsetTop + 'px';
+                        }
+                    }, 1000);
+                }
+            });
+
+            if (allCorrect) {
+                correctCount++;
+                correctScore.textContent = correctCount;
+                correctScore.classList.add('score-pulse');
+                setTimeout(() => correctScore.classList.remove('score-pulse'), 500); // Убираем класс после анимации
+                isChecked = true;
+                btnNext.classList.add('active');
+            } else {
+                incorrectCount++;
+                incorrectScore.textContent = incorrectCount;
+                incorrectScore.classList.add('score-pulse');
+                setTimeout(() => incorrectScore.classList.remove('score-pulse'), 500); // Убираем класс после анимации
+            }
+        });
+
+        // Next button functionality
+        document.getElementById('btnNext').addEventListener('click', () => {
+            if (!btnNext.classList.contains('active')) return;
+            currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+            isChecked = false;
+            btnNext.classList.remove('active');
+            loadSentence();
+        });
+
+        function loadSentence() {
+            const currentSentence = sentences[currentSentenceIndex];
+            draggables.forEach(draggable => {
+                draggable.textContent = currentSentence.words[draggable.id];
+                parking.appendChild(draggable);
+                const pos = initialPositions[draggable.id];
+                draggable.style.left = pos.x - parking.offsetLeft + 'px';
+                draggable.style.top = pos.y - parking.offsetTop + 'px';
+            });
+            background.src = currentSentence.background;
+        }
+
+        // Initial load
+        loadSentence();
+    </script>
+</body>
+</html>
