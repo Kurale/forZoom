@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Падежи по-тиктоковски — с аудио!</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ffd166;
+      --muted:#94a3b8;
+      --success:#7ee787;
+      --danger:#ff7b7b;
+      --glass: rgba(255,255,255,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071023 0%, #0f1724 100%);color:#e6eef8}
+    .app{height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;}
+    .viewer{width:min(420px,96vw);height:min(820px,94vh);background:var(--card);border-radius:18px;overflow:hidden;position:relative;box-shadow:0 10px 30px rgba(2,6,23,0.6);}
+    .clip{height:100%;width:100%;position:absolute;top:0;left:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:28px;box-sizing:border-box;transform:translateY(100%);transition:transform 400ms cubic-bezier(.2,.9,.25,1),opacity 300ms;}
+    .clip.active{transform:translateY(0);opacity:1}
+    .clip.prev{transform:translateY(-100%);opacity:0}
+    .title{font-size:20px;font-weight:700;margin-bottom:8px}
+    .subtitle{font-size:14px;color:var(--muted);margin-bottom:16px}
+    .card-body{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:12px;padding:18px;width:100%;box-sizing:border-box}
+    .big{font-size:48px;font-weight:800;line-height:1}
+    .hint{font-size:16px;margin-top:12px}
+    .sentence{font-size:24px;margin:16px 0;color:#cbd5e1;font-weight:600}
+    .controls{position:absolute;right:12px;bottom:18px;display:flex;flex-direction:column;gap:12px}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:10px 12px;border-radius:12px;color:inherit;font-weight:600;cursor:pointer;backdrop-filter: blur(4px)}
+    .btn:active{transform:scale(.98)}
+    .progress-wrap{position:absolute;left:12px;top:12px;width:calc(100% - 24px);display:flex;gap:8px;align-items:center}
+    .progress-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:999px;flex:1;overflow:hidden}
+    .progress-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#ff9ec0);border-radius:999px;transition:width 300ms linear}
+    .step-pill{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:700}
+    .confetti{position:absolute;inset:0;pointer-events:none}
+    .reward{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(.8);opacity:0;transition:transform 400ms,opacity 400ms}
+    .reward.show{transform:translate(-50%,-50%) scale(1);opacity:1}
+    .reward .badge{background:var(--success);color:#04230b;padding:10px 14px;border-radius:999px;font-weight:800;box-shadow:0 8px 24px rgba(126,231,135,0.12)}
+    .answer-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+    .option{padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);cursor:pointer;border:2px solid transparent;text-align:center;transition:all 0.2s}
+    .option:hover{background:rgba(255,255,255,0.04)}
+    .option.correct{border-color:var(--success);box-shadow:0 8px 30px rgba(126,231,135,0.07);background:rgba(126,231,135,0.05)}
+    .option.wrong{border-color:var(--danger);animation:shake 0.35s;background:rgba(255,123,123,0.05)}
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-6px)}
+      50%{transform:translateX(6px)}
+      75%{transform:translateX(-6px)}
+      100%{transform:translateX(0)}
+    }
+    .results{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center}
+    .counter{font-size:20px;margin:8px 0}
+    .retry-btn{margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="viewer" id="viewer" aria-live="polite">
+      <div class="progress-wrap">
+        <div class="step-pill" id="stepIndicator">Шаг 1/9</div>
+        <div class="progress-bar" aria-hidden>
+          <div class="progress-inner" id="progressInner"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="prevBtn">◀</button>
+        <button class="btn" id="nextBtn">▶</button>
+      </div>
+      <div class="reward" id="reward"><div class="badge">+1 ★</div></div>
+      <canvas class="confetti" id="confettiCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // === АУДИО СИСТЕМА ===
+    let audioContext = null;
+    let isAudioUnlocked = false;
+
+    function initAudio() {
+      if (audioContext) return;
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      isAudioUnlocked = true;
+    }
+
+    function playTone(frequency, duration = 0.2, type = 'sine', gain = 0.2) {
+      if (!isAudioUnlocked) return;
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = gain;
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio error:', e);
+      }
+    }
+
+    function playCorrect() {
+      playTone(880, 0.15, 'sine', 0.15); // высокий "ding"
+    }
+
+    function playIncorrect() {
+      playTone(220, 0.25, 'sawtooth', 0.1); // низкий "buzz"
+    }
+
+    function playReward() {
+      // короткий whoosh + sparkle
+      playTone(660, 0.1, 'sine', 0.1);
+      setTimeout(() => playTone(1320, 0.08, 'sine', 0.08), 50);
+    }
+
+    // Разблокировка аудио при первом взаимодействии
+    function unlockAudio() {
+      if (isAudioUnlocked) return;
+      initAudio();
+      document.body.removeEventListener('touchstart', unlockAudio);
+      document.body.removeEventListener('mousedown', unlockAudio);
+    }
+
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('mousedown', unlockAudio, { once: true });
+
+    // === КОНТЕНТ ===
+    const questions = [
+      {
+        type: "question",
+        title: "Винительный падеж",
+        subtitle: "Какой вопрос?",
+        content: "Какой вопрос соответствует Винительному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кого? Что?"
+      },
+      {
+        type: "example",
+        title: "Найди падеж",
+        subtitle: "В предложении",
+        sentence: "Я вижу кошку.",
+        content: "Какой падеж у слова 'кошка'?",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Винительный"
+      },
+      {
+        type: "question",
+        title: "Дательный падеж",
+        subtitle: "Какой вопрос?",
+        content: "Какой вопрос соответствует Дательному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кому? Чему?"
+      },
+      {
+        type: "example",
+        title: "Найди падеж",
+        subtitle: "В предложении",
+        sentence: "Я иду к реке.",
+        content: "Какой падеж у слова 'река'?",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Дательный"
+      },
+      {
+        type: "question",
+        title: "Родительный падеж",
+        subtitle: "Какой вопрос?",
+        content: "Какой вопрос соответствует Родительному падежу?",
+        options: ["Кого? Чего?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кого? Чего?"
+      },
+      {
+        type: "example",
+        title: "Найди падеж",
+        subtitle: "В предложении",
+        sentence: "Мне не хватает хлеба.",
+        content: "Какой падеж у слова 'хлеб'?",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Родительный"
+      },
+      {
+        type: "question",
+        title: "Предложный падеж",
+        subtitle: "Какой вопрос?",
+        content: "Какой вопрос соответствует Предложному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "О ком? О чём?"
+      },
+      {
+        type: "example",
+        title: "Найди падеж",
+        subtitle: "В предложении",
+        sentence: "Книга лежит на столе.",
+        content: "Какой падеж у слова 'стол'?",
+        options: ["Именительный", "Родительный", "Дательный", "Предложный"],
+        correct: "Предложный"
+      }
+    ];
+
+    // === UI ===
+    const viewer = document.getElementById('viewer');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const progressInner = document.getElementById('progressInner');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const reward = document.getElementById('reward');
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'btn retry-btn';
+    retryBtn.textContent = 'Попробовать ещё раз';
+
+    let current = 0;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let clips = [];
+
+    function createClip(question, index) {
+      const isLast = index === questions.length;
+      const clip = document.createElement('div');
+      clip.className = 'clip';
+      clip.dataset.step = index + 1;
+
+      if (isLast) {
+        const results = document.createElement('div');
+        results.className = 'results';
+        
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = 'Результаты';
+        
+        const correctCount = document.createElement('div');
+        correctCount.className = 'counter';
+        correctCount.id = 'correctCount';
+        correctCount.textContent = 'Правильных: 0';
+        
+        const wrongCount = document.createElement('div');
+        wrongCount.className = 'counter';
+        wrongCount.id = 'wrongCount';
+        wrongCount.textContent = 'Ошибок: 0';
+        
+        results.appendChild(title);
+        results.appendChild(correctCount);
+        results.appendChild(wrongCount);
+        results.appendChild(retryBtn);
+        clip.appendChild(results);
+      } else {
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+        cardBody.style.textAlign = 'center';
+
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = question.title;
+
+        const subtitle = document.createElement('div');
+        subtitle.className = 'subtitle';
+        subtitle.textContent = question.subtitle;
+
+        cardBody.appendChild(title);
+        cardBody.appendChild(subtitle);
+
+        if (question.sentence) {
+          const sentence = document.createElement('div');
+          sentence.className = 'sentence';
+          sentence.textContent = question.sentence;
+          cardBody.appendChild(sentence);
+        }
+
+        const content = document.createElement('div');
+        content.className = 'hint';
+        content.textContent = question.content;
+        cardBody.appendChild(content);
+
+        const answerRow = document.createElement('div');
+        answerRow.className = 'answer-row';
+
+        question.options.forEach(option => {
+          const opt = document.createElement('div');
+          opt.className = 'option';
+          opt.textContent = option;
+          opt.dataset.correct = (option === question.correct).toString();
+          opt.addEventListener('click', () => handleAnswer(opt, index));
+          answerRow.appendChild(opt);
+        });
+
+        cardBody.appendChild(answerRow);
+        clip.appendChild(cardBody);
+      }
+
+      return clip;
+    }
+
+    function init() {
+      while (viewer.children.length > 3) {
+        viewer.removeChild(viewer.firstChild);
+      }
+
+      clips = [];
+      questions.forEach((q, i) => {
+        const clip = createClip(q, i);
+        viewer.insertBefore(clip, viewer.querySelector('.controls'));
+        clips.push(clip);
+      });
+
+      const resultClip = createClip(null, questions.length);
+      viewer.insertBefore(resultClip, viewer.querySelector('.controls'));
+      clips.push(resultClip);
+
+      current = 0;
+      correctAnswers = 0;
+      wrongAnswers = 0;
+      updateProgress();
+      show(0);
+    }
+
+    function show(i) {
+      clips.forEach((c, idx) => {
+        c.classList.remove('active', 'prev');
+        if (idx < i) c.classList.add('prev');
+      });
+      clips[i].classList.add('active');
+      current = i;
+      updateProgress();
+      
+      if (i === clips.length - 1) {
+        document.getElementById('correctCount').textContent = 'Правильных: ' + correctAnswers;
+        document.getElementById('wrongCount').textContent = 'Ошибок: ' + wrongAnswers;
+      }
+    }
+
+    function updateProgress() {
+      stepIndicator.textContent = `Шаг ${current + 1}/${clips.length}`;
+      progressInner.style.width = `${((current + 1) / clips.length) * 100}%`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (current < clips.length - 1) show(current + 1);
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) show(current - 1);
+    });
+
+    retryBtn.addEventListener('click', () => {
+      init();
+    });
+
+    function handleAnswer(opt, questionIndex) {
+      const correct = opt.dataset.correct === 'true';
+      const options = opt.parentElement.querySelectorAll('.option');
+      
+      options.forEach(o => {
+        if (o.dataset.correct === 'true') {
+          o.classList.add('correct');
+        }
+      });
+      
+      if (correct) {
+        opt.classList.add('correct');
+        correctAnswers++;
+        playCorrect();
+        showReward();
+        setTimeout(() => {
+          if (current < clips.length - 1) show(current + 1);
+        }, 700);
+      } else {
+        opt.classList.add('wrong');
+        wrongAnswers++;
+        playIncorrect();
+      }
+    }
+
+    function showReward() {
+      playReward();
+      reward.classList.add('show');
+      startConfetti();
+      setTimeout(() => {
+        reward.classList.remove('show');
+        stopConfetti();
+      }, 1200);
+    }
+
+    let confettiCtx, confettiAnim;
+    function startConfetti() {
+      confettiCanvas.width = confettiCanvas.clientWidth;
+      confettiCanvas.height = confettiCanvas.clientHeight;
+      confettiCtx = confettiCanvas.getContext('2d');
+      const pieces = [];
+      for (let i = 0; i < 50; i++) {
+        pieces.push({
+          x: Math.random() * confettiCanvas.width,
+          y: -10 - Math.random() * 200,
+          r: 6 + Math.random() * 8,
+          vx: (Math.random() - 0.5) * 3,
+          vy: 2 + Math.random() * 4,
+          c: ['#ffd166', '#ff9e9e', '#7ee787', '#9be7ff', '#c77dff'][Math.floor(Math.random() * 5)]
+        });
+      }
+      function frame() {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        for (const p of pieces) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.03;
+          p.r *= 0.995;
+          if (p.r > 0.5) {
+            confettiCtx.beginPath();
+            confettiCtx.fillStyle = p.c;
+            confettiCtx.fillRect(p.x, p.y, p.r, p.r * 0.6);
+          }
+        }
+        confettiAnim = requestAnimationFrame(frame);
+      }
+      frame();
+    }
+    function stopConfetti() {
+      if (confettiAnim) cancelAnimationFrame(confettiAnim);
+      if (confettiCtx) confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+
+    init();
+  </script>
+</body>
+</html>

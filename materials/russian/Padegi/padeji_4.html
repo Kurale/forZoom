@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Падежи по-тиктоковски</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    }
+
+    body {
+      background: #f8f9fa;
+      color: #212529;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+
+    #app {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    #app::-webkit-scrollbar {
+      display: none;
+    }
+
+    .clip {
+      height: 100vh;
+      width: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+      position: relative;
+    }
+
+    .counter {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      z-index: 10;
+      color: #495057;
+    }
+
+    .question-text {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeIn 0.6s forwards;
+    }
+
+    .sentence {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 24px;
+      color: #495057;
+      opacity: 0;
+      animation: fadeIn 0.6s 0.2s forwards;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .option-btn {
+      padding: 16px;
+      font-size: 18px;
+      border: 2px solid #ced4da;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .option-btn:nth-child(1) { animation: slideIn 0.4s 0.4s forwards; }
+    .option-btn:nth-child(2) { animation: slideIn 0.4s 0.5s forwards; }
+    .option-btn:nth-child(3) { animation: slideIn 0.4s 0.6s forwards; }
+    .option-btn:nth-child(4) { animation: slideIn 0.4s 0.7s forwards; }
+
+    .option-btn.correct {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+
+    .option-btn.incorrect {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+
+    .microreward {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .result-screen {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .result-text {
+      font-size: 28px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeIn 0.8s forwards;
+    }
+
+    .score {
+      font-size: 20px;
+      margin-bottom: 32px;
+      color: #495057;
+    }
+
+    .retry-btn {
+      padding: 16px 32px;
+      font-size: 18px;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.2s;
+      opacity: 0;
+      animation: bounceIn 0.6s 0.4s forwards;
+    }
+
+    .retry-btn:hover {
+      background: #0b5ed7;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .question-text {
+        font-size: 20px;
+      }
+      .sentence {
+        font-size: 18px;
+      }
+      .option-btn {
+        font-size: 16px;
+        padding: 14px;
+      }
+      .result-text {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="counter">✅ <span id="correct-count">0</span> / ❌ <span id="incorrect-count">0</span></div>
+    <!-- Clips will be injected here -->
+  </div>
+
+  <script>
+    const questions = [
+      {
+        type: "question",
+        question: "Какой вопрос соответствует Винительному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кого? Что?"
+      },
+      {
+        type: "example",
+        question: "Какой падеж у слова 'кошка' в предложении?",
+        sentence: "Я вижу кошку.",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Винительный"
+      },
+      {
+        type: "question",
+        question: "Какой вопрос соответствует Дательному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кому? Чему?"
+      },
+      {
+        type: "example",
+        question: "Какой падеж у слова 'река' в предложении?",
+        sentence: "Я иду к реке.",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Дательный"
+      },
+      {
+        type: "question",
+        question: "Какой вопрос соответствует Родительному падежу?",
+        options: ["Кого? Чего?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "Кого? Чего?"
+      },
+      {
+        type: "example",
+        question: "Какой падеж у слова 'хлеба' в предложении?",
+        sentence: "Мне не хватает хлеба.",
+        options: ["Именительный", "Родительный", "Дательный", "Винительный"],
+        correct: "Родительный"
+      },
+      {
+        type: "question",
+        question: "Какой вопрос соответствует Предложному падежу?",
+        options: ["Кого? Что?", "Кто? Что?", "Кому? Чему?", "О ком? О чём?"],
+        correct: "О ком? О чём?"
+      },
+      {
+        type: "example",
+        question: "Какой падеж у слова 'стол' в предложении?",
+        sentence: "Книга лежит на столе.",
+        options: ["Именительный", "Родительный", "Дательный", "Предложный"],
+        correct: "Предложный"
+      }
+    ];
+
+    const app = document.getElementById('app');
+    let correctCountEl = document.getElementById('correct-count');
+    let incorrectCountEl = document.getElementById('incorrect-count');
+
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let currentClipIndex = 0;
+
+    function createClip(question, index) {
+      const clip = document.createElement('div');
+      clip.className = 'clip';
+      clip.dataset.index = index;
+
+      const questionText = document.createElement('div');
+      questionText.className = 'question-text';
+      questionText.textContent = question.question;
+
+      clip.appendChild(questionText);
+
+      if (question.sentence) {
+        const sentence = document.createElement('div');
+        sentence.className = 'sentence';
+        sentence.textContent = question.sentence;
+        clip.appendChild(sentence);
+      }
+
+      const options = document.createElement('div');
+      options.className = 'options';
+
+      question.options.forEach((option, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.dataset.index = i;
+        btn.addEventListener('click', () => handleAnswer(index, i));
+        options.appendChild(btn);
+      });
+
+      clip.appendChild(options);
+      return clip;
+    }
+
+    function createResultScreen() {
+      const resultScreen = document.createElement('div');
+      resultScreen.className = 'clip result-screen';
+      resultScreen.style.display = 'flex';
+
+      const resultText = document.createElement('div');
+      resultText.className = 'result-text';
+      resultText.textContent = 'Квест завершён!';
+
+      const score = document.createElement('div');
+      score.className = 'score';
+      score.innerHTML = `Правильных ответов: <strong>${correctCount}</strong><br>Ошибок: <strong>${incorrectCount}</strong>`;
+
+      const retryBtn = document.createElement('button');
+      retryBtn.className = 'retry-btn';
+      retryBtn.textContent = 'Попробовать ещё раз';
+      retryBtn.addEventListener('click', resetQuiz);
+
+      resultScreen.appendChild(resultText);
+      resultScreen.appendChild(score);
+      resultScreen.appendChild(retryBtn);
+
+      return resultScreen;
+    }
+
+    function handleAnswer(clipIndex, optionIndex) {
+      if (clipIndex !== currentClipIndex) return;
+
+      const question = questions[clipIndex];
+      const selectedOption = question.options[optionIndex];
+      const isCorrect = selectedOption === question.correct;
+
+      const clip = document.querySelector(`.clip[data-index="${clipIndex}"]`);
+      const buttons = clip.querySelectorAll('.option-btn');
+
+      buttons.forEach((btn, i) => {
+        if (i === optionIndex) {
+          btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+        if (question.options[i] === question.correct) {
+          btn.classList.add('correct');
+        }
+        btn.disabled = true;
+      });
+
+      if (isCorrect) {
+        correctCount++;
+        showMicroreward(clip);
+      } else {
+        incorrectCount++;
+      }
+
+      updateCounter();
+
+      setTimeout(() => {
+        currentClipIndex++;
+        if (currentClipIndex < questions.length) {
+          app.scrollTo({ top: currentClipIndex * window.innerHeight, behavior: 'smooth' });
+        } else {
+          setTimeout(() => {
+            const resultScreen = createResultScreen();
+            app.appendChild(resultScreen);
+            app.scrollTo({ top: (questions.length) * window.innerHeight, behavior: 'smooth' });
+          }, 500);
+        }
+      }, 1200);
+    }
+
+    function showMicroreward(clip) {
+      const emojis = ['⭐', '✨', '🎉', '🌟', '💫'];
+      const reward = document.createElement('div');
+      reward.className = 'microreward';
+      reward.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      reward.style.left = `${Math.random() * 80 + 10}%`;
+      reward.style.top = `${Math.random() * 40 + 30}%`;
+      reward.style.opacity = '1';
+      reward.style.transform = 'translateY(0)';
+      clip.appendChild(reward);
+
+      // Trigger reflow to restart animation
+      reward.offsetHeight;
+
+      reward.style.animation = 'bounce 0.8s forwards';
+      setTimeout(() => {
+        if (reward.parentNode) {
+          reward.remove();
+        }
+      }, 1000);
+    }
+
+    function updateCounter() {
+      correctCountEl.textContent = correctCount;
+      incorrectCountEl.textContent = incorrectCount;
+    }
+
+    function resetQuiz() {
+      correctCount = 0;
+      incorrectCount = 0;
+      currentClipIndex = 0;
+      updateCounter();
+
+      // Remove all clips and result screen
+      app.innerHTML = '<div class="counter">✅ <span id="correct-count">0</span> / ❌ <span id="incorrect-count">0</span></div>';
+      correctCountEl = document.getElementById('correct-count');
+      incorrectCountEl = document.getElementById('incorrect-count');
+
+      // Rebuild clips
+      questions.forEach((q, i) => {
+        const clip = createClip(q, i);
+        app.appendChild(clip);
+      });
+
+      // Scroll to top immediately
+      app.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    // Initialize
+    questions.forEach((q, i) => {
+      const clip = createClip(q, i);
+      app.appendChild(clip);
+    });
+  </script>
+</body>
+</html>
