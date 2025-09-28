@@ -10,7 +10,8 @@
         { "title": "Прилагательное", "file": "materials/russian/PrilagatelnoeTrenager/index.html" },
         { "title": "Части речи", "file": "materials/russian/RusskiJasikChastiRechi/index.html" },
     { "title": "Словарные слова, 4 класс, ч.1", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4klassGK.html" },
-        { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" }
+       { "title": "Складываем слово мороженое", "file": "materials/russian/SlovarnieSlova/kubikiMorojenoe.html" }, 
+    { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" }
     ],
     "belarusian": [
         { "title": "Слоўнікавыя словы, 3 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova3klas.html" },
