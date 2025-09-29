@@ -4,177 +4,500 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abacus</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Общий контейнер для масштабирования */
+         body {
+        margin: 0;
+        background: #fff;
+        overflow: hidden;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .scale-container {
+        width: 995px;
+        height: 1000px;
+        transform: scale(0.333);
+        transform-origin: top left;
+        position: relative;
+    }
+
+    .abacus {
+        position: relative;
+        width: 995px;
+        height: 1000px;
+        background: #fff;
+    }
+
+    /* Остальной CSS — без изменений */
+    .rama {
+        position: absolute;
+        left: 1046.5px;
+        top: 440.5px;
+        width: 877px;
+        height: 1465px;
+        background: #E4E4E4;
+        border: 10.5px solid #FEAB04;
+        box-sizing: border-box;
+    }
+
+        /* Rods */
+        .group-kost .line {
+            position: absolute;
+            height: 5px;
+            background: #421102;
+            left: 1057px;
+            width: 856px;
+        }
+
+        .group-kost1 .line { top: 1811px; }
+        .group-kost2 .line { top: 1669px; }
+        .group-kost3 .line { top: 1527px; }
+        .group-kost4 .line { top: 1385px; }
+        .group-kost5 .line { top: 1243px; }
+        .group-kost6 .line { top: 1101px; }
+        .group-kost7 .line { top: 959px; }
+        .group-kost8 .line { top: 817px; }
+        .group-kost9 .line { top: 675px; }
+        .group-kost10 .line { top: 533px; }
+
+        /* Beads */
+        .bead {
+            position: absolute;
+            width: 40px;
+            height: 100px;
+            border-radius: 20px;
+            box-sizing: border-box;
+            transition: left 0.3s ease;
+        }
+
+        .yellow {
+            background: #f9d63c;
+            border: 5px solid #c48301;
+        }
+
+        .brown {
+            background: #5d3201;
+            border: 5px solid #361601;
+        }
+
+        /* Bead Positions */
+        .group-kost1 .kost1 { left: 1871px; top: 1760px; }
+        .group-kost1 .kost2 { left: 1826px; top: 1760px; }
+        .group-kost1 .kost3 { left: 1781px; top: 1760px; }
+        .group-kost1 .kost4 { left: 1736px; top: 1760px; }
+        .group-kost1 .kost5 { left: 1691px; top: 1760px; }
+        .group-kost1 .kost6 { left: 1646px; top: 1760px; }
+        .group-kost1 .kost7 { left: 1601px; top: 1760px; }
+        .group-kost1 .kost8 { left: 1556px; top: 1760px; }
+        .group-kost1 .kost9 { left: 1511px; top: 1760px; }
+        .group-kost1 .kost10 { left: 1466px; top: 1760px; }
+
+        .group-kost2 .kost1 { left: 1871px; top: 1618px; }
+        .group-kost2 .kost2 { left: 1826px; top: 1618px; }
+        .group-kost2 .kost3 { left: 1781px; top: 1618px; }
+        .group-kost2 .kost4 { left: 1736px; top: 1618px; }
+        .group-kost2 .kost5 { left: 1691px; top: 1618px; }
+        .group-kost2 .kost6 { left: 1646px; top: 1618px; }
+        .group-kost2 .kost7 { left: 1601px; top: 1618px; }
+        .group-kost2 .kost8 { left: 1556px; top: 1618px; }
+        .group-kost2 .kost9 { left: 1511px; top: 1618px; }
+        .group-kost2 .kost10 { left: 1466px; top: 1618px; }
+
+        .group-kost3 .kost1 { left: 1871px; top: 1476px; }
+        .group-kost3 .kost2 { left: 1826px; top: 1476px; }
+        .group-kost3 .kost3 { left: 1781px; top: 1476px; }
+        .group-kost3 .kost4 { left: 1736px; top: 1476px; }
+        .group-kost3 .kost5 { left: 1691px; top: 1476px; }
+        .group-kost3 .kost6 { left: 1646px; top: 1476px; }
+        .group-kost3 .kost7 { left: 1601px; top: 1476px; }
+        .group-kost3 .kost8 { left: 1556px; top: 1476px; }
+        .group-kost3 .kost9 { left: 1511px; top: 1476px; }
+        .group-kost3 .kost10 { left: 1466px; top: 1476px; }
+
+        .group-kost4 .kost4-4 { left: 1871px; top: 1334px; }
+        .group-kost4 .kost4-5 { left: 1826px; top: 1334px; }
+        .group-kost4 .kost4-6 { left: 1781px; top: 1334px; }
+        .group-kost4 .kost4-7 { left: 1736px; top: 1334px; }
+
+        .group-kost5 .kost1 { left: 1871px; top: 1192px; }
+        .group-kost5 .kost2 { left: 1826px; top: 1192px; }
+        .group-kost5 .kost3 { left: 1781px; top: 1192px; }
+        .group-kost5 .kost4 { left: 1736px; top: 1192px; }
+        .group-kost5 .kost5 { left: 1691px; top: 1192px; }
+        .group-kost5 .kost6 { left: 1646px; top: 1192px; }
+        .group-kost5 .kost7 { left: 1601px; top: 1192px; }
+        .group-kost5 .kost8 { left: 1556px; top: 1192px; }
+        .group-kost5 .kost9 { left: 1511px; top: 1192px; }
+        .group-kost5 .kost10 { left: 1466px; top: 1192px; }
+
+        .group-kost6 .kost1 { left: 1871px; top: 1050px; }
+        .group-kost6 .kost2 { left: 1826px; top: 1050px; }
+        .group-kost6 .kost3 { left: 1781px; top: 1050px; }
+        .group-kost6 .kost4 { left: 1736px; top: 1050px; }
+        .group-kost6 .kost5 { left: 1691px; top: 1050px; }
+        .group-kost6 .kost6 { left: 1646px; top: 1050px; }
+        .group-kost6 .kost7 { left: 1601px; top: 1050px; }
+        .group-kost6 .kost8 { left: 1556px; top: 1050px; }
+        .group-kost6 .kost9 { left: 1511px; top: 1050px; }
+        .group-kost6 .kost10 { left: 1466px; top: 1050px; }
+
+        .group-kost7 .kost1 { left: 1871px; top: 908px; }
+        .group-kost7 .kost2 { left: 1826px; top: 908px; }
+        .group-kost7 .kost3 { left: 1781px; top: 908px; }
+        .group-kost7 .kost4 { left: 1736px; top: 908px; }
+        .group-kost7 .kost5 { left: 1691px; top: 908px; }
+        .group-kost7 .kost6 { left: 1646px; top: 908px; }
+        .group-kost7 .kost7 { left: 1601px; top: 908px; }
+        .group-kost7 .kost8 { left: 1556px; top: 908px; }
+        .group-kost7 .kost9 { left: 1511px; top: 908px; }
+        .group-kost7 .kost10 { left: 1466px; top: 908px; }
+
+        .group-kost8 .kost1 { left: 1871px; top: 766px; }
+        .group-kost8 .kost2 { left: 1826px; top: 766px; }
+        .group-kost8 .kost3 { left: 1781px; top: 766px; }
+        .group-kost8 .kost4 { left: 1736px; top: 766px; }
+        .group-kost8 .kost5 { left: 1691px; top: 766px; }
+        .group-kost8 .kost6 { left: 1646px; top: 766px; }
+        .group-kost8 .kost7 { left: 1601px; top: 766px; }
+        .group-kost8 .kost8 { left: 1556px; top: 766px; }
+        .group-kost8 .kost9 { left: 1511px; top: 766px; }
+        .group-kost8 .kost10 { left: 1466px; top: 766px; }
+
+        .group-kost9 .kost1 { left: 1871px; top: 624px; }
+        .group-kost9 .kost2 { left: 1826px; top: 624px; }
+        .group-kost9 .kost3 { left: 1781px; top: 624px; }
+        .group-kost9 .kost4 { left: 1736px; top: 624px; }
+        .group-kost9 .kost5 { left: 1691px; top: 624px; }
+        .group-kost9 .kost6 { left: 1646px; top: 624px; }
+        .group-kost9 .kost7 { left: 1601px; top: 624px; }
+        .group-kost9 .kost8 { left: 1556px; top: 624px; }
+        .group-kost9 .kost9 { left: 1511px; top: 624px; }
+        .group-kost9 .kost10 { left: 1466px; top: 624px; }
+
+        .group-kost10 .kost1 { left: 1871px; top: 482px; }
+        .group-kost10 .kost2 { left: 1826px; top: 482px; }
+        .group-kost10 .kost3 { left: 1781px; top: 482px; }
+        .group-kost10 .kost4 { left: 1736px; top: 482px; }
+        .group-kost10 .kost5 { left: 1691px; top: 482px; }
+        .group-kost10 .kost6 { left: 1646px; top: 482px; }
+        .group-kost10 .kost7 { left: 1601px; top: 482px; }
+        .group-kost10 .kost8 { left: 1556px; top: 482px; }
+        .group-kost10 .kost9 { left: 1511px; top: 482px; }
+        .group-kost10 .kost10 { left: 1466px; top: 482px; }
+
+        /* Display */
+        .volume {
+            position: absolute;
+            left: 30%;
+            top: 120px;
+            width: 600px;
+            height: 210px;
+            background: #CBD2DB;
+            border-radius: 34px;
+        }
+
+        .data {
+            position: absolute;
+            left: 35%;
+            top: 226.045px;
+            transform: translateY(-50%);
+            font-family: 'Inter', sans-serif;
+            font-size: 128px;
+            color: #fff;
+        }
+
+        /* Labels */
+        .title .label {
+            position: absolute;
+            transform: translateY(-75%);
+            font-family: 'Inter', sans-serif;
+            font-size: 96px;
+            color: #CFCFCF;
+        }
+    </style>
 </head>
 <body>
-    <div class="abacus">
-        <!-- Frame -->
-        <div class="rama"></div>
+    <div class="scale-container">
+        <div class="abacus">
+            <!-- Frame -->
+            <div class="rama"></div>
 
-        <!-- Rods and Beads -->
-        <div class="group-kost group-kost1">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost2">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost3">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost4">
-            <div class="line"></div>
-            <div class="bead kost4-4 yellow"></div>
-            <div class="bead kost4-5 brown"></div>
-            <div class="bead kost4-6 brown"></div>
-            <div class="bead kost4-7 yellow"></div>
-        </div>
-        <div class="group-kost group-kost5">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost6">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost7">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost8">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost9">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
-        <div class="group-kost group-kost10">
-            <div class="line"></div>
-            <div class="bead kost1 yellow"></div>
-            <div class="bead kost2 yellow"></div>
-            <div class="bead kost3 yellow"></div>
-            <div class="bead kost4 yellow"></div>
-            <div class="bead kost5 brown"></div>
-            <div class="bead kost6 brown"></div>
-            <div class="bead kost7 yellow"></div>
-            <div class="bead kost8 yellow"></div>
-            <div class="bead kost9 yellow"></div>
-            <div class="bead kost10 yellow"></div>
-        </div>
+            <!-- Rods and Beads -->
+            <div class="group-kost group-kost1">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost2">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost3">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost4">
+                <div class="line"></div>
+                <div class="bead kost4-4 yellow"></div>
+                <div class="bead kost4-5 brown"></div>
+                <div class="bead kost4-6 brown"></div>
+                <div class="bead kost4-7 yellow"></div>
+            </div>
+            <div class="group-kost group-kost5">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost6">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost7">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost8">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost9">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
+            <div class="group-kost group-kost10">
+                <div class="line"></div>
+                <div class="bead kost1 yellow"></div>
+                <div class="bead kost2 yellow"></div>
+                <div class="bead kost3 yellow"></div>
+                <div class="bead kost4 yellow"></div>
+                <div class="bead kost5 brown"></div>
+                <div class="bead kost6 brown"></div>
+                <div class="bead kost7 yellow"></div>
+                <div class="bead kost8 yellow"></div>
+                <div class="bead kost9 yellow"></div>
+                <div class="bead kost10 yellow"></div>
+            </div>
 
-        <!-- Display -->
-        <div class="volume"></div>
-        <div class="data">000</div>
+            <!-- Display -->
+            <div class="volume"></div>
+            <div class="data">000</div>
 
-        <!-- Labels -->
-        <div class="title">
-            <span class="label" style="left: 722px; top: 1276.91px;">1</span>
-            <span class="label" style="left: 625px; top: 1418.91px;">1/4</span>
-            <span class="label" style="left: 590px; top: 1560.91px;">1/10</span>
-            <span class="label" style="left: 530px; top: 1702.91px;">1/100</span>
-            <span class="label" style="left: 470px; top: 1850.91px;">1/1000</span>
-            <span class="label" style="left: 669px; top: 1134.91px;">10</span>
-            <span class="label" style="left: 616px; top: 992.909px;">100</span>
-            <span class="label" style="left: 557px; top: 850.909px;">1000</span>
-            <span class="label" style="left: 497px; top: 714.909px;">10000</span>
-            <span class="label" style="left: 445px; top: 566.909px;">100000</span>
+            <!-- Labels -->
+            <div class="title">
+                <span class="label" style="left: 722px; top: 1276.91px;">1</span>
+                <span class="label" style="left: 625px; top: 1418.91px;">1/4</span>
+                <span class="label" style="left: 590px; top: 1560.91px;">1/10</span>
+                <span class="label" style="left: 530px; top: 1702.91px;">1/100</span>
+                <span class="label" style="left: 470px; top: 1850.91px;">1/1000</span>
+                <span class="label" style="left: 669px; top: 1134.91px;">10</span>
+                <span class="label" style="left: 616px; top: 992.909px;">100</span>
+                <span class="label" style="left: 557px; top: 850.909px;">1000</span>
+                <span class="label" style="left: 497px; top: 714.909px;">10000</span>
+                <span class="label" style="left: 445px; top: 566.909px;">100000</span>
+            </div>
         </div>
-
-        <!-- Buttons 
-        <div class="btn btn-plus">
-            <div class="circle"></div>
-            <span class="symbol">+</span>
-        </div>
-        <div class="btn btn-minus">
-            <div class="circle"></div>
-            <span class="symbol">−</span>
-        </div>
-        <div class="btn btn-umnojit">
-            <div class="circle"></div>
-            <span class="symbol">×</span>
-        </div>
-        <div class="btn btn-delit">
-            <div class="circle"></div>
-            <span class="symbol">÷</span>
-        </div>-->
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Определяем исходные позиции для костяшек
+const originalPositions = {
+    kost1: 1871,
+    kost2: 1826,
+    kost3: 1781,
+    kost4: 1736,
+    kost5: 1691,
+    kost6: 1646,
+    kost7: 1601,
+    kost8: 1556,
+    kost9: 1511,
+    kost10: 1466,
+    'kost4-4': 1871, // Уникальные позиции для group-kost4
+    'kost4-5': 1826,
+    'kost4-6': 1781,
+    'kost4-7': 1736
+};
 
+// Порядок костяшек для обычных групп (слева направо: kost10 → kost1)
+const beadOrder = [
+    'kost10', 'kost9', 'kost8', 'kost7', 'kost6',
+    'kost5', 'kost4', 'kost3', 'kost2', 'kost1'
+];
+
+// Порядок костяшек для group-kost4 (слева направо: kost4-7 → kost4-4)
+const beadOrderGroup4 = ['kost4-7', 'kost4-6', 'kost4-5', 'kost4-4'];
+
+// Границы рамки
+const frameLeft = 1057; // Внутренний левый край rama (1046.5 + 10.5)
+const beadSpacing = 45; // Расстояние между центрами костяшек
+
+// Веса разрядов для групп
+const groupWeights = {
+    'group-kost5': 1,      // Единицы
+    'group-kost6': 10,     // Десятки
+    'group-kost7': 100,    // Сотни
+    'group-kost8': 1000,   // Тысячи
+    'group-kost9': 10000,  // Десятки тысяч
+    'group-kost10': 100000 // Сотни тысяч
+};
+
+// Отслеживание состояния рядов (находятся ли костяшки слева)
+const rowStates = {
+    'group-kost1': Array(10).fill(false), // false = справа, true = слева
+    'group-kost2': Array(10).fill(false),
+    'group-kost3': Array(10).fill(false),
+    'group-kost4': Array(4).fill(false),  // Только 4 костяшки (kost4-7 до kost4-4)
+    'group-kost5': Array(10).fill(false),
+    'group-kost6': Array(10).fill(false),
+    'group-kost7': Array(10).fill(false),
+    'group-kost8': Array(10).fill(false),
+    'group-kost9': Array(10).fill(false),
+    'group-kost10': Array(10).fill(false)
+};
+
+// Функция для подсчёта текущего числа
+function calculateTotal() {
+    let total = 0;
+    // Учитываем только группы group-kost5 до group-kost10
+    for (const group of ['group-kost5', 'group-kost6', 'group-kost7', 'group-kost8', 'group-kost9', 'group-kost10']) {
+        // Подсчитываем количество костяшек слева (true)
+        const beadsLeft = rowStates[group].filter(state => state).length;
+        // Умножаем на вес разряда
+        total += beadsLeft * groupWeights[group];
+    }
+    return total;
+}
+
+// Функция для обновления дисплея
+function updateDisplay() {
+    const dataElement = document.querySelector('.data');
+    const total = calculateTotal();
+    dataElement.textContent = total.toString(); // Преобразуем в строку без ведущих нулей
+}
+
+// Инициализация обработчиков кликов для костяшек
+document.querySelectorAll('.group-kost').forEach(group => {
+    const groupClass = group.classList[1]; // Например, 'group-kost1'
+    const beads = group.querySelectorAll('.bead');
+    const isGroup4 = groupClass === 'group-kost4';
+    const currentBeadOrder = isGroup4 ? beadOrderGroup4 : beadOrder;
+
+    beads.forEach(bead => {
+        bead.addEventListener('click', () => {
+            const beadClass = bead.classList[1]; // Например, 'kost4-7'
+            const beadIndex = currentBeadOrder.indexOf(beadClass); // Индекс (0 для kost10 или kost4-7)
+
+            // Определяем, находится ли костяшка слева
+            const isLeft = rowStates[groupClass][beadIndex];
+
+            if (isLeft) {
+                // Двигаем только кликнутую костяшку вправо на исходную позицию
+                const currentBead = group.querySelector(`.${beadClass}`);
+                currentBead.style.left = `${originalPositions[beadClass]}px`;
+                rowStates[groupClass][beadIndex] = false;
+            } else {
+                // Двигаем кликнутую костяшку и все правее неё влево
+                for (let i = 0; i <= beadIndex; i++) {
+                    const currentBead = group.querySelector(`.${currentBeadOrder[i]}`);
+                    if (!currentBead) continue; // Проверка на существование
+
+                    // Самая левая костяшка (kost10 или kost4-7) идёт к frameLeft (1057px)
+                    const newLeft = frameLeft + i * beadSpacing;
+                    currentBead.style.left = `${newLeft}px`;
+                    rowStates[groupClass][i] = true;
+                }
+            }
+
+            // Возвращаем костяшки левее кликнутой на исходные позиции, если они были слева
+            for (let i = beadIndex + 1; i < rowStates[groupClass].length; i++) {
+                const currentBead = group.querySelector(`.${currentBeadOrder[i]}`);
+                if (!currentBead) continue;
+                if (rowStates[groupClass][i]) {
+                    currentBead.style.left = `${originalPositions[currentBeadOrder[i]]}px`;
+                    rowStates[groupClass][i] = false;
+                }
+            }
+
+            // Обновляем дисплей после каждого клика по костяшке
+            updateDisplay();
+        });
+    });
+});
+
+// Инициализируем дисплей при загрузке
+updateDisplay();
+    </script>
 </body>
 </html>
