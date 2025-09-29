@@ -8,6 +8,7 @@
         { "title": "Абак", "file": "materials/math/AbacusHTML_2/index.html" },
         { "title": "Тренажёр 'Таблица умножения'", "file": "materials/math/UmnojenieGoldstar/UmnojenieGoldstarTimerClickSound.svg" },
         { "title": "Тренажёр 'Внетабличное деление'", "file": "materials/math/UmnojenieGoldstar/VnetablichnoeDelenieGoldstarTimer.svg" },
+        { "title": "Тренажёр 'Многозначные числа'", "file": "materials/math/ViktorinaShablon_1/index.html" },
         { "title": "Многозначные числа. Викторина 4 класс", "file": "materials/math/ViktorinaMatematika4klassMngznchChisla/index.html" }
     ],
     "russian": [

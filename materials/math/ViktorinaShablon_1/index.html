@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>primary.guru - Математическая викторина</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Стартовый экран -->
+        <div id="start-screen" class="screen active">
+            <div class="logo">Многозначные числа</div>
+            <h1>Проверь свои знания!</h1>
+            <p>🟣🟣🟣</p>
+            <button id="start-btn" class="btn-primary pulse">Вперёд!</button>
+            <div class="hint">
+                <small>🔆🔆🔆</small>
+            </div>
+        </div>
+
+        <!-- Экран квиза -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+                <div id="question-counter" class="question-counter">1/5</div>
+            </div>
+            
+            <div id="question-container" class="question-container">
+                <h2 id="question-text" class="question-text"></h2>
+                <div id="options-container" class="options-container"></div>
+            </div>
+            
+            <button id="next-btn" class="btn-primary hidden">Следующий вопрос</button>
+        </div>
+
+        <!-- Экран результатов -->
+        <div id="result-screen" class="screen">
+            <div class="result-container">
+                <h1>Результаты квиза</h1>
+                <div id="score" class="score-display">0/0</div>
+                <div id="percentage" class="percentage">0%</div>
+                <div id="feedback" class="feedback"></div>
+                <button id="restart-btn" class="btn-primary">Пройти снова</button>
+                <button id="home-btn" class="btn-secondary">На главную</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
