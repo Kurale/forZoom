@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивное задание по математике</title>
+    <style>
+        .drag-over {
+            outline: 4px dashed #AD0AD7 !important;
+        }
+
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .success-animation {
+            animation: success 0.5s ease-in-out;
+        }
+
+        /* Стили для скрытия элементов */
+        .hidden {
+            display: none !important;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Ваша разметка здесь -->
+    <div data-layer="Desktop - 3" class="Desktop3" style="width: 1336px; height: 950px; background: white; border-radius: 16px; outline: 4px #AD0AD7 solid; outline-offset: -4px">
+  <div data-svg-wrapper data-layer="Union" class="Union" style="left: 67px; top: 276px; position: absolute">
+     <svg width="608" height="315" viewBox="0 0 608 315" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <mask id="path-1-inside-1_556_212" fill="white">
+    <path d="M608 256H50.1641V289.918L50.1553 290.565C49.8119 304.119 38.7179 315 25.082 315C11.2296 315 0 303.77 0 289.918V0H608V256Z"/>
+    </mask>
+    <path d="M608 256H50.1641V289.918L50.1553 290.565C49.8119 304.119 38.7179 315 25.082 315C11.2296 315 0 303.77 0 289.918V0H608V256Z" fill="#F2C2FF"/>
+    <path d="M608 256V257H609V256H608ZM50.1641 256V255H49.1641V256H50.1641ZM50.1641 289.918L51.1641 289.932V289.918H50.1641ZM50.1553 290.565L51.155 290.591L51.1552 290.579L50.1553 290.565ZM25.082 315V316H25.082L25.082 315ZM0 0V-1H-1V0H0ZM608 0H609V-1H608V0ZM608 256V255H50.1641V256V257H608V256ZM50.1641 256H49.1641V289.918H50.1641H51.1641V256H50.1641ZM50.1641 289.918L49.1642 289.904L49.1554 290.552L50.1553 290.565L51.1552 290.579L51.164 289.932L50.1641 289.918ZM50.1553 290.565L49.1556 290.54C48.8259 303.552 38.1741 314 25.082 314L25.082 315L25.082 316C39.2618 316 50.7979 304.685 51.155 290.591L50.1553 290.565ZM25.082 315V314C11.7819 314 1 303.218 1 289.918H0H-1C-1 304.323 10.6774 316 25.082 316V315ZM0 289.918H1V0H0H-1V289.918H0ZM0 0V1H608V0V-1H0V0ZM608 0H607V256H608H609V0H608Z" fill="#D54CF8" mask="url(#path-1-inside-1_556_212)"/>
+    </svg>
+  </div>
+  <div data-layer="10" style="left: 70px; top: 523px; position: absolute; text-align: center; color: white; font-size: 36px; font-family: Roboto; font-weight: 700; line-height: 71.22px; word-wrap: break-word">10</div>
+  <div data-layer="unitPlus1" class="Unitplus1" style="width: 100px; height: 100px; left: 374px; top: 632px; z-index: 10; cursor: grab; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: rgb(255, 255, 255); border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus2" class="Unitplus2" style="width: 100px; height: 100px; left: 374px; top: 750px; z-index: 10; cursor: grab; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus3" class="Unitplus3" style="width: 100px; height: 100px; left: 495px; top: 632px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus4" class="Unitplus4" style="width: 100px; height: 100px; left: 495px; top: 750px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus5" class="Unitplus5" style="width: 100px; height: 100px; left: 616px; top: 632px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus6" class="Unitplus6" style="width: 100px; height: 100px; left: 616px; top: 750px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus7" class="Unitplus7" style="width: 100px; height: 100px; left: 737px; top: 632px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: rgb(255, 255, 255); border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus8" class="Unitplus8" style="width: 100px; height: 100px; left: 737px; top: 750px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus9" class="Unitplus9" style="width: 100px; height: 100px; left: 858px; top: 632px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unitPlus10" class="Unitplus10" style="width: 100px; height: 100px; left: 858px; top: 750px; z-index: 10; cursor: grab; position: absolute; opacity: 0.25">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #05C967; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="placeUnit10" class="Placeunit10" style="width: 101px; height: 101px; left: 566px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit8" class="Placeunit8" style="width: 101px; height: 101px; left: 445px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit6" class="Placeunit6" style="width: 101px; height: 101px; left: 324px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit4" class="Placeunit4" style="width: 101px; height: 101px; left: 203px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit2" class="Placeunit2" style="width: 101px; height: 101px; left: 82px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit9" class="Placeunit9" style="width: 101px; height: 101px; left: 566px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit7" class="Placeunit7" style="width: 101px; height: 101px; left: 445px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit5" class="Placeunit5" style="width: 101px; height: 101px; left: 324px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit3" class="Placeunit3" style="width: 101px; height: 101px; left: 203px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="placeUnit1" class="Placeunit1" style="width: 101px; height: 101px; left: 82px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="unit1" class="Unit1" style="width: 100px; height: 100px; left: 82px; top: 295px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit3" class="Unit3" style="width: 100px; height: 100px; left: 203px; top: 295px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit5" class="Unit5" style="width: 100px; height: 100px; left: 324px; top: 295px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit7" class="Unit7" style="width: 100px; height: 100px; left: 445px; top: 295px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit9" class="Unit9" style="width: 100px; height: 100px; left: 566px; top: 295px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="place2" class="Place2" style="width: 101px; height: 101px; left: 683px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place4" class="Place4" style="width: 101px; height: 101px; left: 804px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place8" class="Place8" style="width: 101px; height: 101px; left: 1046px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place6" class="Place6" style="width: 101px; height: 101px; left: 925px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place10" class="Place10" style="width: 101px; height: 101px; left: 1167px; top: 295px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place1" class="Place1" style="width: 101px; height: 101px; left: 683px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place3" class="Place3" style="width: 101px; height: 101px; left: 804px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place7" class="Place7" style="width: 101px; height: 101px; left: 1046px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place5" class="Place5" style="width: 101px; height: 101px; left: 925px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="place9" class="Place9" style="width: 101px; height: 101px; left: 1167px; top: 413px; position: absolute; border-radius: 9999px; outline: 4px #D54CF8 solid"></div>
+  <div data-layer="unit2" class="Unit2" style="width: 100px; height: 100px; left: 82px; top: 413px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit4" class="Unit4" style="width: 100px; height: 100px; left: 203px; top: 413px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit6" class="Unit6" style="width: 100px; height: 100px; left: 324px; top: 413px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="unit8" class="Unit8" style="width: 100px; height: 100px; left: 445px; top: 413px; position: absolute">
+    <div data-layer="Ellipse 24" class="Ellipse24" style="width: 101px; height: 101px; left: 0px; top: 0px; position: absolute; background: #D54CF8; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 25" class="Ellipse25" style="width: 24px; height: 24px; left: 16px; top: 16px; position: absolute; background: white; border-radius: 9999px"></div>
+    <div data-layer="Ellipse 26" class="Ellipse26" style="width: 8px; height: 8px; left: 74px; top: 71px; position: absolute; background: rgba(255, 255, 255, 0.56); border-radius: 9999px"></div>
+  </div>
+  <div data-layer="task" class="Task" style="width: 473px; height: 128px; padding-left: 47px; left: 419px; top: 58px; position: absolute; border-radius: 23px; outline: 3px #1464DB solid; outline-offset: -3px; justify-content: flex-start; align-items: center; gap: 1px; display: inline-flex">
+    <div data-layer="example" class="Example" style="text-align: center; color: #1464DB; font-size: 96px; font-family: Roboto; font-weight: 400; line-height: 189.92px; word-wrap: break-word">9 + 2 =</div>
+    <div data-layer="answer" class="Answer" style="text-align: center; color: #1464DB; font-size: 96px; font-family: Roboto; font-weight: 400; line-height: 189.92px; word-wrap: break-word">11</div>
+  </div>
+  <div data-layer="correct" class="Correct" style="width: 183px; height: 131px; left: 1026px; top: 55px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+    <div data-layer="Ellipse 28" class="Ellipse28" style="width: 130px; height: 130px; border-radius: 9999px; border: 10px #3ACD05 solid"></div>
+    <div data-svg-wrapper data-layer="Vector 19" class="Vector19" style="left: 58px; top: 0px; position: absolute">
+      <svg width="85" height="114" viewBox="0 0 85 114" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 51.5L37.5 95L76.5 4" stroke="#3ACD05" stroke-width="18"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Состояние игры
+            const gameState = {
+                currentExample: { a: 9, b: 2, result: 11 },
+                placedBalls: 0,
+                totalBalls: 2,
+                examples: [
+                    // Примеры с 9
+                    { a: 9, b: 2, result: 11, hideUnit: null },
+                    { a: 9, b: 3, result: 12, hideUnit: null },
+                    { a: 9, b: 4, result: 13, hideUnit: null },
+                    { a: 9, b: 5, result: 14, hideUnit: null },
+                    { a: 9, b: 6, result: 15, hideUnit: null },
+                    { a: 9, b: 7, result: 16, hideUnit: null },
+                    { a: 9, b: 8, result: 17, hideUnit: null },
+                    { a: 9, b: 9, result: 18, hideUnit: null },
+                    
+                    // Примеры с 8
+                    { a: 8, b: 3, result: 11, hideUnit: ['unit9'] },
+                    { a: 8, b: 4, result: 12, hideUnit: ['unit9'] },
+                    { a: 8, b: 5, result: 13, hideUnit: ['unit9'] },
+                    { a: 8, b: 6, result: 14, hideUnit: ['unit9'] },
+                    { a: 8, b: 7, result: 15, hideUnit: ['unit9'] },
+                    { a: 8, b: 8, result: 16, hideUnit: ['unit9'] },
+                    { a: 8, b: 9, result: 17, hideUnit: ['unit9'] },
+                    
+                    // Примеры с 7
+                    { a: 7, b: 4, result: 11, hideUnit: ['unit8', 'unit9'] },
+                    { a: 7, b: 5, result: 12, hideUnit: ['unit8', 'unit9'] },
+                    { a: 7, b: 6, result: 13, hideUnit: ['unit8', 'unit9'] },
+                    { a: 7, b: 7, result: 14, hideUnit: ['unit8', 'unit9'] },
+                    { a: 7, b: 8, result: 15, hideUnit: ['unit8', 'unit9'] },
+                    { a: 7, b: 9, result: 16, hideUnit: ['unit8', 'unit9'] },
+                    
+                    // Примеры с 6
+                    { a: 6, b: 5, result: 11, hideUnit: ['unit7', 'unit8', 'unit9'] },
+                    { a: 6, b: 6, result: 12, hideUnit: ['unit7', 'unit8', 'unit9'] },
+                    { a: 6, b: 7, result: 13, hideUnit: ['unit7', 'unit8', 'unit9'] },
+                    { a: 6, b: 8, result: 14, hideUnit: ['unit7', 'unit8', 'unit9'] },
+                    { a: 6, b: 9, result: 15, hideUnit: ['unit7', 'unit8', 'unit9'] },
+                    
+                    // Примеры с 5
+                    { a: 5, b: 6, result: 11, hideUnit: ['unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 5, b: 7, result: 12, hideUnit: ['unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 5, b: 8, result: 13, hideUnit: ['unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 5, b: 9, result: 14, hideUnit: ['unit6', 'unit7', 'unit8', 'unit9'] },
+                    
+                    // Примеры с 4
+                    { a: 4, b: 7, result: 11, hideUnit: ['unit5', 'unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 4, b: 8, result: 12, hideUnit: ['unit5', 'unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 4, b: 9, result: 13, hideUnit: ['unit5', 'unit6', 'unit7', 'unit8', 'unit9'] },
+                    
+                    // Примеры с 3
+                    { a: 3, b: 8, result: 11, hideUnit: ['unit4', 'unit5', 'unit6', 'unit7', 'unit8', 'unit9'] },
+                    { a: 3, b: 9, result: 12, hideUnit: ['unit4', 'unit5', 'unit6', 'unit7', 'unit8', 'unit9'] },
+                    
+                    // Примеры с 2
+                    { a: 2, b: 9, result: 11, hideUnit: ['unit3', 'unit4', 'unit5', 'unit6', 'unit7', 'unit8', 'unit9'] }
+                ],
+                currentExampleIndex: 0
+            };
+            
+            // Элементы DOM
+            const exampleElement = document.querySelector('[data-layer="example"]');
+            const answerElement = document.querySelector('[data-layer="answer"]');
+            const correctElement = document.querySelector('.Correct');
+            const unitPlusElements = document.querySelectorAll('[data-layer^="unitPlus"]');
+            const placeUnitElements = document.querySelectorAll('[data-layer^="placeUnit"]');
+            const placeElements = document.querySelectorAll('[data-layer^="place"]');
+            const purpleUnits = document.querySelectorAll('[data-layer^="unit"]');
+            
+            // Собираем все места для размещения шариков
+            const allPlaceElements = [...placeUnitElements, ...placeElements];
+            
+            // Инициализация игры
+            function initGame() {
+                updateExample();
+                setupDragAndDrop();
+                resetBalls();
+            }
+            
+            // Обновление примера
+            function updateExample() {
+                const example = gameState.examples[gameState.currentExampleIndex];
+                gameState.currentExample = example;
+                gameState.totalBalls = example.b;
+                gameState.placedBalls = 0;
+                
+                exampleElement.textContent = `${example.a} + ${example.b} =`;
+                answerElement.textContent = example.result;
+                
+                // Обновляем видимость шариков
+                unitPlusElements.forEach((unit, index) => {
+                    if (index < example.b) {
+                        unit.style.opacity = '1';
+                    } else {
+                        unit.style.opacity = '0.25';
+                    }
+                });
+                
+                // Управление видимостью фиолетовых единиц
+                purpleUnits.forEach(unit => {
+                    unit.style.display = 'block';
+                });
+                
+                if (example.hideUnit) {
+                    if (Array.isArray(example.hideUnit)) {
+                        example.hideUnit.forEach(unitId => {
+                            const unitToHide = document.querySelector(`[data-layer="${unitId}"]`);
+                            if (unitToHide) {
+                                unitToHide.style.display = 'none';
+                            }
+                        });
+                    } else {
+                        const unitToHide = document.querySelector(`[data-layer="${example.hideUnit}"]`);
+                        if (unitToHide) {
+                            unitToHide.style.display = 'none';
+                        }
+                    }
+                }
+                
+                // Скрываем ответ и галочку
+                answerElement.style.display = 'none';
+                correctElement.style.display = 'none';
+            }
+            
+            // Настройка drag and drop
+            function setupDragAndDrop() {
+                unitPlusElements.forEach(unit => {
+                    unit.setAttribute('draggable', 'true');
+                    
+                    unit.addEventListener('dragstart', function(e) {
+                        e.dataTransfer.setData('text/plain', unit.getAttribute('data-layer'));
+                        setTimeout(() => unit.style.opacity = '0.4', 0);
+                    });
+                    
+                    unit.addEventListener('dragend', function() {
+                        if (unit.style.opacity === '0.4') {
+                            unit.style.opacity = '1';
+                        }
+                    });
+                });
+                
+                allPlaceElements.forEach(place => {
+                    place.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        place.classList.add('drag-over');
+                    });
+                    
+                    place.addEventListener('dragleave', function() {
+                        place.classList.remove('drag-over');
+                    });
+                    
+                    place.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        place.classList.remove('drag-over');
+                        
+                        const unitData = e.dataTransfer.getData('text/plain');
+                        const unit = document.querySelector(`[data-layer="${unitData}"]`);
+                        
+                        if (unit && place.children.length === 0) {
+                            // Создаем копию шарика и помещаем в целевое место
+                            const clone = unit.cloneNode(true);
+                            clone.style.opacity = '1';
+                            clone.style.position = 'absolute';
+                            clone.style.top = '0';
+                            clone.style.left = '0';
+                            clone.style.width = '100%';
+                            clone.style.height = '100%';
+                            clone.style.cursor = 'default';
+                            place.appendChild(clone);
+                            
+                            // Делаем оригинальный шарик полупрозрачным
+                            unit.style.opacity = '0.25';
+                            
+                            // Увеличиваем счетчик размещенных шариков
+                            gameState.placedBalls++;
+                            
+                            // Анимация успеха
+                            clone.classList.add('success-animation');
+                            
+                            // Проверяем, все ли шарики размещены
+                            if (gameState.placedBalls === gameState.totalBalls) {
+                                showResult();
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // Сброс шариков
+            function resetBalls() {
+                // Очищаем все места
+                allPlaceElements.forEach(place => {
+                    place.innerHTML = '';
+                });
+                
+                unitPlusElements.forEach((unit, index) => {
+                    if (index < gameState.currentExample.b) {
+                        unit.style.opacity = '1';
+                    } else {
+                        unit.style.opacity = '0.25';
+                    }
+                });
+                
+                gameState.placedBalls = 0;
+            }
+            
+            // Показать результат
+            function showResult() {
+                // Показываем ответ
+                answerElement.style.display = 'block';
+                
+                // Через секунду показываем галочку
+                setTimeout(() => {
+                    correctElement.style.display = 'inline-flex';
+                    
+                    // Через еще 2 секунды переходим к следующему примеру
+                    setTimeout(() => {
+                        nextExample();
+                    }, 2000);
+                }, 1000);
+            }
+            
+            // Следующий пример
+            function nextExample() {
+                gameState.currentExampleIndex++;
+                
+                if (gameState.currentExampleIndex < gameState.examples.length) {
+                    updateExample();
+                    resetBalls();
+                } else {
+                    // Конец игры
+                    alert('Поздравляем! Вы завершили все примеры!');
+                }
+            }
+            
+            // Запуск игры
+            initGame();
+        });
+    </script>
+</body>
+</html>

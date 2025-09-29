@@ -4,15 +4,16 @@
         { "title": "Площадь и периметр", "file": "materials/math/PerimetrPloschadInteractiv/PerimetrPloschad.html" },
         { "title": "Площадь, интерактив", "file": "materials/math/PoleVvodaPloschad/PoleVvodaPloschad.html" },
         { "title": "Задачи на скорость и стоимость", "file": "materials/math/зdachiNaDvijICenaStoimost/index.html" },
+        { "title": "Сложение через десяток", "file": "materials/math/SlojenieCherezDesiatok/deepseek_html_1.html" },
         { "title": "Многозначные числа. Викторина 4 класс", "file": "materials/math/ViktorinaMatematika4klassMngznchChisla/index.html" }
     ],
     "russian": [
         { "title": "Прилагательное", "file": "materials/russian/PrilagatelnoeTrenager/index.html" },
         { "title": "Части речи", "file": "materials/russian/RusskiJasikChastiRechi/index.html" },
-    { "title": "Словарные слова, 4 класс, ч.1", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4klassGK.html" },
-       { "title": "Складываем слово мороженое", "file": "materials/russian/SlovarnieSlova/kubikiMorojenoe.html" },
-       { "title": "Складываем слово шоколад", "file": "materials/russian/SlovarnieSlova/kubikiMorojenoe.html" }, 
-    { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" }
+        { "title": "Словарные слова, 4 класс, ч.1", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4klassGK.html" },
+        { "title": "Складываем слово мороженое", "file": "materials/russian/SlovarnieSlova/kubikiMorojenoe.html" },
+        { "title": "Складываем слово шоколад", "file": "materials/russian/SlovarnieSlova/Chocolate.html" },
+        { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" }
     ],
     "belarusian": [
         { "title": "Слоўнікавыя словы, 3 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova3klas.html" },
