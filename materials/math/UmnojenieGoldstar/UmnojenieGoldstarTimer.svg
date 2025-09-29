@@ -1,0 +1,337 @@
+<svg id="TrenagUmn" data-name="TrenagUmn_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1055 1027.1">
+  <defs>
+    <style>
+      .multiplier {
+        cursor: pointer;
+        transition: opacity 0.3s;
+      }
+      .multiplier.unselected {
+        opacity: 0.5;
+      }
+      .number-btn {
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .number-btn:hover circle {
+        fill: #77b0ae;
+        opacity: 0.2;
+      }
+      .correct-answer {
+        animation: pulse 1s;
+        fill: green !important;
+      }
+      .incorrect-answer {
+        animation: pulse 1s;
+        fill: red !important;
+      }
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+      #krest {
+        cursor: pointer;
+      }
+      .timer-text {
+        font-size: 20px;
+        fill: #ffffff;
+        font-family: Roboto-Medium, Roboto;
+        font-weight: 500;
+      }
+    </style>
+  </defs>
+
+  <!-- Существующий SVG код -->
+  <g id="trenag" transform="translate(0, 50)">
+    <g id="fon">
+      <path d="m47.6,2.8h959.7c24.7,0,44.8,20.1,44.8,44.8v831.8c0,24.7-20.1,44.8-44.8,44.8H47.6c-24.7,0-44.8-20.1-44.8-44.8V47.6C2.8,22.9,22.9,2.8,47.6,2.8Z" style="fill:rgb(26, 28, 49); stroke-width: 0px;"/>
+      <path d="m1007.3,5.7c23.1,0,42,18.8,42,42v831.8c0,23.1-18.8,42-42,42H47.6c-23.1,0-42-18.8-42-42V47.6C5.7,24.5,24.5,5.7,47.6,5.7h959.7m0-5.7H47.6C21.3,0,0,21.3,0,47.6v831.8c0,26.3,21.3,47.6,47.6,47.6h959.7c26.3,0,47.6-21.3,47.6-47.6V47.6c0-26.3-21.3-47.6-47.6-47.6h0Z" style="fill: #496391; stroke-width: 0px;"/>
+    </g>
+    <g id="fonButt">
+      <rect x="248.2" y="475.3" width="554.4" height="255.3" rx="26.1" ry="26.1" style="fill:#161426; stroke-width: 0px;"/>
+      <path d="m776.5,478.1c12.8,0,23.3,10.4,23.3,23.3v203c0,12.8-10.4,23.3-23.3,23.3h-502.2c-12.8,0-23.3-10.4-23.3-23.3v-203c0-12.8,10.4-23.3,23.3-23.3h502.2m0-5.7h-502.2c-16,0-29,13-29,29v203c0,16,13,29,29,29h502.2c16,0,29-13,29-29v-203c0-16-13-29-29-29h0Z" style="fill: #D959C3; stroke-width: 0px;"/>
+    </g>
+    <text transform="translate(312.7 359.9)" style="fill: #186BD9; font-family: Roboto-Medium, Roboto; font-size: 170.1px; font-weight: 500;"><tspan x="0" y="0" xml:space="preserve">×     =</tspan></text>
+    <text id="perviM" transform="translate(270 359.9)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 170.1px; font-weight: 500; text-anchor: end;"><tspan x="0" y="0" xml:space="preserve">  </tspan></text>
+    <text id="vtoroiM" transform="translate(442.8 359.9)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 170.1px; font-weight: 500;"><tspan x="0" y="0" xml:space="preserve">   </tspan></text>
+    <text id="otvet" transform="translate(737.3 359.9)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 170.1px; font-weight: 500;"><tspan x="0" y="0">   </tspan></text>
+    <g id="x2" class="multiplier unselected" data-value="2">
+      <text transform="translate(50.9 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">2</tspan></text>
+      <circle cx="91.9" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x3" class="multiplier unselected" data-value="3">
+      <text transform="translate(175.4 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">3</tspan></text>
+      <circle cx="216.3" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x4" class="multiplier unselected" data-value="4">
+      <text transform="translate(299.8 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">4</tspan></text>
+      <circle cx="340.8" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x5" class="multiplier unselected" data-value="5">
+      <text transform="translate(424.3 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">5</tspan></text>
+      <circle cx="465.2" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x6" class="multiplier unselected" data-value="6">
+      <text transform="translate(548.8 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">6</tspan></text>
+      <circle cx="589.7" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x7" class="multiplier unselected" data-value="7">
+      <text transform="translate(673.2 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">7</tspan></text>
+      <circle cx="714.2" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x8" class="multiplier unselected" data-value="8">
+      <text transform="translate(797.7 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">8</tspan></text>
+      <circle cx="838.6" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="x9" class="multiplier unselected" data-value="9">
+      <text transform="translate(922.1 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">9</tspan></text>
+      <circle cx="963.1" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt0" class="number-btn">
+      <text transform="translate(288.8 560.5)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">0</tspan></text>
+      <circle cx="307.2" cy="537.1" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt1" class="number-btn">
+      <text transform="translate(397.2 560.5)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">1</tspan></text>
+      <circle cx="415.6" cy="537.1" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt2" class="number-btn">
+      <text transform="translate(505.3 560.5)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">2</tspan></text>
+      <circle cx="523.7" cy="537.1" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt3" class="number-btn">
+      <text transform="translate(613.4 560.5)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">3</tspan></text>
+      <circle cx="631.8" cy="537.1" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt4" class="number-btn">
+      <text transform="translate(723.3 560.5)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">4</tspan></text>
+      <circle cx="741.7" cy="537.1" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt5" class="number-btn">
+      <text transform="translate(288.8 683.2)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">5</tspan></text>
+      <circle cx="307.2" cy="659.9" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt6" class="number-btn">
+      <text transform="translate(397.2 683.2)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">6</tspan></text>
+      <circle cx="415.6" cy="659.9" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt7" class="number-btn">
+      <text transform="translate(505.3 683.2)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">7</tspan></text>
+      <circle cx="523.7" cy="659.9" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt8" class="number-btn">
+      <text transform="translate(613.4 683.2)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">8</tspan></text>
+      <circle cx="631.8" cy="659.9" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <g id="butt9" class="number-btn">
+      <text transform="translate(723.3 683.2)" style="fill: #165FF2; font-family: Roboto-Medium, Roboto; font-size: 67.1px; font-weight: 500;"><tspan x="0" y="0">9</tspan></text>
+      <circle cx="741.7" cy="659.9" r="44.1" style="fill: transparent; stroke: #186BD9; stroke-miterlimit: 10; stroke-width: 8.5px;"/>
+    </g>
+    <text id="krest" transform="translate(828.4 874.2)" style="fill:rgb(134, 60, 63); font-family: Roboto-Medium, Roboto; font-size: 121.9px; font-weight: 500;"><tspan x="0" y="0">×</tspan></text>
+    <polygon id="galka" points="176.9 803.5 164.8 796.1 135.7 843.3 118.8 821.2 107.1 829.1 137.7 867.9 144.6 856 176.9 803.5" style="fill:rgb(64, 110, 86); stroke-width: 0px;"/>
+    <text id="correct" transform="translate(192.7 867.9)" style="fill:rgb(64, 112, 86); font-family: Roboto-Medium, Roboto; font-size: 70.9px; font-weight: 500;"><tspan x="0" y="0">0 </tspan></text>
+    <g id="incorrect">
+      <text transform="translate(913.5 861.6)" style="fill:rgb(133, 61, 63); font-family: Roboto-Medium, Roboto; font-size: 70.9px; font-weight: 500;"><tspan x="0" y="0">0 </tspan></text>
+    </g>
+
+    <script type="text/javascript"><![CDATA[
+      let selectedMultipliers = [];
+      let correctCount = 0;
+      let incorrectCount = 0;
+      let currentAnswer = "";
+      let multiplierProgress = {
+        2: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        3: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        4: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        5: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        6: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        7: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        8: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 },
+        9: { correct: 0, total: 10, usedFirstNums: new Set(), startTime: null, elapsedTime: 0 }
+      };
+      let completedMultipliers = new Set();
+
+      const perviM = document.getElementById('perviM').querySelector('tspan');
+      const vtoroiM = document.getElementById('vtoroiM').querySelector('tspan');
+      const otvet = document.getElementById('otvet').querySelector('tspan');
+      const correct = document.getElementById('correct').querySelector('tspan');
+      const incorrect = document.getElementById('incorrect').querySelector('tspan');
+
+      document.querySelectorAll('.multiplier').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const value = parseInt(this.getAttribute('data-value'));
+          if (completedMultipliers.has(value)) return;
+
+          const index = selectedMultipliers.indexOf(value);
+          if (index === -1) {
+            selectedMultipliers.push(value);
+            this.classList.remove('unselected');
+            if (!multiplierProgress[value].startTime) {
+              multiplierProgress[value].startTime = Date.now(); // Начинаем отсчёт времени
+            }
+          } else {
+            selectedMultipliers.splice(index, 1);
+            this.classList.add('unselected');
+          }
+
+          if (selectedMultipliers.length > 0) {
+            generateProblem();
+          }
+        });
+      });
+
+      document.querySelectorAll('.number-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const value = this.querySelector('tspan').textContent;
+          currentAnswer += value;
+          otvet.textContent = currentAnswer;
+
+          if (currentAnswer.length >= String(getCorrectAnswer()).length) {
+            checkAnswer();
+          }
+        });
+      });
+
+      function generateProblem() {
+        const activeMultipliers = selectedMultipliers.filter(m => !completedMultipliers.has(m));
+        if (activeMultipliers.length === 0) return;
+
+        const secondNum = activeMultipliers[Math.floor(Math.random() * activeMultipliers.length)];
+        const usedNums = multiplierProgress[secondNum].usedFirstNums;
+
+        const availableFirstNums = [];
+        for (let i = 1; i <= 10; i++) {
+          if (!usedNums.has(i)) {
+            availableFirstNums.push(i);
+          }
+        }
+
+        if (availableFirstNums.length === 0) return;
+
+        const firstNum = availableFirstNums[Math.floor(Math.random() * availableFirstNums.length)];
+
+        perviM.textContent = firstNum;
+        vtoroiM.textContent = secondNum;
+        otvet.textContent = "";
+        currentAnswer = "";
+        otvet.parentNode.classList.remove('correct-answer', 'incorrect-answer');
+      }
+
+      function getCorrectAnswer() {
+        return parseInt(perviM.textContent) * parseInt(vtoroiM.textContent);
+      }
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+
+      function replaceWithStar(multiplier) {
+        const button = document.getElementById(`x${multiplier}`);
+        const cx = parseFloat(button.querySelector('circle').getAttribute('cx'));
+        const cy = parseFloat(button.querySelector('circle').getAttribute('cy'));
+
+        // Вычисляем время
+        const endTime = Date.now();
+        const startTime = multiplierProgress[multiplier].startTime;
+        const elapsedTime = (endTime - startTime) / 1000; // в секундах
+        multiplierProgress[multiplier].elapsedTime = elapsedTime;
+
+        button.innerHTML = '';
+        const star = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        star.setAttribute('d', 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z');
+        star.setAttribute('transform', `translate(${cx - 38} ${cy - 38}) scale(3)`);
+        star.setAttribute('style', 'fill: #ffd700; stroke: #d4af37; stroke-width: 0.5px;');
+
+        const timerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        timerText.setAttribute('x', cx);
+        timerText.setAttribute('y', cy + 60); // Располагаем таймер ниже звезды
+        timerText.setAttribute('class', 'timer-text');
+        timerText.setAttribute('text-anchor', 'middle');
+        timerText.textContent = formatTime(elapsedTime);
+
+        button.appendChild(star);
+        button.appendChild(timerText);
+        button.classList.remove('multiplier', 'unselected');
+        button.style.cursor = 'default';
+      }
+
+      function checkAnswer() {
+        const correctAnswer = getCorrectAnswer();
+        const userAnswer = parseInt(currentAnswer);
+        const currentMultiplier = parseInt(vtoroiM.textContent);
+        const firstNum = parseInt(perviM.textContent);
+
+        otvet.textContent = currentAnswer;
+
+        if (userAnswer === correctAnswer) {
+          correctCount++;
+          correct.textContent = correctCount;
+          otvet.parentNode.classList.add('correct-answer');
+
+          if (!completedMultipliers.has(currentMultiplier)) {
+            multiplierProgress[currentMultiplier].usedFirstNums.add(firstNum);
+            multiplierProgress[currentMultiplier].correct++;
+
+            if (multiplierProgress[currentMultiplier].correct >= multiplierProgress[currentMultiplier].total) {
+              completedMultipliers.add(currentMultiplier);
+              replaceWithStar(currentMultiplier);
+              const index = selectedMultipliers.indexOf(currentMultiplier);
+              if (index !== -1) {
+                selectedMultipliers.splice(index, 1);
+              }
+            }
+          }
+        } else {
+          incorrectCount++;
+          incorrect.textContent = incorrectCount;
+          otvet.parentNode.classList.add('incorrect-answer');
+        }
+
+        document.querySelectorAll('.number-btn').forEach(btn => {
+          btn.style.pointerEvents = 'none';
+        });
+
+        setTimeout(() => {
+          document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.style.pointerEvents = 'auto';
+          });
+
+          if (selectedMultipliers.length > 0) {
+            generateProblem();
+          }
+        }, 1000);
+      }
+
+      document.getElementById('krest').addEventListener('click', function() {
+        selectedMultipliers = [];
+        completedMultipliers.clear();
+        for (let key in multiplierProgress) {
+          multiplierProgress[key].correct = 0;
+          multiplierProgress[key].usedFirstNums.clear();
+          multiplierProgress[key].startTime = null;
+          multiplierProgress[key].elapsedTime = 0;
+        }
+        document.querySelectorAll('[id^="x"]').forEach(btn => {
+          const value = parseInt(btn.getAttribute('data-value'));
+          if (value) {
+            btn.innerHTML = `<text transform="translate(${50.9 + (value-2)*124.4} 114.1)" style="fill: #D959C3; font-family: Roboto-Medium, Roboto; font-weight: 500;"><tspan x="0" y="0" style="font-size: 63.6px;">×</tspan><tspan x="33.9" y="0" style="font-size: 76.3px;">${value}</tspan></text>
+              <circle cx="${91.9 + (value-2)*124.4}" cy="89.6" r="50.1" style="fill: none; stroke: #D959C3; stroke-miterlimit: 10; stroke-width: 8.5px;"/>`;
+            btn.classList.add('multiplier', 'unselected');
+            btn.style.cursor = 'pointer';
+          }
+        });
+        perviM.textContent = "";
+        vtoroiM.textContent = "";
+        otvet.textContent = "";
+        currentAnswer = "";
+        correctCount = 0;
+        incorrectCount = 0;
+        correct.textContent = "0";
+        incorrect.textContent = "0";
+        otvet.parentNode.classList.remove('correct-answer', 'incorrect-answer');
+      });
+    ]]></script>
+  </g>
+</svg>

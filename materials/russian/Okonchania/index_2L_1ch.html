@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Тренажёр по русскому языку</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+        #StarGold {
+            transform-origin: center;
+        }
+        @keyframes starPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes frogJump {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <svg id="gameSvg" width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="PravopisOkonch">
+            <rect width="1000" height="1000" fill="white"/>
+            <rect id="backgroundFon" x="72" y="44" width="863" height="887" rx="35" stroke="#0BCB78" stroke-width="6" stroke-dasharray="14 14"/>
+            <rect id="bgWord" x="129" y="318" width="750" height="147" rx="22" fill="#B8ECFF"/>
+            <rect id="bgWordTitul" x="125" y="78" width="750" height="79" rx="22" fill="#B8ECFF"/>
+            <rect id="bgStar" x="129" y="644" width="261" height="147" rx="22" fill="#B8ECFF"/>
+            <rect id="bgFrog" x="624" y="644" width="255" height="147" rx="22" fill="#B8ECFF"/>
+            <text id="title" fill="#505F9A" font-family="Arial" font-size="40"><tspan x="210" y="130.867">Пишем окончания правильно.</tspan></text>
+            <rect id="inputPlace" x="547" y="363" width="130" height="62" rx="13" stroke="#505F9A" stroke-width="4" fill="transparent" style="cursor: pointer;"/>
+            <text id="word" fill="#0E3E86" font-family="Arial" font-size="64" text-anchor="end"><tspan x="540" y="409.188">Он шум</tspan></text>
+            <text id="input" fill="#007C51" font-family="Arial" font-size="64" text-anchor="start"><tspan x="551" y="409.188"></tspan></text>
+            <path id="StarGold" d="M297.836 678.918L308.11 699.049C308.764 700.33 309.991 701.222 311.411 701.448L333.732 704.998C334.941 705.19 335.423 706.673 334.558 707.539L318.586 723.531C317.57 724.549 317.101 725.991 317.325 727.412L320.847 749.737C321.037 750.947 319.776 751.863 318.685 751.308L298.54 741.06C297.258 740.408 295.742 740.408 294.46 741.06L274.315 751.308C273.224 751.863 271.963 750.947 272.153 749.737L275.675 727.412C275.899 725.991 275.43 724.549 274.414 723.531L258.442 707.539C257.577 706.673 258.059 705.19 259.268 704.998L281.589 701.448C283.009 701.222 284.236 700.33 284.89 699.049L295.164 678.918C295.721 677.827 297.279 677.827 297.836 678.918Z" fill="#FDC754" stroke="#FC5E42" stroke-width="3"/>
+            <!-- Элемент лягушки -->
+            <g id="frog">
+                <path id="Ellipse 1" d="M749.761 700.903C747.257 706.89 749.473 714.439 755.594 721.927C761.685 729.377 771.483 736.54 783.561 741.593C795.639 746.646 807.619 748.594 817.2 747.7C826.83 746.802 833.761 743.08 836.266 737.094C838.77 731.107 836.554 723.558 830.433 716.07C824.342 708.62 814.544 701.456 802.466 696.404C790.388 691.351 778.408 689.403 768.827 690.297C759.197 691.195 752.266 694.917 749.761 700.903Z" fill="#A0CB6C" stroke="#7D6262" stroke-width="2"/>
+                <g id="Ellipse 3">
+                <mask id="path-14-inside-1_1_2" fill="white">
+                <path d="M748.911 701.177C747.619 704.265 747.479 707.8 748.498 711.579C749.517 715.358 751.676 719.307 754.852 723.202C758.027 727.096 762.157 730.86 767.006 734.277C771.854 737.694 777.326 740.698 783.109 743.117C788.892 745.537 794.873 747.324 800.71 748.377C806.547 749.431 812.126 749.729 817.129 749.256C822.132 748.783 826.46 747.548 829.867 745.62C833.274 743.693 835.692 741.111 836.984 738.023L792.948 719.6L748.911 701.177Z"/>
+                </mask>
+                <path d="M748.911 701.177C747.619 704.265 747.479 707.8 748.498 711.579C749.517 715.358 751.676 719.307 754.852 723.202C758.027 727.096 762.157 730.86 767.006 734.277C771.854 737.694 777.326 740.698 783.109 743.117C788.892 745.537 794.873 747.324 800.71 748.377C806.547 749.431 812.126 749.729 817.129 749.256C822.132 748.783 826.46 747.548 829.867 745.62C833.274 743.693 835.692 741.111 836.984 738.023L792.948 719.6L748.911 701.177Z" fill="#F1EE9F" stroke="#7D6262" stroke-width="4" mask="url(#path-14-inside-1_1_2)"/>
+                </g>
+                <path id="Subtract" fill-rule="evenodd" clip-rule="evenodd" d="M752.019 699.306C761.848 692.62 781.012 692.885 800.31 700.959C820.265 709.307 834.173 723.414 835.57 735.373C839.004 723.075 824.6 706.19 802.275 696.85C780.556 687.764 759.016 689.029 752.019 699.306Z" fill="#D5F276"/>
+                <circle id="Ellipse 2" cx="12.0573" cy="12.0573" r="11.0573" transform="matrix(-1 0 0 1 793.358 679.726)" fill="#A0CB6C" stroke="#7D6262" stroke-width="2"/>
+                <path id="Subtract_2" fill-rule="evenodd" clip-rule="evenodd" d="M771.999 688.108C773.872 686.069 776.56 684.792 779.546 684.792C785.205 684.792 789.792 689.379 789.792 695.037C789.792 695.891 789.687 696.72 789.491 697.513C790.625 695.892 791.291 693.918 791.291 691.789C791.291 686.268 786.816 681.793 781.295 681.793C777.075 681.793 773.465 684.409 771.999 688.108Z" fill="#D5F276"/>
+                <path id="Vector 3" d="M767.521 732.089C759.968 726.922 747.885 714.865 750.296 704.185C750.296 704.185 754.086 713.831 765.109 724.51C776.133 735.19 788.535 742.424 788.535 742.424C781.99 741.046 780.612 741.046 767.521 732.089Z" fill="#CAC770"/>
+                <circle id="Ellipse 5" cx="1.37798" cy="1.37798" r="1.37798" transform="matrix(-1 0 0 1 778.889 692.128)" fill="#7D6262"/>
+                <path id="Vector 1" d="M748.574 748.97C748.574 748.97 749.263 741.735 766.487 743.113L780.612 714.865C787.157 704.874 801.281 712.109 798.525 718.998L773.033 748.97H748.574Z" fill="#A0CB6C" stroke="#7D6262" stroke-width="2" stroke-linecap="round"/>
+                <path id="Vector 2" d="M768.554 748.969L834.353 748.969C840.209 714.176 776.822 704.185 787.846 742.424C782.059 741.322 768.554 743.457 768.554 748.969Z" fill="#A0CB6C" stroke="#7D6262" stroke-width="2" stroke-linecap="round"/>
+                <path id="Subtract_3" fill-rule="evenodd" clip-rule="evenodd" d="M792.669 723.886C797.423 720.067 806.69 720.218 816.023 724.831C825.673 729.6 832.399 737.659 833.075 744.491C834.736 737.465 827.77 727.819 816.973 722.483C806.47 717.293 796.053 718.015 792.669 723.886Z" fill="#D5F276"/>
+                <path id="Vector 4" d="M769.932 747.936H833.664C834.008 744.836 812.871 745.18 802.659 745.18C792.325 745.18 770.966 745.525 769.932 747.936Z" fill="#7B9C53"/>
+            </g>
+            <text id="inputScoreStar" fill="#FCB32D" stroke="#FF653F" stroke-width="2" font-family="Arial" font-size="64"><tspan x="172" y="741.773">0</tspan></text>
+            <text id="inputScoreFrog" fill="#A0CB6C" stroke="#7D6262" stroke-width="2" font-family="Arial" font-size="64"><tspan x="654" y="741.773">0</tspan></text>
+            <g id="dropdown" transform="translate(547, 425)" style="display: none;">
+                <rect width="115" height="150" rx="13" fill="white" stroke="#505F9A" stroke-width="4"/>
+                <text font-family="Arial" font-size="48" fill="#007C51" style="cursor: pointer;">
+                    <tspan x="10" y="50" id="option1"></tspan>
+                    <tspan x="10" y="110" id="option2"></tspan>
+                    <!-- Убраны лишние варианты, так как в массиве только 2 опции -->
+                </text>
+            </g>
+        </g>
+    </svg>
+
+    <script>
+        const words = [
+    { text: "Ты шум", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты беж", options: ["ешь", "ишь"], correct: "ишь" },
+    { text: "Ты смотр", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты рису", options: ["ешь", "ишь"], correct: "ешь" },
+    { text: "Ты пиш", options: ["ешь", "ишь"], correct: "ешь" },
+    { text: "Ты чита", options: ["ишь", "ешь"], correct: "ешь" },
+    { text: "Ты стро", options: ["ешь", "ишь"], correct: "ишь" },
+    { text: "Ты говор", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты сид", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты дума", options: ["ишь", "ешь"], correct: "ешь" },
+    { text: "Ты гуля", options: ["ешь", "ишь"], correct: "ешь" },
+    { text: "Ты уч", options: ["ешь", "ишь"], correct: "ишь" },
+    { text: "Ты плыв", options: ["ёшь", "ишь"], correct: "ёшь" },
+    { text: "Ты по", options: ["ишь", "ёшь"], correct: "ёшь" },
+    { text: "Ты леж", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты бега", options: ["ишь", "ешь"], correct: "ешь" },
+    { text: "Ты сп", options: ["ишь", "ешь"], correct: "ишь" },
+    { text: "Ты рису", options: ["ишь", "ишь"], correct: "ешь" },
+    { text: "Ты плач", options: ["ишь", "ешь"], correct: "ешь" },
+    { text: "Ты крич", options: ["ишь", "ешь"], correct: "ишь" }
+];
+
+        let currentWordIndex = 0;
+        let starScore = 0;
+        let frogScore = 0;
+
+        // Элементы DOM
+        const gameSvg = document.querySelector('#gameSvg');
+        const inputText = document.querySelector('#input tspan');
+        const wordText = document.querySelector('#word tspan');
+        const starScoreText = document.querySelector('#inputScoreStar tspan');
+        const frogScoreText = document.querySelector('#inputScoreFrog tspan');
+        const starElement = document.querySelector('#StarGold');
+        const frogElement = document.querySelector('#frog');
+        const dropdown = document.querySelector('#dropdown');
+        const inputPlace = document.querySelector('#inputPlace');
+        const inputElement = document.querySelector('#input');
+
+        // Открытие дропдауна
+        inputPlace.addEventListener('click', showDropdown);
+
+        function showDropdown() {
+            dropdown.style.display = 'block';
+            inputPlace.style.pointerEvents = 'none';
+            const currentWord = words[currentWordIndex];
+            const optionElements = [
+                document.querySelector('#option1'),
+                document.querySelector('#option2')//сюда добавлять опции если их больше
+            ];
+
+            optionElements.forEach((option, index) => {
+                option.textContent = currentWord.options[index];
+                option.removeEventListener('click', handleOptionClick);
+                option.addEventListener('click', handleOptionClick);
+            });
+        }
+
+        function handleOptionClick(e) {
+            const selected = e.target.textContent;
+            checkAnswer(selected);
+        }
+
+        function checkAnswer(selected) {
+            const currentWord = words[currentWordIndex];
+            dropdown.style.display = 'none';
+            inputText.textContent = selected;
+
+            if (selected === currentWord.correct) {
+                starScore++;
+                starScoreText.textContent = starScore.toString();
+                inputElement.setAttribute('fill', '#007C51');
+                starElement.style.animation = 'starPulse 0.5s ease-in-out';
+                setTimeout(() => starElement.style.animation = '', 500);
+            } else {
+                frogScore++;
+                starScore = Math.max(0, starScore - 1);
+                frogScoreText.textContent = frogScore.toString();
+                starScoreText.textContent = starScore.toString();
+                inputElement.setAttribute('fill', '#FF0000');
+                frogElement.style.animation = 'frogJump 0.5s ease-in-out';
+                setTimeout(() => frogElement.style.animation = '', 500);
+            }
+
+            setTimeout(() => {
+                currentWordIndex++;
+                if (currentWordIndex < words.length) {
+                    updateWord();
+                    inputPlace.style.pointerEvents = 'auto';
+                } else {
+                    showEndScreen();
+                }
+            }, 1000);
+        }
+
+        function updateWord() {
+            const currentWord = words[currentWordIndex];
+            wordText.textContent = currentWord.text;
+            inputText.textContent = '';
+            inputElement.setAttribute('fill', '#007C51');
+        }
+
+        function showEndScreen() {
+            // Определяем, какой экран показать в зависимости от количества ошибок
+            const endScreenUrl = frogScore <= 2 ? './end-screen-hungry.svg' : './end-screen-happy.svg';
+            
+            // Загружаем SVG-файл
+            fetch(endScreenUrl)
+                .then(response => response.text())
+                .then(svgContent => {
+                    document.body.innerHTML = svgContent;
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке финального экрана:', error);
+                    document.body.innerHTML = '<h1>Ошибка загрузки финального экрана</h1>';
+                });
+        }
+
+        updateWord();
+    </script>
+</body>
+</html>

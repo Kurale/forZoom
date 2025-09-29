@@ -1,0 +1,245 @@
+body {
+    margin: 0;
+    display: absolute;
+    justify-content: center;
+    align-items: center;
+    height: 25vh;
+    background: #fff;
+}
+
+.abacus {
+    position: absolute;
+    transform: translateY(20%);
+    transform: translateX(20%);
+    width: 995px;
+    height: 1000px;
+    background: #fff;
+}
+
+/* Frame */
+.rama {
+    position: absolute;
+    left: 1046.5px;
+    top: 440.5px;
+    width: 877px;
+    height: 1465px;
+    background: #E4E4E4;
+    border: 10.5px solid #FEAB04;
+    box-sizing: border-box;
+}
+
+/* Rods */
+.group-kost .line {
+    position: absolute;
+    height: 5px;
+    background: #421102;
+    left: 1057px;
+    width: 856px;
+}
+
+.group-kost1 .line { top: 1811px; }
+.group-kost2 .line { top: 1669px; }
+.group-kost3 .line { top: 1527px; }
+.group-kost4 .line { top: 1385px; }
+.group-kost5 .line { top: 1243px; }
+.group-kost6 .line { top: 1101px; }
+.group-kost7 .line { top: 959px; }
+.group-kost8 .line { top: 817px; }
+.group-kost9 .line { top: 675px; }
+.group-kost10 .line { top: 533px; }
+
+
+
+/* Beads */
+.bead {
+    position: absolute;
+    width: 40px;
+    height: 100px;
+    border-radius: 20px;
+    box-sizing: border-box;
+    transition: left 0.3s ease; /* Add smooth transition for left movement */
+}
+
+.yellow {
+    background: #f9d63c;
+    border: 5px solid #c48301;
+}
+
+.brown {
+    background: #5d3201;
+    border: 5px solid #361601;
+}
+
+/* Rest of the existing styles remain unchanged */
+
+/* Bead Positions */
+.group-kost1 .kost1 { left: 1871px; top: 1760px; }
+.group-kost1 .kost2 { left: 1826px; top: 1760px; }
+.group-kost1 .kost3 { left: 1781px; top: 1760px; }
+.group-kost1 .kost4 { left: 1736px; top: 1760px; }
+.group-kost1 .kost5 { left: 1691px; top: 1760px; }
+.group-kost1 .kost6 { left: 1646px; top: 1760px; }
+.group-kost1 .kost7 { left: 1601px; top: 1760px; }
+.group-kost1 .kost8 { left: 1556px; top: 1760px; }
+.group-kost1 .kost9 { left: 1511px; top: 1760px; }
+.group-kost1 .kost10 { left: 1466px; top: 1760px; }
+
+.group-kost2 .kost1 { left: 1871px; top: 1618px; }
+.group-kost2 .kost2 { left: 1826px; top: 1618px; }
+.group-kost2 .kost3 { left: 1781px; top: 1618px; }
+.group-kost2 .kost4 { left: 1736px; top: 1618px; }
+.group-kost2 .kost5 { left: 1691px; top: 1618px; }
+.group-kost2 .kost6 { left: 1646px; top: 1618px; }
+.group-kost2 .kost7 { left: 1601px; top: 1618px; }
+.group-kost2 .kost8 { left: 1556px; top: 1618px; }
+.group-kost2 .kost9 { left: 1511px; top: 1618px; }
+.group-kost2 .kost10 { left: 1466px; top: 1618px; }
+
+.group-kost3 .kost1 { left: 1871px; top: 1476px; }
+.group-kost3 .kost2 { left: 1826px; top: 1476px; }
+.group-kost3 .kost3 { left: 1781px; top: 1476px; }
+.group-kost3 .kost4 { left: 1736px; top: 1476px; }
+.group-kost3 .kost5 { left: 1691px; top: 1476px; }
+.group-kost3 .kost6 { left: 1646px; top: 1476px; }
+.group-kost3 .kost7 { left: 1601px; top: 1476px; }
+.group-kost3 .kost8 { left: 1556px; top: 1476px; }
+.group-kost3 .kost9 { left: 1511px; top: 1476px; }
+.group-kost3 .kost10 { left: 1466px; top: 1476px; }
+
+
+
+/* Bead Positions для group-kost4 */
+.group-kost4 .kost4-4 { left: 1871px; top: 1334px; }
+.group-kost4 .kost4-5 { left: 1826px; top: 1334px; }
+.group-kost4 .kost4-6 { left: 1781px; top: 1334px; }
+.group-kost4 .kost4-7 { left: 1736px; top: 1334px; }
+
+
+
+.group-kost5 .kost1 { left: 1871px; top: 1192px; }
+.group-kost5 .kost2 { left: 1826px; top: 1192px; }
+.group-kost5 .kost3 { left: 1781px; top: 1192px; }
+.group-kost5 .kost4 { left: 1736px; top: 1192px; }
+.group-kost5 .kost5 { left: 1691px; top: 1192px; }
+.group-kost5 .kost6 { left: 1646px; top: 1192px; }
+.group-kost5 .kost7 { left: 1601px; top: 1192px; }
+.group-kost5 .kost8 { left: 1556px; top: 1192px; }
+.group-kost5 .kost9 { left: 1511px; top: 1192px; }
+.group-kost5 .kost10 { left: 1466px; top: 1192px; }
+
+.group-kost6 .kost1 { left: 1871px; top: 1050px; }
+.group-kost6 .kost2 { left: 1826px; top: 1050px; }
+.group-kost6 .kost3 { left: 1781px; top: 1050px; }
+.group-kost6 .kost4 { left: 1736px; top: 1050px; }
+.group-kost6 .kost5 { left: 1691px; top: 1050px; }
+.group-kost6 .kost6 { left: 1646px; top: 1050px; }
+.group-kost6 .kost7 { left: 1601px; top: 1050px; }
+.group-kost6 .kost8 { left: 1556px; top: 1050px; }
+.group-kost6 .kost9 { left: 1511px; top: 1050px; }
+.group-kost6 .kost10 { left: 1466px; top: 1050px; }
+
+.group-kost7 .kost1 { left: 1871px; top: 908px; }
+.group-kost7 .kost2 { left: 1826px; top: 908px; }
+.group-kost7 .kost3 { left: 1781px; top: 908px; }
+.group-kost7 .kost4 { left: 1736px; top: 908px; }
+.group-kost7 .kost5 { left: 1691px; top: 908px; }
+.group-kost7 .kost6 { left: 1646px; top: 908px; }
+.group-kost7 .kost7 { left: 1601px; top: 908px; }
+.group-kost7 .kost8 { left: 1556px; top: 908px; }
+.group-kost7 .kost9 { left: 1511px; top: 908px; }
+.group-kost7 .kost10 { left: 1466px; top: 908px; }
+
+.group-kost8 .kost1 { left: 1871px; top: 766px; }
+.group-kost8 .kost2 { left: 1826px; top: 766px; }
+.group-kost8 .kost3 { left: 1781px; top: 766px; }
+.group-kost8 .kost4 { left: 1736px; top: 766px; }
+.group-kost8 .kost5 { left: 1691px; top: 766px; }
+.group-kost8 .kost6 { left: 1646px; top: 766px; }
+.group-kost8 .kost7 { left: 1601px; top: 766px; }
+.group-kost8 .kost8 { left: 1556px; top: 766px; }
+.group-kost8 .kost9 { left: 1511px; top: 766px; }
+.group-kost8 .kost10 { left: 1466px; top: 766px; }
+
+.group-kost9 .kost1 { left: 1871px; top: 624px; }
+.group-kost9 .kost2 { left: 1826px; top: 624px; }
+.group-kost9 .kost3 { left: 1781px; top: 624px; }
+.group-kost9 .kost4 { left: 1736px; top: 624px; }
+.group-kost9 .kost5 { left: 1691px; top: 624px; }
+.group-kost9 .kost6 { left: 1646px; top: 624px; }
+.group-kost9 .kost7 { left: 1601px; top: 624px; }
+.group-kost9 .kost8 { left: 1556px; top: 624px; }
+.group-kost9 .kost9 { left: 1511px; top: 624px; }
+.group-kost9 .kost10 { left: 1466px; top: 624px; }
+
+.group-kost10 .kost1 { left: 1871px; top: 482px; }
+.group-kost10 .kost2 { left: 1826px; top: 482px; }
+.group-kost10 .kost3 { left: 1781px; top: 482px; }
+.group-kost10 .kost4 { left: 1736px; top: 482px; }
+.group-kost10 .kost5 { left: 1691px; top: 482px; }
+.group-kost10 .kost6 { left: 1646px; top: 482px; }
+.group-kost10 .kost7 { left: 1601px; top: 482px; }
+.group-kost10 .kost8 { left: 1556px; top: 482px; }
+.group-kost10 .kost9 { left: 1511px; top: 482px; }
+.group-kost10 .kost10 { left: 1466px; top: 482px; }
+
+/* Display */
+.volume {
+    position: absolute;
+    left: 30%;
+    top: 120px;
+    width: 600px;
+    height: 210px;
+    background: #CBD2DB;
+    border-radius: 34px;
+}
+
+.data {
+    position: absolute;
+    left: 35%;
+    top: 226.045px;
+    transform: translateY(-50%);
+    font-family: 'Inter', sans-serif;
+    font-size: 128px;
+    color: #fff;
+}
+
+/* Labels */
+.title .label {
+    position: absolute;
+    transform: translateY(-75%);
+    font-family: 'Inter', sans-serif;
+    font-size: 96px;
+    color: #CFCFCF;
+}
+
+/* Buttons 
+.btn {
+    position: absolute;
+}
+
+.btn .circle {
+    position: absolute;
+    width: 172px;
+    height: 172px;
+    background: #D9D9D9;
+    border-radius: 50%;
+}
+
+.btn .symbol {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 128px;
+    color: #000;
+}
+
+.btn-plus .circle { left: 71px; top: 644px; }
+.btn-plus .symbol { left: 114px; top: 765.045px; transform: translateY(-50%); }
+
+.btn-minus .circle { left: 71px; top: 919px; }
+.btn-minus .symbol { left: 127px; top: 1048.73px; transform: translateY(-50%); font-size: 134px; }
+
+.btn-umnojit .circle { left: 71px; top: 1194px; }
+.btn-umnojit .symbol { left: 115px; top: 1315.05px; transform: translateY(-50%); }
+
+.btn-delit .circle { left: 71px; top: 1469px; }
+.btn-delit .symbol { left: 140px; top: 1590.05px; transform: translateY(-50%); }*/
