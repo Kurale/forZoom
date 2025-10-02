@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Абакус - Математический тренажёр</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a606c, #1fb25c, #fdbb2d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 1440px;
+            height: 1024px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title {
+            color: white;
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073;
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6;
+            }
+        }
+
+        .number-display {
+            width: 80%;
+            height: 120px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .number-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .number {
+            font-size: 72px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .abacus-container {
+            width: 90%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .abacus-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;       /* вместо top: 0 */
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    border-radius: 0 0 20px 20px; /* закругления снизу */
+}
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            width: 120px;
+            position: relative;
+        }
+
+        .column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: linear-gradient(to bottom, #8B4513, #A0522D, #8B4513);
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+        .bead {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: radial-gradient(circle at 30% 30%, #ffffff, #cccccc);
+            opacity: 0.3;
+        }
+
+        .bead.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .bead:hover {
+            transform: scale(1.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            margin-top: 20px;
+            max-width: 80%;
+            line-height: 1.5;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .counter {
+            color: white;
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .column-label {
+            position: absolute;
+            bottom: -30px;
+            color: rgba(255, 255, 255, 0);
+            font-size: 18px;
+            font-weight: bold;
+            }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Математический тренажёр "Абакус"</h1>
+        
+        <div class="number-display">
+            <div class="number" id="targetNumber">0</div>
+        </div>
+        
+        <div class="abacus-container" id="abacus">
+            <!-- Столбики будут созданы через JavaScript -->
+        </div>
+        
+        <div class="counter">
+            Выставлено: <span id="currentCount">0</span> из <span id="targetCount">0</span>
+        </div>
+        
+        <div class="controls">
+            <button class="btn generate-btn" id="generateBtn">Сгенерировать число</button>
+            <button class="btn clear-btn" id="clearBtn">Очистить абак</button>
+        </div>
+        
+        <div class="instructions">
+            Кликайте на костяшки, чтобы активировать их. Постарайтесь выставить на абаке число, показанное выше.
+            Крайний правый столбец - единицы, далее десятки, сотни, тысячи, десятки тысяч, сотни тысяч.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const abacus = document.getElementById('abacus');
+            const targetNumberElement = document.getElementById('targetNumber');
+            const generateBtn = document.getElementById('generateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const currentCountElement = document.getElementById('currentCount');
+            const targetCountElement = document.getElementById('targetCount');
+            
+            const columns = 6; // 6 столбиков для разрядов числа
+            const beadsPerColumn = 9; // 9 костяшек в каждом столбце
+            
+            // Названия разрядов (от младшего к старшему - справа налево)
+            const placeNames = ['Единицы', 'Десятки', 'Сотни', 'Тысячи', 'Десятки тысяч', 'Сотни тысяч'];
+            
+            let targetNumber = 0;
+            let currentNumber = 0;
+            let beads = [];
+            
+            // Создаем абак
+            function createAbacus() {
+                abacus.innerHTML = '';
+                beads = [];
+                
+                // Создаем столбцы от старших разрядов к младшим (слева направо)
+                for (let i = columns - 1; i >= 0; i--) {
+                    const column = document.createElement('div');
+                    column.className = 'column';
+                    
+                    // Добавляем подпись разряда
+                    const label = document.createElement('div');
+                    label.className = 'column-label';
+                    label.textContent = placeNames[i];
+                    column.appendChild(label);
+                    
+                    const columnBeads = [];
+                    
+                    for (let j = 0; j < beadsPerColumn; j++) {
+                        const bead = document.createElement('div');
+                        bead.className = 'bead';
+                        bead.dataset.column = i;
+                        // Значение разряда: 10^i
+                        bead.dataset.value = Math.pow(10, i);
+                        
+                        // Назначаем цвет в зависимости от столбца
+                        // Теперь i идет от 5 (сотни тысяч) до 0 (единицы)
+                        const hue = (i * 40) % 360;
+                        bead.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue}, 100%, 80%), hsl(${hue}, 100%, 50%))`;
+                        
+                        bead.addEventListener('click', toggleBead);
+                        column.appendChild(bead);
+                        columnBeads.push(bead);
+                    }
+                    
+                    abacus.appendChild(column);
+                    beads[i] = columnBeads; // Сохраняем в правильном порядке
+                }
+            }
+            
+            // Переключение состояния костяшки
+            function toggleBead() {
+                const bead = this;
+                const column = parseInt(bead.dataset.column);
+                const beadIndex = Array.from(bead.parentNode.children).indexOf(bead) - 1; // -1 из-за метки
+                
+                if (bead.classList.contains('active')) {
+                    bead.classList.remove('active');
+                    currentNumber -= parseInt(bead.dataset.value);
+                } else {
+                    bead.classList.add('active');
+                    currentNumber += parseInt(bead.dataset.value);
+                    
+                    // Анимация активации
+                    bead.style.animation = 'pulse 0.5s';
+                    setTimeout(() => {
+                        bead.style.animation = '';
+                    }, 500);
+                }
+                
+                updateCounter();
+                
+                // Проверка на совпадение
+                if (currentNumber === targetNumber) {
+                    celebrate();
+                }
+            }
+            
+            // Генерация случайного числа
+            function generateNumber() {
+                targetNumber = Math.floor(Math.random() * 999999) + 10; // от 10 до 1000000
+                targetNumberElement.textContent = targetNumber.toLocaleString();
+                targetCountElement.textContent = targetNumber.toLocaleString();
+                
+                // Сбрасываем абак
+                resetAbacus();
+                
+                // Анимация появления числа
+                targetNumberElement.style.transform = 'scale(0)';
+                targetNumberElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    targetNumberElement.style.transition = 'all 0.5s ease';
+                    targetNumberElement.style.transform = 'scale(1)';
+                    targetNumberElement.style.opacity = '1';
+                }, 100);
+            }
+            
+            // Сброс абака
+            function resetAbacus() {
+                currentNumber = 0;
+                beads.forEach(column => {
+                    column.forEach(bead => {
+                        bead.classList.remove('active');
+                    });
+                });
+                updateCounter();
+            }
+            
+            // Обновление счетчика
+            function updateCounter() {
+                currentCountElement.textContent = currentNumber.toLocaleString();
+                
+                // Изменяем цвет счетчика в зависимости от прогресса
+                const progress = currentNumber / targetNumber;
+                if (progress < 0.5) {
+                    currentCountElement.style.color = '#ff6b6b';
+                } else if (progress < 1) {
+                    currentCountElement.style.color = '#ffe66d';
+                } else if (progress === 1) {
+                    currentCountElement.style.color = '#4ecdc4';
+                }
+            }
+            
+            // Праздничная анимация при правильном ответе
+            function celebrate() {
+                // Создаем конфетти
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                    document.body.appendChild(confetti);
+                    
+                    // Удаляем конфетти после анимации
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+                
+                // Анимация победы для числа
+                targetNumberElement.style.animation = 'glow 1s infinite alternate';
+                setTimeout(() => {
+                    targetNumberElement.style.animation = '';
+                }, 3000);
+            }
+            
+            // Инициализация
+            createAbacus();
+            generateNumber();
+            
+            // Назначаем обработчики событий
+            generateBtn.addEventListener('click', generateNumber);
+            clearBtn.addEventListener('click', resetAbacus);
+        });
+    </script>
+</body>
+</html>
