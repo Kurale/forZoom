@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабиринт предлогов</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    h1 {
+        color: white;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .controls {
+        margin-bottom: 20px;
+    }
+
+    button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 0 10px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    .score {
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        display: inline-block;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .score span {
+        margin: 0 15px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    #correctCount {
+        color: #4CAF50;
+    }
+
+    #incorrectCount {
+        color: #f44336;
+    }
+
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(7, 150px);
+        grid-template-rows: repeat(5, 150px);
+        gap: 10px;
+        justify-content: center;
+        margin: 20px auto;
+        max-width: 1470px;
+    }
+
+    .square {
+        width: 150px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        font-size: 36px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 
+            0 8px 16px rgba(0,0,0,0.2),
+            inset 0 -4px 8px rgba(0,0,0,0.1),
+            inset 0 4px 8px rgba(255,255,255,0.2);
+        border: 3px solid rgba(255,255,255,0.3);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        color: white;
+    }
+
+    .square:hover {
+        transform: scale(1.05);
+        box-shadow: 
+            0 12px 20px rgba(0,0,0,0.3),
+            inset 0 -4px 8px rgba(0,0,0,0.1),
+            inset 0 4px 8px rgba(255,255,255,0.3);
+    }
+
+    .square.correct {
+        background: #4CAF50 !important;
+        transform: scale(1.1);
+        box-shadow: 
+            0 0 30px rgba(76, 175, 80, 0.5),
+            0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .square.incorrect {
+        background: #f44336 !important;
+        animation: vibration 0.5s ease;
+    }
+
+    @keyframes vibration {
+        0%, 100% { transform: translateX(0) rotate(0); }
+        25% { transform: translateX(-5px) rotate(-1deg); }
+        50% { transform: translateX(5px) rotate(1deg); }
+        75% { transform: translateX(-5px) rotate(-1deg); }
+    }
+
+    .message {
+        font-size: 32px;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-top: 20px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .message.show {
+        opacity: 1;
+    }
+
+    #confettiCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>Лабиринт предлогов</h1>
+        
+        <div class="controls">
+            <button id="startBtn">Начать</button>
+            <button id="refreshBtn">Обновить</button>
+            <button id="resultBtn">Показать результат</button>
+        </div>
+        
+        <div class="score">
+            <span>Правильно: <span id="correctCount">0</span></span>
+            <span>Неправильно: <span id="incorrectCount">0</span></span>
+        </div>
+        
+        <div id="gameBoard" class="game-board"></div>
+        
+        <div id="message" class="message"></div>
+    </div>
+    
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Звуковые файлы -->
+    <audio id="correctSound" src="sound/correct.wav"></audio>
+    <audio id="incorrectSound" src="sound/incorrect.wav"></audio>
+    <audio id="congratSound" src="sound/congrat.wav"></audio>
+
+    <script>
+        class PrepositionGame {
+            constructor() {
+                this.gameBoard = document.getElementById('gameBoard');
+                this.correctCountElement = document.getElementById('correctCount');
+                this.incorrectCountElement = document.getElementById('incorrectCount');
+                this.messageElement = document.getElementById('message');
+                this.confettiCanvas = document.getElementById('confettiCanvas');
+                
+                // Аудиоэлементы
+                this.correctSound = document.getElementById('correctSound');
+                this.incorrectSound = document.getElementById('incorrectSound');
+                this.congratSound = document.getElementById('congratSound');
+
+                this.genitivePrepositions = ['без', 'у', 'до', 'от', 'с', 'около', 'из', 'возле', 'после', 'для', 'вокруг'];
+                this.otherPrepositions = ['в', 'на', 'по', 'о', 'про', 'за', 'над', 'под', 'перед', 'при', 'через', 'к', 'об'];
+                
+                this.correctCount = 0;
+                this.incorrectCount = 0;
+                this.gameActive = false;
+                this.genitivePath = [];
+                this.selectedSquares = new Set();
+                
+                this.colors = [
+                    'linear-gradient(135deg, #FF6B6B, #FF8E53)',
+                    'linear-gradient(135deg, #4ea5cdff, #fdff73ff)',
+                    'linear-gradient(135deg, #FFD166, #FF9A76)',
+                    'linear-gradient(135deg, #5702b1ff, #ca25fcff)',
+                    'linear-gradient(135deg, #FF9A8B, #f95353ff)',
+                    'linear-gradient(135deg, #4273e6ff, #54a5fcff)',
+                    'linear-gradient(135deg, #FFD3A5, #fd8d65ff)'
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                document.getElementById('startBtn').addEventListener('click', () => this.startGame());
+                document.getElementById('refreshBtn').addEventListener('click', () => this.refreshGame());
+                document.getElementById('resultBtn').addEventListener('click', () => this.showResult());
+                
+                this.confettiCanvas.width = window.innerWidth;
+                this.confettiCanvas.height = window.innerHeight;
+            }
+            
+            startGame() {
+                this.gameActive = true;
+                this.correctCount = 0;
+                this.incorrectCount = 0;
+                this.selectedSquares.clear();
+                this.updateScore();
+                this.createGameBoard();
+                this.hideMessage();
+            }
+            
+            refreshGame() {
+                this.startGame();
+            }
+            
+            showResult() {
+                alert(`Результат:\nПравильно: ${this.correctCount}\nНеправильно: ${this.incorrectCount}`);
+            }
+            
+            createGameBoard() {
+                this.gameBoard.innerHTML = '';
+                this.genitivePath = this.generateGenitivePath();
+                
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < 7; col++) {
+                        const index = row * 7 + col;
+                        const square = document.createElement('div');
+                        square.className = 'square';
+                        
+                        const isGenitive = this.genitivePath.some(coord => 
+                            coord.row === row && coord.col === col
+                        );
+                        
+                        if (isGenitive) {
+                            square.textContent = this.getRandomPreposition(this.genitivePrepositions);
+                            square.dataset.genitive = 'true';
+                        } else {
+                            square.textContent = this.getRandomPreposition(this.otherPrepositions);
+                            square.dataset.genitive = 'false';
+                        }
+                        
+                        square.style.background = this.colors[Math.floor(Math.random() * this.colors.length)];
+                        square.addEventListener('click', () => this.handleSquareClick(square, index));
+                        this.gameBoard.appendChild(square);
+                    }
+                }
+            }
+            
+            generateGenitivePath() {
+                const path = [];
+                let row = 0;
+                let col = 0;
+                
+                while (row < 5 && col < 7) {
+                    path.push({ row, col });
+                    
+                    if (Math.random() > 0.5 && row < 4) {
+                        row++;
+                    } else if (col < 6) {
+                        col++;
+                    } else {
+                        row++;
+                    }
+                }
+                
+                return path;
+            }
+            
+            getRandomPreposition(prepositions) {
+                return prepositions[Math.floor(Math.random() * prepositions.length)];
+            }
+            
+            playSound(audioElement) {
+                // Сброс и воспроизведение с начала
+                audioElement.currentTime = 0;
+                audioElement.play().catch(e => {
+                    console.warn("Звук не воспроизведён:", e);
+                });
+            }
+            
+            handleSquareClick(square, index) {
+                if (!this.gameActive || this.selectedSquares.has(index)) return;
+                
+                const isGenitive = square.dataset.genitive === 'true';
+                
+                if (isGenitive) {
+                    this.correctCount++;
+                    square.classList.add('correct');
+                    this.selectedSquares.add(index);
+                    this.playSound(this.correctSound);
+                    
+                    if (this.selectedSquares.size === this.genitivePath.length) {
+                        this.endGame();
+                    }
+                } else {
+                    this.incorrectCount++;
+                    square.classList.add('incorrect');
+                    this.playSound(this.incorrectSound);
+                    
+                    setTimeout(() => {
+                        square.classList.remove('incorrect');
+                    }, 500);
+                }
+                
+                this.updateScore();
+            }
+            
+            updateScore() {
+                this.correctCountElement.textContent = this.correctCount;
+                this.incorrectCountElement.textContent = this.incorrectCount;
+            }
+            
+            endGame() {
+                this.gameActive = false;
+                this.showMessage('Молодец!');
+                this.playSound(this.congratSound);
+                this.createConfetti();
+            }
+            
+            showMessage(text) {
+                this.messageElement.textContent = text;
+                this.messageElement.classList.add('show');
+            }
+            
+            hideMessage() {
+                this.messageElement.classList.remove('show');
+            }
+            
+            createConfetti() {
+                const ctx = this.confettiCanvas.getContext('2d');
+                const confettiCount = 200;
+                const confetti = [];
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    confetti.push({
+                        x: Math.random() * this.confettiCanvas.width,
+                        y: Math.random() * this.confettiCanvas.height - this.confettiCanvas.height,
+                        radius: Math.random() * 10 + 5,
+                        color: this.getRandomColor(),
+                        speed: Math.random() * 3 + 2,
+                        rotation: Math.random() * 360,
+                        rotationSpeed: Math.random() * 10 - 5
+                    });
+                }
+                
+                const animate = () => {
+                    ctx.clearRect(0, 0, this.confettiCanvas.width, this.confettiCanvas.height);
+                    
+                    let stillFalling = false;
+                    
+                    confetti.forEach(particle => {
+                        particle.y += particle.speed;
+                        particle.rotation += particle.rotationSpeed;
+                        
+                        if (particle.y < this.confettiCanvas.height) {
+                            stillFalling = true;
+                        }
+                        
+                        ctx.save();
+                        ctx.translate(particle.x, particle.y);
+                        ctx.rotate(particle.rotation * Math.PI / 180);
+                        ctx.fillStyle = particle.color;
+                        ctx.fillRect(-particle.radius/2, -particle.radius/2, particle.radius, particle.radius);
+                        ctx.restore();
+                    });
+                    
+                    if (stillFalling) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        setTimeout(() => {
+                            ctx.clearRect(0, 0, this.confettiCanvas.width, this.confettiCanvas.height);
+                        }, 2000);
+                    }
+                };
+                
+                animate();
+            }
+
+            getRandomColor() {
+                const colorStr = this.colors[Math.floor(Math.random() * this.colors.length)];
+                // Извлекаем второй цвет из градиента (пример: "#FF8E53")
+                const match = colorStr.match(/#[0-9a-fA-F]{6,8}/g);
+                return match && match[1] ? match[1] : '#FFD700';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new PrepositionGame();
+        });
+    </script>
+</body>
+</html>
