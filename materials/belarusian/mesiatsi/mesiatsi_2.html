@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="be">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Месяцы у годзе - Беларуская мова</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+            min-height: 150vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0 #ffd166;
+            font-size: 2rem;
+            margin: 5px 0;
+            text-align: center;
+        }
+        
+        .instructions {
+            background-color: #ffd166;
+            padding: 8px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+        }
+        
+        .game-container {
+            display: flex;
+			height: 500px;
+            width: 100%;
+            max-width: 1200px;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .drop-zones-container {
+            flex: 1;
+			min-width: 300px;
+            background-color: #ffd166;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .months-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #ffd166;
+            padding: 15px;
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .drop-zone {
+            height: 50px;
+            background-color: #ff9e7d;
+            border: 3px dashed #ff6b6b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.highlight {
+            background-color: #ffcc5c;
+            border-color: #ff9e00;
+            transform: scale(1.02);
+        }
+        
+        .drop-zone.filled {
+            background-color: #a8e6cf;
+            border: 3px solid #06d6a0;
+        }
+        
+        .month-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .month-item {
+            height: 50px;
+            background-color: #06d6a0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            text-align: center;
+            padding: 0 8px;
+        }
+        
+        .month-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .month-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+        
+        .month-info {
+            width: 100%;
+            max-width: 1200px;
+            background-color: #ffd166;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .month-info.active {
+            display: block;
+        }
+        
+        .month-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .month-detail {
+            background-color: #a8e6cf;
+            padding: 12px;
+            border-radius: 12px;
+            border-left: 5px solid #06d6a0;
+            font-size: 0.9rem;
+        }
+        
+        .month-detail h3 {
+            margin-top: 0;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+        
+        .month-detail .days {
+            font-weight: bold;
+            color: #118ab2;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .poem {
+            font-style: italic;
+            color: #333;
+            line-height: 1.3;
+            font-size: 0.85rem;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #checkBtn {
+            background-color: #06d6a0;
+        }
+        
+        #checkBtn:hover {
+            background-color: #05c48f;
+        }
+        
+        #resetBtn {
+            background-color: #118ab2;
+        }
+        
+        #resetBtn:hover {
+            background-color: #0f7a9e;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            display: none;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .result.success {
+            background-color: #a8e6cf;
+            color: #06d6a0;
+            display: block;
+        }
+        
+        .result.error {
+            background-color: #ffccd5;
+            color: #ff6b6b;
+            display: block;
+        }
+        
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .drop-zones-container, .months-container {
+                max-height: 250px;
+            }
+            
+            .month-details {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .drop-zones-container, .months-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .month-details {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .instructions {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Месяцы у годзе</h1>
+    
+    <div class="instructions">
+        <p>Перацягніце назвы месяцаў на правільныя пранумараваныя месцы!</p>
+    </div>
+    
+    <div class="game-container">
+        <div class="drop-zones-container" id="dropZonesContainer">
+            <h2 style="grid-column: 1 / -1; text-align: center; margin: 0 0 10px 0; color: #ff6b6b;">Парадак месяцаў</h2>
+            <!-- Drop zones will be generated here -->
+        </div>
+        
+        <div class="months-container" id="monthsContainer">
+            <h2 style="grid-column: 1 / -1; text-align: center; margin: 0 0 10px 0; color: #ff6b6b;">Месяцы для перацягвання</h2>
+            <!-- Month items will be generated here -->
+        </div>
+    </div>
+    
+    <div class="month-info" id="monthInfo">
+        <h2 style="text-align: center; color: #ff6b6b; margin: 0 0 10px 0;">Цікавасці пра месяцы</h2>
+        <div class="month-details" id="monthDetails">
+            <!-- Month details will be generated here -->
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="checkBtn">Праверыць адказ</button>
+        <button id="resetBtn">Пачаць нанова</button>
+    </div>
+    
+    <div class="result" id="result"></div>
+    
+    <canvas id="confettiCanvas"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Белорусские названия месяцев
+            const months = [
+                { name: "Студзень", days: 31 },
+                { name: "Люты", days: 28 },
+                { name: "Сакавік", days: 31 },
+                { name: "Красавік", days: 30 },
+                { name: "Травень", days: 31 },
+                { name: "Чэрвень", days: 30 },
+                { name: "Ліпень", days: 31 },
+                { name: "Жнівень", days: 31 },
+                { name: "Верасень", days: 30 },
+                { name: "Кастрычнік", days: 31 },
+                { name: "Лістапад", days: 30 },
+                { name: "Снежань", days: 31 }
+            ];
+            
+            // Стихи про каждый месяц
+            const monthPoems = [
+                "Студзень - мароз, сняжок ляжыць,\nНовы год нас частуе, дзівуе.\nСнегавiк смешны стаiць,\nЗiма ў поўнай сiле пануе.",
+                "Люты - зiмы апошнi месяц,\nМарозы ўсё яшчэ трымаюць.\nАле ўжо сонейка свяціць ясней,\nВясну з сабой яны спазняюць.",
+                "Сакавік - вясны пачатак,\nСняжок растае, цячучы вадой.\nПтушкі вяртаюцца з выраю,\nІ лес абуджаецца вясной.",
+                "Красавiк - усё красуе,\nДрэвы пускаюць першы ліст.\nКветкi розныя цвітуць,\nІ сонца грэе ўжо даўно, як крэмній.",
+                "Травень - месяц майскіх кветак,\nУсё зелянее, пахне трава.\nСвята Перамогi мы святкуем,\nІ вясна ў поўнай сваёй красе.",
+                "Чэрвень - лета пачынаецца,\nСамы доўгі дзень у годзе.\nКаникулы, смех, забавы,\nУсе на прыродзе, ў агародзе.",
+                "Ліпень - сярэдзiна лета,\nСонца пячэ, спякота.\nЯгады, грыбы, купанне,\nАдпачынак - проста соладка!",
+                "Жнівень - жніво, ураджай,\nПоле поўнае дабрыняў.\nСонейка яшчэ грэе,\nАле ўжо восень не за гарамі.",
+                "Верасень - восень прыходзiць,\nЛiсце жоўцее, ападае.\nШкола клiча дзяцей,\nВучоба зноў пачынаецца.",
+                "Кастрычнік - залатая восень,\nЛiсце ўсё розных колераў.\nДажджы, хмары, вецер свежы,\nПрырода рыхтуецца да зімы.",
+                "Лістапад - апошнія лісты,\nДрэвы голыя, сумна стаяць.\nХоладна, мароз па-ранняму,\nЗіма вось-вось прыйдзе, каб панаваць.",
+                "Снежань - зіма, мароз, снягi,\nСвяткі, Каляды, падарункі.\nГод завяршаецца прыгожа,\nНовы чакае нас з табой."
+            ];
+            
+            const dropZonesContainer = document.getElementById('dropZonesContainer');
+            const monthsContainer = document.getElementById('monthsContainer');
+            const monthInfo = document.getElementById('monthInfo');
+            const monthDetails = document.getElementById('monthDetails');
+            const checkBtn = document.getElementById('checkBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const result = document.getElementById('result');
+            const confettiCanvas = document.getElementById('confettiCanvas');
+            
+            let draggedMonth = null;
+            let correctOrder = false;
+            
+            // Создание зон для перетаскивания
+            for (let i = 0; i < 12; i++) {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.dataset.order = i + 1;
+                dropZone.innerHTML = `<span class="month-number">${i + 1}</span> <span class="month-name"></span>`;
+                dropZonesContainer.appendChild(dropZone);
+                
+                // Добавляем обработчики событий для зон
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('dragenter', handleDragEnter);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+                dropZone.addEventListener('drop', handleDrop);
+            }
+            
+            // Создание перетаскиваемых элементов месяцев
+            const shuffledMonths = [...months].sort(() => Math.random() - 0.5);
+            
+            shuffledMonths.forEach((month, index) => {
+                const monthElement = document.createElement('div');
+                monthElement.className = 'month-item';
+                monthElement.textContent = month.name;
+                monthElement.draggable = true;
+                monthElement.dataset.index = index;
+                monthElement.dataset.name = month.name;
+                
+                monthElement.addEventListener('dragstart', handleDragStart);
+                monthElement.addEventListener('dragend', handleDragEnd);
+                
+                monthsContainer.appendChild(monthElement);
+            });
+            
+            // Обработчики событий для перетаскивания
+            function handleDragStart(e) {
+                draggedMonth = this;
+                this.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', this.dataset.name);
+            }
+            
+            function handleDragEnd() {
+                this.classList.remove('dragging');
+                draggedMonth = null;
+                
+                // Убираем подсветку со всех зон
+                document.querySelectorAll('.drop-zone').forEach(zone => {
+                    zone.classList.remove('highlight');
+                });
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+            }
+            
+            function handleDragEnter(e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            }
+            
+            function handleDragLeave() {
+                this.classList.remove('highlight');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                
+                if (draggedMonth) {
+                    // Проверяем, не занята ли уже зона
+                    if (!this.querySelector('.month-name').textContent) {
+                        this.querySelector('.month-name').textContent = draggedMonth.textContent;
+                        this.dataset.month = draggedMonth.dataset.name;
+                        this.classList.add('filled');
+                        draggedMonth.style.visibility = 'hidden';
+                    }
+                }
+            }
+            
+            // Проверка правильности расстановки
+            checkBtn.addEventListener('click', function() {
+                const dropZones = document.querySelectorAll('.drop-zone');
+                let allFilled = true;
+                let correct = true;
+                
+                for (let i = 0; i < dropZones.length; i++) {
+                    const zone = dropZones[i];
+                    const monthName = zone.dataset.month;
+                    
+                    if (!monthName) {
+                        allFilled = false;
+                        break;
+                    }
+                    
+                    if (monthName !== months[i].name) {
+                        correct = false;
+                    }
+                }
+                
+                if (!allFilled) {
+                    result.textContent = "Спачатку размясціце ўсе месяцы!";
+                    result.className = "result error";
+                    return;
+                }
+                
+                if (correct) {
+                    result.textContent = "Віншую! Вы правільна размясцілі ўсе месяцы!";
+                    result.className = "result success";
+                    monthInfo.classList.add('active');
+                    showMonthDetails();
+                    createConfetti();
+                    correctOrder = true;
+                } else {
+                    result.textContent = "Ёсць памылкі. Паспрабуйце яшчэ раз!";
+                    result.className = "result error";
+                    resetGame();
+                }
+            });
+            
+            // Сброс игры
+            resetBtn.addEventListener('click', resetGame);
+            
+            function resetGame() {
+                // Очищаем зоны
+                document.querySelectorAll('.drop-zone').forEach(zone => {
+                    zone.querySelector('.month-name').textContent = '';
+                    zone.classList.remove('filled');
+                    delete zone.dataset.month;
+                });
+                
+                // Показываем все месяцы
+                document.querySelectorAll('.month-item').forEach(month => {
+                    month.style.visibility = 'visible';
+                });
+                
+                // Скрываем информацию о месяцах и результат
+                monthInfo.classList.remove('active');
+                result.className = "result";
+                result.textContent = "";
+                
+                // Останавливаем конфетти
+                stopConfetti();
+                correctOrder = false;
+            }
+            
+            // Показать информацию о месяцах
+            function showMonthDetails() {
+                monthDetails.innerHTML = '';
+                
+                months.forEach((month, index) => {
+                    const detailElement = document.createElement('div');
+                    detailElement.className = 'month-detail';
+                    
+                    detailElement.innerHTML = `
+                        <h3>${month.name}</h3>
+                        <div class="days">Колькасць дзён: ${month.days}</div>
+                        <div class="poem">${monthPoems[index].replace(/\n/g, '<br>')}</div>
+                    `;
+                    
+                    monthDetails.appendChild(detailElement);
+                });
+            }
+            
+            // Конфетти эффект
+            let confettiAnimation;
+            
+            function createConfetti() {
+                const ctx = confettiCanvas.getContext('2d');
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+                confettiCanvas.style.display = 'block';
+                
+                const confettiPieces = [];
+                const colors = ['#ff6b6b', '#06d6a0', '#118ab2', '#ffd166', '#a8e6cf', '#ff9e7d'];
+                
+                // Создаем частицы конфетти
+                for (let i = 0; i < 150; i++) {
+                    confettiPieces.push({
+                        x: Math.random() * confettiCanvas.width,
+                        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                        size: Math.random() * 8 + 4,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        speed: Math.random() * 3 + 2,
+                        angle: Math.random() * 360,
+                        spin: Math.random() * 10 - 5
+                    });
+                }
+                
+                function drawConfetti() {
+                    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                    
+                    let activePieces = 0;
+                    
+                    confettiPieces.forEach(piece => {
+                        piece.y += piece.speed;
+                        piece.angle += piece.spin;
+                        
+                        if (piece.y < confettiCanvas.height) {
+                            activePieces++;
+                            
+                            ctx.save();
+                            ctx.translate(piece.x, piece.y);
+                            ctx.rotate(piece.angle * Math.PI / 180);
+                            ctx.fillStyle = piece.color;
+                            ctx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size);
+                            ctx.restore();
+                        }
+                    });
+                    
+                    if (activePieces > 0) {
+                        confettiAnimation = requestAnimationFrame(drawConfetti);
+                    } else {
+                        confettiCanvas.style.display = 'none';
+                    }
+                }
+                
+                drawConfetti();
+            }
+            
+            function stopConfetti() {
+                if (confettiAnimation) {
+                    cancelAnimationFrame(confettiAnimation);
+                    confettiCanvas.style.display = 'none';
+                }
+            }
+            
+            // Адаптация к изменению размера окна
+            window.addEventListener('resize', function() {
+                if (correctOrder) {
+                    stopConfetti();
+                    createConfetti();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
