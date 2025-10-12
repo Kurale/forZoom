@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хроно-Квест: Путешествие во времени</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #feca57 75%, #48c9b0 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .quiz-container {
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
+                        0 0 100px rgba(102, 126, 234, 0.5),
+                        inset 0 0 30px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+            margin-bottom: 10px;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8)); }
+            to { filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.8)); }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(240, 147, 251, 0.3));
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex: 1;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .score-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-label {
+            color: #a0a0ff;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            color: #ffffff;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question {
+            color: #ffffff;
+            font-size: 1.4em;
+            text-align: center;
+            line-height: 1.6;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .answer-btn {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(240, 147, 251, 0.2));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .answer-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.5);
+            border-color: #00ffff;
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #00ff88, #00ffff);
+            color: #000;
+            animation: pulse 0.5s ease;
+        }
+
+        .answer-btn.incorrect {
+            background: linear-gradient(135deg, #ff0066, #ff3366);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+        }
+
+        .start-screen, .end-screen {
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .start-btn, .restart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .start-btn:hover, .restart-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.7);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 30px currentColor;
+            pointer-events: none;
+            z-index: 1000;
+            animation: feedbackPop 1s ease forwards;
+        }
+
+        @keyframes feedbackPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            color: #00ffff;
+            font-weight: 700;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 999;
+        }
+
+        @keyframes particleAnimation {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .achievement {
+            position: fixed;
+            top: 20px;
+            right: -300px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+            transition: right 0.5s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            right: 20px;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            .question { font-size: 1.1em; }
+            .answer-btn { padding: 15px; font-size: 1em; }
+            .quiz-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="quiz-container">
+        <div class="timer hidden" id="timer">⏱️ <span id="timeValue">30</span></div>
+        
+        <div class="header">
+            <h1>🚀 ХРОНО-КВЕСТ 🕰️</h1>
+            <p style="color: #a0a0ff;">Путешествие сквозь века и эпохи!</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Очки</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Вопрос</div>
+                <div class="score-value" id="questionNumber">1/10</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Серия</div>
+                <div class="score-value" id="streak">0</div>
+            </div>
+        </div>
+
+        <div class="start-screen" id="startScreen">
+            <h2 style="color: #00ffff; margin-bottom: 20px;">🌟 Добро пожаловать в путешествие во времени! 🌟</h2>
+            <p style="color: #ffffff; margin-bottom: 20px; line-height: 1.6;">
+                Готов проверить свои знания о датах, веках и исторических эпохах?<br>
+                Отвечай правильно, собирай очки и становись мастером времени!
+            </p>
+            <button class="start-btn" onclick="startQuiz()">НАЧАТЬ ПУТЕШЕСТВИЕ</button>
+        </div>
+
+        <div class="question-container hidden" id="questionContainer">
+            <div class="question" id="questionText"></div>
+        </div>
+
+        <div class="answers-grid hidden" id="answersGrid"></div>
+
+        <div class="end-screen hidden" id="endScreen">
+            <h2 style="color: #00ffff; margin-bottom: 20px;">🎉 Путешествие завершено! 🎉</h2>
+            <div style="color: #ffffff; font-size: 1.5em; margin-bottom: 20px;">
+                Твой результат: <span id="finalScore" style="color: #ffff00; font-weight: 700;"></span> очков
+            </div>
+            <div id="resultMessage" style="color: #ffffff; margin-bottom: 30px; font-size: 1.2em;"></div>
+            <button class="restart-btn" onclick="restartQuiz()">ПОПРОБОВАТЬ СНОВА</button>
+        </div>
+    </div>
+
+    <script>
+        // Звуковые эффекты через Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(frequency, duration, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            playSound(523, 0.1); // C5
+            setTimeout(() => playSound(659, 0.1), 100); // E5
+            setTimeout(() => playSound(784, 0.2), 200); // G5
+        }
+
+        function playIncorrectSound() {
+            playSound(200, 0.3, 'sawtooth');
+        }
+
+        function playClickSound() {
+            playSound(800, 0.05);
+        }
+
+        function playWinSound() {
+            const notes = [523, 587, 659, 698, 784, 880, 988, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.2), i * 100);
+            });
+        }
+
+        // База вопросов
+        const questions = [
+    {
+        "question": "В каком веке полетел в космос Пётр Климук (1973 год)?",
+        "answers": ["20-й век", "21-й век", "19-й век", "22-й век"],
+        "correct": 0
+    },
+    {
+        "question": "В каком веке в летописи впервые упомянут Минск (1067 год)?",
+        "answers": ["10-й век", "11-й век", "12-й век", "13-й век"],
+        "correct": 1
+    },
+    {
+        "question": "В каком веке родился Франциск Скорина (около 1490 года)?",
+        "answers": ["14-й век", "15-й век", "16-й век", "17-й век"],
+        "correct": 1
+    },
+    {
+        "question": "Какой месяц в високосном году имеет 29 дней?",
+        "answers": ["Январь", "Февраль", "Март", "Апрель"],
+        "correct": 1
+    },
+    {
+        "question": "Сколько дней в декабре?",
+        "answers": ["28", "29", "30", "31"],
+        "correct": 3
+    },
+    {
+        "question": "Сколько лет составляет один век?",
+        "answers": ["10", "50", "100", "1000"],
+        "correct": 2
+    },
+    {
+        "question": "К какому веку относится 587 год?",
+        "answers": ["5-й век", "6-й век", "7-й век", "4-й век"],
+        "correct": 1
+    },
+    {
+        "question": "Сколько дней в високосном году?",
+        "answers": ["360", "365", "366", "364"],
+        "correct": 2
+    },
+    {
+        "question": "Сколько месяцев длится одна пора года?",
+        "answers": ["2", "3", "4", "6"],
+        "correct": 1
+    },
+    {
+        "question": "К какому веку относится 2000 год?",
+        "answers": ["20-й век", "21-й век", "22-й век", "19-й век"],
+        "correct": 0
+    }
+];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let streak = 0;
+        let timer = null;
+        let timeLeft = 30;
+        let isAnswering = false;
+
+        // Создание звездного фона
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Создание частиц при правильном ответе
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.innerHTML = '✨';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.setProperty('--y', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.animation = 'particleAnimation 1s ease forwards';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        // Показ обратной связи
+        function showFeedback(text, color) {
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+            feedback.textContent = text;
+            feedback.style.color = color;
+            document.body.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 1000);
+        }
+
+        // Показ достижения
+        function showAchievement(text) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = '🏆 ' + text;
+            document.body.appendChild(achievement);
+            setTimeout(() => achievement.classList.add('show'), 100);
+            setTimeout(() => {
+                achievement.classList.remove('show');
+                setTimeout(() => achievement.remove(), 500);
+            }, 3000);
+        }
+
+        function startQuiz() {
+            playClickSound();
+            currentQuestion = 0;
+            score = 0;
+            streak = 0;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('answersGrid').classList.remove('hidden');
+            document.getElementById('timer').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            isAnswering = false;
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('questionNumber').textContent = `${currentQuestion + 1}/${questions.length}`;
+            
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn';
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(index);
+                answersGrid.appendChild(button);
+            });
+
+            updateProgress();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 30;
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswer(-1);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timeValue').textContent = timeLeft;
+            if (timeLeft <= 10) {
+                document.getElementById('timer').style.color = '#ff3366';
+            } else {
+                document.getElementById('timer').style.color = '#00ffff';
+            }
+        }
+
+        function checkAnswer(answerIndex) {
+            if (isAnswering) return;
+            isAnswering = true;
+            clearInterval(timer);
+            
+            const question = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.answer-btn');
+            
+            if (answerIndex === -1) {
+                // Время вышло
+                buttons.forEach(btn => btn.classList.add('incorrect'));
+                showFeedback('⏰ Время вышло!', '#ff3366');
+                playIncorrectSound();
+                streak = 0;
+                updateScore();
+            } else {
+                if (answerIndex === question.correct) {
+                    buttons[answerIndex].classList.add('correct');
+                    const points = Math.max(10, timeLeft * 2);
+                    score += points;
+                    streak++;
+                    showFeedback('✨ Правильно!', '#00ff88');
+                    playCorrectSound();
+                    
+                    // Создание частиц
+                    const rect = buttons[answerIndex].getBoundingClientRect();
+                    createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    
+                    // Проверка достижений
+                    if (streak === 3) {
+                        showAchievement('Серия из 3 правильных!');
+                        score += 20;
+                    } else if (streak === 5) {
+                        showAchievement('Серия из 5 правильных! Супер!');
+                        score += 50;
+                    }
+                } else {
+                    buttons[answerIndex].classList.add('incorrect');
+                    buttons[question.correct].classList.add('correct');
+                    showFeedback('❌ Неправильно', '#ff3366');
+                    playIncorrectSound();
+                    streak = 0;
+                }
+                updateScore();
+            }
+            
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion();
+            }, 2000);
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function endQuiz() {
+            clearInterval(timer);
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('answersGrid').classList.add('hidden');
+            document.getElementById('timer').classList.add('hidden');
+            document.getElementById('endScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            
+            let message = '';
+            if (score >= 200) {
+                message = '🌟 Легендарный путешественник во времени! Ты настоящий мастер истории!';
+            } else if (score >= 150) {
+                message = '⭐ Отличный результат! Ты хорошо знаешь историю!';
+            } else if (score >= 100) {
+                message = '👍 Хорошая работа! Продолжай изучать историю!';
+            } else {
+                message = '💪 Не сдавайся! История ждет своих исследователей!';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+            playWinSound();
+        }
+
+        function restartQuiz() {
+            playClickSound();
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            updateScore();
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // Инициализация
+        createStars();
+        updateScore();
+    </script>
+</body>
+</html>
