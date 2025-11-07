@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тренажёр: Заполни окончание "который"</title>
+  <style>
+    body {
+      font-family: "Roboto", Tahoma, sans-serif;
+      background-color: #f0f4fb;
+      color: #333;
+      padding: 5px;
+      line-height: 2;
+    }
+    h1 {
+      text-align: center;
+      color: #1a3e6e;
+    }
+    .stats {
+      margin: 10px auto;
+      text-align: center;
+      font-weight: bold;
+      font-size: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+	  font-size: 24px;
+    }
+    td {
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      vertical-align: top;
+      width: 33%;
+    }
+    input[type="text"] {
+      font-size: 24px;
+      padding: 2px;
+      border: 1px solid #999;
+      border-radius: 4px;
+      text-align: center;
+    }
+    input.correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    input.incorrect {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    .keyboard {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .keyboard button {
+      margin: 15px;
+      padding: 20px 28px;
+      font-size: 24px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .keyboard button:hover {
+      background-color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+<h1>Тренажёр: Заполни окончания местоимения "который"</h1>
+<div class="stats">
+  Правильных ответов: <span id="correctCount">0</span> из <span id="totalCount">0</span>
+</div>
+
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <strong>Именительный</strong><br>
+        Это человек, КОТОР<input type="text" data-answer="ЫЙ" maxlength="3"> работает в банке.<br>
+        Это девушка, КОТОР<input type="text" data-answer="АЯ" maxlength="3"> говорит по-английски.<br>
+        Это пальто, КОТОР<input type="text" data-answer="ОЕ" maxlength="2"> висит в шкафу.<br>
+        Это люди, КОТОР<input type="text" data-answer="ЫЕ" maxlength="2"> помогают нам.
+      </td>
+      <td>
+        <strong>Винительный</strong><br>
+        Это стол, КОТОР<input type="text" data-answer="ЫЙ" maxlength="3"> стоит в углу.<br>
+        Это человек, КОТОР<input type="text" data-answer="ОГО" maxlength="3"> я знаю.<br>
+        Это девушка, КОТОР<input type="text" data-answer="УЮ" maxlength="3"> рисует художник.<br>
+        Это пальто, КОТОР<input type="text" data-answer="ОЕ" maxlength="2"> ты купил.<br>
+        Это люди, КОТОР<input type="text" data-answer="ЫХ" maxlength="3"> я пригласил.
+      </td>
+      <td>
+        <strong>Родительный</strong><br>
+        Это человек, у КОТОР<input type="text" data-answer="ОГО" maxlength="3"> есть семья.<br>
+        Это девушка, КОТОР<input type="text" data-answer="ОЙ" maxlength="2"> не было на уроке.<br>
+        Это пальто, около КОТОР<input type="text" data-answer="ОГО" maxlength="3"> висел костюм.<br>
+        Это люди, без КОТОР<input type="text" data-answer="ЫХ" maxlength="3"> нельзя начинать праздник.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Дательный</strong><br>
+        Это человек, КОТОР<input type="text" data-answer="ОМУ" maxlength="4"> я даю медаль.<br>
+        Это девушка, к КОТОР<input type="text" data-answer="ОЙ" maxlength="2"> мы идём в гости.<br>
+        Это люди, КОТОР<input type="text" data-answer="ЫМ" maxlength="3"> плывёт лодка.
+      </td>
+      <td>
+        <strong>Творительный</strong><br>
+        Это человек, с КОТОР<input type="text" data-answer="ЫМ" maxlength="3"> я хочу познакомиться.<br>
+        Это девушка, над КОТОР<input type="text" data-answer="ОЙ" maxlength="2"> летает дрон.<br>
+        Это люди, с КОТОР<input type="text" data-answer="ЫМИ" maxlength="4"> он разговаривал.
+      </td>
+      <td>
+        <strong>Предложный</strong><br>
+        Это человек, о КОТОР<input type="text" data-answer="ОМ" maxlength="3"> спрашивает журналист.<br>
+        Это девушка, о КОТОР<input type="text" data-answer="ОЙ" maxlength="2"> ты мечтаешь.<br>
+        Это люди, о КОТОР<input type="text" data-answer="ЫХ" maxlength="3"> рассказывает спасатель.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="keyboard" id="keyboard"></div>
+
+<script>
+  const inputs = document.querySelectorAll('input[data-answer]');
+  const correctSpan = document.getElementById('correctCount');
+  const totalSpan = document.getElementById('totalCount');
+  let activeInput = null;
+
+  function updateStats() {
+    let correct = 0;
+    inputs.forEach(input => {
+      if (input.classList.contains('correct')) correct++;
+    });
+    correctSpan.textContent = correct;
+    totalSpan.textContent = inputs.length;
+  }
+
+  function checkInput() {
+    const answer = this.dataset.answer.toLowerCase().trim();
+    const userInput = this.value.toLowerCase().trim();
+
+    if (userInput === answer) {
+      this.classList.remove('incorrect');
+      this.classList.add('correct');
+      this.disabled = true;
+    } else {
+      this.classList.remove('correct');
+      this.classList.add('incorrect');
+    }
+    updateStats();
+  }
+
+  inputs.forEach(input => {
+    input.style.width = (input.dataset.answer.length * 1.2) + "em";
+    input.addEventListener('blur', checkInput);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkInput.call(this);
+      }
+    });
+    input.addEventListener('focus', () => {
+      activeInput = input;
+    });
+  });
+
+  // Создание виртуальной клавиатуры
+  const keyboardLayout = [
+    'Й','Ц','У','К','Е','Н','Г','Ш','Щ','З','Х','Ъ',
+    'Ф','Ы','В','А','П','Р','О','Л','Д','Ж','Э',
+    'Я','Ч','С','М','И','Т','Ь','Б','Ю','←'
+  ];
+
+  const keyboardContainer = document.getElementById('keyboard');
+  keyboardLayout.forEach(key => {
+    const btn = document.createElement('button');
+    btn.textContent = key;
+    btn.onclick = () => {
+      if (!activeInput || activeInput.disabled) return;
+      if (key === '←') {
+        activeInput.value = activeInput.value.slice(0, -1);
+      } else {
+        activeInput.value += key;
+      }
+      activeInput.focus();
+    };
+    keyboardContainer.appendChild(btn);
+  });
+
+  updateStats();
+</script>
+</body>
+</html>

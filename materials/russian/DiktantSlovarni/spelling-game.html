@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диктант - Сборка слов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto';
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            font-size: 2.5em;
+            color: #764ba2;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-display {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .word-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .word-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+
+        .speaker-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .speaker-btn:hover {
+            background: #ff5252;
+            transform: scale(1.1);
+        }
+
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+
+        .drop-zones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .drop-zone {
+            width: 60px;
+            height: 60px;
+            border: 3px dashed #764ba2;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .drop-zone.highlight {
+            border-color: #667eea;
+            background: #e3f2fd;
+            transform: scale(1.1);
+        }
+
+        .drop-zone.filled {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+
+        .drop-zone.preview {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+
+        .letter-tiles {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .letter-tile {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .letter-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .letter-tile:active {
+            transform: scale(0.95);
+        }
+
+        .letter-tile.selected {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: pulse-selected 1s infinite;
+        }
+
+        .letter-tile.used {
+            opacity: 0.3;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Comic Neue', cursive;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-check {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .message {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .message.success {
+            background: #e8f5e8;
+            color: #4caf50;
+            border: 2px solid #4caf50;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #f44336;
+            border: 2px solid #f44336;
+        }
+
+        .message.info {
+            background: #e3f2fd;
+            color: #2196f3;
+            border: 2px solid #2196f3;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        @keyframes pulse-selected {
+            0%, 100% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            .game-title {
+                font-size: 2em;
+            }
+            
+            .letter-tile, .drop-zone {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+            
+            .drop-zones, .letter-tiles {
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">📝 Диктант</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="word-display">
+            <div class="word-info">
+                <span class="word-number" id="wordNumber">Слово 1 из 10</span>
+                <button class="speaker-btn" id="speakerBtn" title="Прослушать слово">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+            
+            <div class="drop-zones" id="dropZones"></div>
+        </div>
+
+        <div class="letter-tiles" id="letterTiles"></div>
+
+        <div class="game-controls">
+            <button class="btn btn-check" id="checkBtn">Проверить</button>
+            <button class="btn btn-reset" id="resetBtn">Сбросить</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        class SpellingGame {
+            constructor() {
+                this.words = [
+    "антенна", "асфальт", "ещё", "камень", "компьютер",
+    "космос", "медаль", "мечтать", "мороженое", "однажды",
+    "океан", "олень", "оранжевый", "памятник", "пуговица",
+    "ребёнок", "тарелка", "телефон", "температура", "тракторист",
+    "транспорт", "фломастер", "фонарь", "якорь", "звезда"
+  ];
+                
+                this.extraLettersCount = 3;
+                this.currentWordIndex = 0;
+                this.currentWord = '';
+                this.currentLetters = [];
+                this.usedTiles = [];
+                this.selectedTile = null;
+                this.isTouch = 'ontouchstart' in window;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.loadWords();
+            }
+
+            initializeElements() {
+                this.dropZonesContainer = document.getElementById('dropZones');
+                this.letterTilesContainer = document.getElementById('letterTiles');
+                this.speakerBtn = document.getElementById('speakerBtn');
+                this.checkBtn = document.getElementById('checkBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.messageDiv = document.getElementById('message');
+                this.wordNumberSpan = document.getElementById('wordNumber');
+                this.progressFill = document.getElementById('progressFill');
+            }
+
+            bindEvents() {
+                this.speakerBtn.addEventListener('click', () => this.speakCurrentWord());
+                this.checkBtn.addEventListener('click', () => this.checkWord());
+                this.resetBtn.addEventListener('click', () => this.resetCurrentWord());
+                
+                // Предотвращаем выделение текста на мобильных устройствах
+                document.addEventListener('selectstart', (e) => {
+                    if (e.target.closest('.letter-tile') || e.target.closest('.drop-zone')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            async loadWords() {
+                try {
+                    const response = await fetch('words.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.words = data.words || this.words;
+                    }
+                } catch (error) {
+                    console.log('Используется встроенный список слов');
+                }
+                
+                this.startNewGame();
+            }
+
+            startNewGame() {
+                this.currentWordIndex = 0;
+                this.nextWord();
+            }
+
+            nextWord() {
+                if (this.currentWordIndex >= this.words.length) {
+                    this.showMessage('Поздравляем! Вы завершили все слова!', 'success');
+                    this.checkBtn.disabled = true;
+                    return;
+                }
+
+                this.currentWord = this.words[this.currentWordIndex];
+                this.generateLetterTiles();
+                this.createDropZones();
+                this.updateProgress();
+                this.clearMessage();
+                this.usedTiles = [];
+                this.selectedTile = null;
+                
+                setTimeout(() => this.speakCurrentWord(), 500);
+            }
+
+            generateLetterTiles() {
+                this.letterTilesContainer.innerHTML = '';
+                this.currentLetters = [];
+                
+                // Добавляем правильные буквы
+                const correctLetters = this.currentWord.split('');
+                this.currentLetters.push(...correctLetters);
+                
+                // Добавляем лишние буквы
+                const russianLetters = 'абивгдеауиёиаиоийоаиеаеоасоиоишщиеъьэуя';
+                while (this.currentLetters.length < this.currentWord.length + this.extraLettersCount) {
+                    const randomLetter = russianLetters[Math.floor(Math.random() * russianLetters.length)];
+                    if (!this.currentLetters.includes(randomLetter) || Math.random() > 0.7) {
+                        this.currentLetters.push(randomLetter);
+                    }
+                }
+                
+                // Перемешиваем буквы
+                this.shuffleArray(this.currentLetters);
+                
+                // Создаем плитки с буквами
+                this.currentLetters.forEach((letter, index) => {
+                    const tile = this.createLetterTile(letter, index);
+                    this.letterTilesContainer.appendChild(tile);
+                });
+            }
+
+            createLetterTile(letter, index) {
+                const tile = document.createElement('div');
+                tile.className = 'letter-tile';
+                tile.textContent = letter;
+                tile.dataset.letter = letter;
+                tile.dataset.index = index;
+                
+                // Добавляем обработчики для двухкликовой системы
+                if (this.isTouch) {
+                    tile.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.handleTileClick(tile);
+                    });
+                } else {
+                    tile.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.handleTileClick(tile);
+                    });
+                }
+                
+                return tile;
+            }
+
+            createDropZones() {
+                this.dropZonesContainer.innerHTML = '';
+                
+                for (let i = 0; i < this.currentWord.length; i++) {
+                    const zone = document.createElement('div');
+                    zone.className = 'drop-zone';
+                    zone.dataset.position = i;
+                    
+                    // Добавляем обработчики для зон
+                    if (this.isTouch) {
+                        zone.addEventListener('touchstart', (e) => {
+                            e.preventDefault();
+                            this.handleZoneClick(zone);
+                        });
+                    } else {
+                        zone.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.handleZoneClick(zone);
+                        });
+                    }
+                    
+                    this.dropZonesContainer.appendChild(zone);
+                }
+                
+                this.wordNumberSpan.textContent = `Слово ${this.currentWordIndex + 1} из ${this.words.length}`;
+            }
+
+            handleTileClick(tile) {
+                if (tile.classList.contains('used')) {
+                    return;
+                }
+
+                // Если плитка уже выбрана, снимаем выбор
+                if (this.selectedTile === tile) {
+                    this.deselectTile();
+                    return;
+                }
+
+                // Снимаем выбор с предыдущей плитки
+                this.deselectTile();
+
+                // Выбираем новую плитку
+                this.selectedTile = tile;
+                tile.classList.add('selected');
+                
+                // Подсвечиваем доступные зоны
+                this.highlightAvailableZones();
+            }
+
+            handleZoneClick(zone) {
+                if (!this.selectedTile) {
+                    return;
+                }
+
+                // Если зона уже занята, ничего не делаем
+                if (zone.classList.contains('filled')) {
+                    return;
+                }
+
+                // Помещаем выбранную плитку в зону
+                this.placeTileInZone(this.selectedTile, zone);
+                
+                // Снимаем выбор
+                this.deselectTile();
+            }
+
+            placeTileInZone(tile, zone) {
+                zone.textContent = tile.dataset.letter;
+                zone.classList.add('filled');
+                zone.dataset.letterIndex = tile.dataset.index;
+                
+                tile.classList.add('used');
+                tile.style.display = 'none';
+                
+                this.usedTiles.push(parseInt(tile.dataset.index));
+                
+                // Анимация успешного размещения
+                zone.classList.add('pulse');
+                setTimeout(() => zone.classList.remove('pulse'), 300);
+                
+                // Убираем подсветку зон
+                this.clearZoneHighlight();
+            }
+
+            deselectTile() {
+                if (this.selectedTile) {
+                    this.selectedTile.classList.remove('selected');
+                    this.selectedTile = null;
+                    this.clearZoneHighlight();
+                }
+            }
+
+            highlightAvailableZones() {
+                const dropZones = this.dropZonesContainer.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    if (!zone.classList.contains('filled')) {
+                        zone.classList.add('highlight');
+                    }
+                });
+            }
+
+            clearZoneHighlight() {
+                const dropZones = this.dropZonesContainer.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    zone.classList.remove('highlight');
+                });
+            }
+
+            resetCurrentWord() {
+                // Очищаем зоны
+                const dropZones = this.dropZonesContainer.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    zone.textContent = '';
+                    zone.classList.remove('filled');
+                    delete zone.dataset.letterIndex;
+                });
+                
+                // Возвращаем все плитки
+                const letterTiles = this.letterTilesContainer.querySelectorAll('.letter-tile');
+                letterTiles.forEach(tile => {
+                    tile.classList.remove('used');
+                    tile.style.display = 'flex';
+                });
+                
+                this.usedTiles = [];
+                this.deselectTile();
+                this.clearMessage();
+            }
+
+            checkWord() {
+                const dropZones = this.dropZonesContainer.querySelectorAll('.drop-zone');
+                const currentWordAttempt = Array.from(dropZones).map(zone => zone.textContent).join('');
+                
+                if (currentWordAttempt.length < this.currentWord.length) {
+                    this.showMessage('Соберите все буквы слова!', 'error');
+                    return;
+                }
+                
+                if (currentWordAttempt === this.currentWord) {
+                    this.showMessage('Отлично! Правильно!', 'success');
+                    this.checkBtn.disabled = true;
+                    
+                    // Анимация успеха
+                    dropZones.forEach(zone => {
+                        zone.classList.add('bounce');
+                    });
+                    
+                    setTimeout(() => {
+                        this.currentWordIndex++;
+                        this.checkBtn.disabled = false;
+                        this.nextWord();
+                    }, 2000);
+                } else {
+                    this.showMessage('Попробуйте ещё раз!', 'error');
+                    
+                    // Анимация ошибки
+                    dropZones.forEach(zone => {
+                        zone.classList.add('shake');
+                        setTimeout(() => zone.classList.remove('shake'), 500);
+                    });
+                    
+                    setTimeout(() => {
+                        this.resetCurrentWord();
+                    }, 1000);
+                }
+            }
+
+            speakCurrentWord() {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(this.currentWord);
+                    utterance.lang = 'ru-RU';
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1;
+                    
+                    // Попробуем найти русский голос
+                    const voices = speechSynthesis.getVoices();
+                    const russianVoice = voices.find(voice => voice.lang.startsWith('ru'));
+                    if (russianVoice) {
+                        utterance.voice = russianVoice;
+                    }
+                    
+                    speechSynthesis.speak(utterance);
+                    
+                    // Анимация динамика
+                    this.speakerBtn.classList.add('pulse');
+                    setTimeout(() => this.speakerBtn.classList.remove('pulse'), 300);
+                } else {
+                    this.showMessage('Ваш браузер не поддерживает синтез речи', 'info');
+                }
+            }
+
+            showMessage(text, type) {
+                this.messageDiv.textContent = text;
+                this.messageDiv.className = `message ${type}`;
+            }
+
+            clearMessage() {
+                this.messageDiv.textContent = '';
+                this.messageDiv.className = 'message';
+            }
+
+            updateProgress() {
+                const progress = (this.currentWordIndex / this.words.length) * 100;
+                this.progressFill.style.width = `${progress}%`;
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+        }
+
+        // Инициализация игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            new SpellingGame();
+        });
+
+        // Загрузка голосов для синтеза речи
+        if ('speechSynthesis' in window) {
+            speechSynthesis.addEventListener('voiceschanged', () => {
+                console.log('Голоса загружены');
+            });
+        }
+    </script>
+</body>
+</html>
