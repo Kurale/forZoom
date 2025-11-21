@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cardboard Labyrinth (SVG) — Interactive</title>
+<style>
+  :root{
+    --bg:#f6e9d6;
+    --paper:#f3e0c8;
+    --ink:#3b2f2a;
+    --accent:#ffd166;
+    --cardboard-edge:#d9b89a;
+    --cell-size:48px;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  .wrap{display:flex;flex-direction:column;gap:12px;align-items:center;padding:18px;}
+  header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  h1{margin:0;font-size:18px;color:var(--ink);}
+  .controls{display:flex;gap:8px;align-items:center;}
+  button, select, label{background:transparent;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;font-weight:600;color:var(--ink);cursor:pointer}
+  button:hover, select:hover{background:rgba(0,0,0,0.03);}
+  .small{padding:6px 8px;border-radius:8px;font-size:13px}
+  .board-wrap{background:transparent;padding:12px;border-radius:16px;box-shadow: 0 8px 18px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;}
+  svg{display:block;max-width:calc(100vw - 64px);height:auto}
+  .legend{font-size:13px;color:var(--ink);display:flex;gap:12px;align-items:center}
+  .hint{opacity:0.9;font-size:13px;color:#5a4a42}
+  footer{max-width:1100px;width:100%;display:flex;justify-content:space-between;align-items:center;color:#6c584b;font-size:13px;}
+  .btn-ghost{background:transparent;border:0;color:var(--ink);font-weight:700;padding:6px 8px}
+  .toggle{display:inline-flex;align-items:center;gap:8px}
+  input[type=range]{accent-color:var(--accent)}
+  @media (max-width:640px){
+    header{flex-direction:column;align-items:flex-start;gap:8px}
+    footer{flex-direction:column;align-items:flex-start;gap:8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Cardboard Labyrinth — Walk the path!</h1>
+    <div class="controls">
+      <label class="small">Size:
+        <select id="sizeSelect" aria-label="Select maze size">
+          <option value="9">9×9 (small)</option>
+          <option value="13" selected>13×13 (kid, comfy)</option>
+          <option value="17">17×17 (bigger)</option>
+          <option value="21">21×21 (challenging)</option>
+        </select>
+      </label>
+      <label class="small">False paths:
+        <select id="falsePathSelect" aria-label="Select false paths ratio">
+          <option value="0">None (perfect maze)</option>
+          <option value="0.1">Few (10%)</option>
+          <option value="0.15" selected>Medium (15%)</option>
+          <option value="0.25">Many (25%)</option>
+          <option value="0.35">Lots (35%)</option>
+        </select>
+      </label>
+      <button id="regen" class="small">New Maze</button>
+      <button id="showSolution" class="small">Show solution</button>
+      <button id="exportSVG" class="small">Export SVG</button>
+    </div>
+  </header>
+
+  <div class="board-wrap" id="boardWrap" role="application" aria-label="Labyrinth board">
+    <!-- SVG will be inserted here -->
+  </div>
+
+  <div style="max-width:1100px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+    <div class="legend">
+      <div class="hint">Use ← ↑ → ↓ or WASD to move. Tap adjacent tiles to move on touch.</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:13px;color:#6c584b">Start</div>
+      <svg width="28" height="20" viewBox="0 0 28 20" aria-hidden>
+        <rect x="1" y="2" width="24" height="14" rx="3" fill="#9ad3bc"/>
+        <path d="M5 10 L10 7 L10 13 Z" fill="#205072"/>
+      </svg>
+      <div style="font-size:13px;color:#6c584b">Exit</div>
+      <svg width="28" height="20" viewBox="0 0 28 20" aria-hidden>
+        <rect x="1" y="2" width="24" height="14" rx="3" fill="#ffd166"/>
+        <circle cx="14" cy="9" r="3" fill="#d65a31"/>
+      </svg>
+    </div>
+  </div>
+
+  <footer>
+    <div>Vector first: SVG paths & shapes are exportable for further vectorization.</div>
+    <div>© Labyrinth kit</div>
+  </footer>
+</div>
+
+<script>
+/*
+  Cardboard Labyrinth (single-file)
+  - Generates a perfect maze (unique solution)
+  - Renders via SVG (vector-friendly)
+  - Player moves only through open passages (keyboard/touch)
+  - Buttons: regenerate, show solution, export svg
+*/
+
+// ======== Maze generation: Prim's algorithm (perfect maze with many dead ends) ========
+function makeMaze(cols, rows, falsePathRatio = 0.15) {
+  // cells: each cell has walls: top,right,bottom,left (true = wall present)
+  const grid = Array(rows).fill(null).map(()=>Array(cols).fill(null));
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      grid[r][c] = {r,c,walls:[1,1,1,1],visited:false};
+    }
+  }
+
+  const neighbors = (cell) => {
+    const list = [];
+    const {r,c} = cell;
+    if (r>0) list.push({dir:0, cell:grid[r-1][c]});       // top
+    if (c<cols-1) list.push({dir:1, cell:grid[r][c+1]});  // right
+    if (r<rows-1) list.push({dir:2, cell:grid[r+1][c]});  // bottom
+    if (c>0) list.push({dir:3, cell:grid[r][c-1]});      // left
+    return list;
+  };
+
+  // Prim's algorithm implementation
+  const walls = []; // List of walls between visited and unvisited cells
+  const start = grid[0][0];
+  start.visited = true;
+  
+  // Add all walls of the starting cell to the wall list
+  const startNeighbors = neighbors(start);
+  startNeighbors.forEach(n => {
+    if (!n.cell.visited) {
+      walls.push({from: start, to: n.cell, dir: n.dir});
+    }
+  });
+  
+  while (walls.length > 0) {
+    // Pick a random wall from the list
+    const randomIndex = Math.floor(Math.random() * walls.length);
+    const wall = walls[randomIndex];
+    walls.splice(randomIndex, 1);
+    
+    // If only one of the cells is visited, carve a path
+    if (wall.from.visited && !wall.to.visited) {
+      // Remove the wall between the cells
+      wall.from.walls[wall.dir] = 0;
+      wall.to.walls[(wall.dir + 2) % 4] = 0;
+      
+      // Mark the new cell as visited
+      wall.to.visited = true;
+      
+      // Add all walls of the newly visited cell to the wall list
+      const newNeighbors = neighbors(wall.to);
+      newNeighbors.forEach(n => {
+        if (!n.cell.visited) {
+          walls.push({from: wall.to, to: n.cell, dir: n.dir});
+        }
+      });
+    }
+  }
+  
+  // mark all visited false to reuse if needed (we might run BFS for solution)
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) grid[r][c].visited=false;
+  return grid;
+}
+
+// Helper function to calculate distance between two cells using BFS
+function bfsDistance(grid, startPos, targetPos) {
+  const rows = grid.length, cols = grid[0].length;
+  const q = [];
+  const visited = Array(rows).fill(null).map(()=>Array(cols).fill(false));
+  const distance = Array(rows).fill(null).map(()=>Array(cols).fill(0));
+  
+  q.push(startPos);
+  visited[startPos.r][startPos.c] = true;
+  
+  while(q.length){
+    const cur = q.shift();
+    if(cur.r===targetPos.r && cur.c===targetPos.c) return distance[cur.r][cur.c];
+    
+    const cell = grid[cur.r][cur.c];
+    // check directions where wall is open
+    const dirs = [
+      {dr:-1,dc:0},{dr:0,dc:1},{dr:1,dc:0},{dr:0,dc:-1}
+    ];
+    for(let d=0;d<4;d++){
+      if(cell.walls[d]===0){
+        const nr=cur.r+dirs[d].dr, nc=cur.c+dirs[d].dc;
+        if(nr>=0 && nr<rows && nc>=0 && nc<cols && !visited[nr][nc]){
+          visited[nr][nc] = true;
+          distance[nr][nc] = distance[cur.r][cur.c] + 1;
+          q.push({r:nr,c:nc});
+        }
+      }
+    }
+  }
+  return Infinity; // No path found
+}
+
+// ======== Pathfinding (shortest path) ========
+function bfsPath(grid, startPos, targetPos) {
+  const rows = grid.length, cols = grid[0].length;
+  const q = [];
+  const came = Array(rows).fill(null).map(()=>Array(cols).fill(null));
+  q.push(startPos);
+  came[startPos.r][startPos.c]=true;
+  while(q.length){
+    const cur = q.shift();
+    if(cur.r===targetPos.r && cur.c===targetPos.c) break;
+    const cell = grid[cur.r][cur.c];
+    // check directions where wall is open
+    const dirs = [
+      {dr:-1,dc:0},{dr:0,dc:1},{dr:1,dc:0},{dr:0,dc:-1}
+    ];
+    for(let d=0;d<4;d++){
+      if(cell.walls[d]===0){
+        const nr=cur.r+dirs[d].dr, nc=cur.c+dirs[d].dc;
+        if(nr>=0 && nr<rows && nc>=0 && nc<cols && !came[nr][nc]){
+          came[nr][nc]= {r:cur.r,c:cur.c}; // came from
+          q.push({r:nr,c:nc});
+        }
+      }
+    }
+  }
+  // reconstruct path
+  if(!came[targetPos.r][targetPos.c]) return null;
+  const path = [];
+  let cur = targetPos;
+  while(!(cur.r===startPos.r && cur.c===startPos.c)){
+    path.push(cur);
+    const prev = came[cur.r][cur.c];
+    cur = {r:prev.r,c:prev.c};
+  }
+  path.push(startPos);
+  path.reverse();
+  return path;
+}
+
+// ======== SVG render & interaction ========
+const boardWrap = document.getElementById('boardWrap');
+const regenBtn = document.getElementById('regen');
+const showSolBtn = document.getElementById('showSolution');
+const exportBtn = document.getElementById('exportSVG');
+const sizeSelect = document.getElementById('sizeSelect');
+
+let maze = null;
+let cols = parseInt(sizeSelect.value), rows = cols;
+let cellSize = 48;
+let svgEl = null;
+let player = {r:0,c:0};
+let exitCell = null;
+let solutionPath = null;
+let showSolutionFlag = false;
+
+function buildAndRender(c,r, falsePathRatio = 0.15){
+  cols = c; rows = r;
+  maze = makeMaze(cols, rows, falsePathRatio);
+  player = {r:0,c:0};
+  exitCell = {r:rows-1,c:cols-1};
+  solutionPath = bfsPath(maze, player, exitCell);
+  renderSVG();
+}
+
+function renderSVG(){
+  // sizing
+  const padding = 16;
+  const width = cols * cellSize + padding*2;
+  const height = rows * cellSize + padding*2;
+  // remove existing
+  boardWrap.innerHTML = '';
+  // create svg
+  const svgns = "http://www.w3.org/2000/svg";
+  svgEl = document.createElementNS(svgns,'svg');
+  svgEl.setAttribute('width', Math.min(width, 960));
+  svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svgEl.setAttribute('role','img');
+  svgEl.setAttribute('aria-label','Cardboard labyrinth');
+  svgEl.style.maxWidth = '100%';
+  // defs: paper texture, shadow, stitch
+  const defs = document.createElementNS(svgns,'defs');
+  defs.innerHTML = `
+    <pattern id="paperGrain" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="${getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()}" />
+      <rect x="0" y="0" width="1" height="6" fill="rgba(0,0,0,0.02)"/>
+      <rect x="3" y="2" width="1" height="6" fill="rgba(0,0,0,0.01)"/>
+    </pattern>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="6" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="cardEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--cardboard-edge').trim()}" stop-opacity="1"/>
+      <stop offset="1" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()}" stop-opacity="1"/>
+    </linearGradient>
+    <path id="stitch" d="M0 0"/>
+  `;
+  svgEl.appendChild(defs);
+
+  // background cardboard sheet
+  const sheet = document.createElementNS(svgns,'rect');
+  sheet.setAttribute('x',8);
+  sheet.setAttribute('y',8);
+  sheet.setAttribute('rx',14);
+  sheet.setAttribute('ry',14);
+  sheet.setAttribute('width', width-16);
+  sheet.setAttribute('height', height-16);
+  sheet.setAttribute('fill','url(#paperGrain)');
+  sheet.setAttribute('stroke','url(#cardEdge)');
+  sheet.setAttribute('stroke-width','2');
+  sheet.setAttribute('filter','url(#softShadow)');
+  svgEl.appendChild(sheet);
+
+  // slight stitched border (visual)
+  const stitch = document.createElementNS(svgns,'rect');
+  stitch.setAttribute('x',14);
+  stitch.setAttribute('y',14);
+  stitch.setAttribute('rx',10);
+  stitch.setAttribute('width', width-28);
+  stitch.setAttribute('height', height-28);
+  stitch.setAttribute('fill','none');
+  stitch.setAttribute('stroke','rgba(0,0,0,0.06)');
+  stitch.setAttribute('stroke-dasharray','6 8');
+  stitch.setAttribute('stroke-width','1.5');
+  svgEl.appendChild(stitch);
+
+  // group for maze
+  const g = document.createElementNS(svgns,'g');
+  g.setAttribute('transform', `translate(${padding},${padding})`);
+  // draw cells background (cardboard tiles)
+  for(let rr=0; rr<rows; rr++){
+    for(let cc=0; cc<cols; cc++){
+      const rx = cc * cellSize + 6*( (cc+rr)%2 ? 0.2 : 0.0 ); // subtle offset
+      const ry = rr * cellSize + 6*( (cc+rr)%2 ? 0.1 : 0.0 );
+      const tile = document.createElementNS(svgns,'rect');
+      tile.setAttribute('x', cc*cellSize + 6);
+      tile.setAttribute('y', rr*cellSize + 6);
+      tile.setAttribute('width', cellSize - 12);
+      tile.setAttribute('height', cellSize - 12);
+      tile.setAttribute('rx',8);
+      tile.setAttribute('fill','rgba(255,255,255,0.02)');
+      tile.setAttribute('stroke','rgba(0,0,0,0.02)');
+      tile.setAttribute('stroke-width','1');
+      g.appendChild(tile);
+    }
+  }
+
+  // draw walls as SVG paths (thicker, ink)
+  const wallsPath = [];
+  // We'll build a path combining walls to keep it vector-friendly
+  for(let rr=0; rr<rows; rr++){
+    for(let cc=0; cc<cols; cc++){
+      const cell = maze[rr][cc];
+      const x = cc*cellSize, y = rr*cellSize;
+      const pad = 6; // inner padding (tile spacing)
+      const left = x + pad, top = y + pad, right = x+cellSize - pad, bottom = y+cellSize - pad;
+      // top wall
+      if(cell.walls[0]) wallsPath.push(`M ${left} ${top} L ${right} ${top}`);
+      if(cell.walls[1]) wallsPath.push(`M ${right} ${top} L ${right} ${bottom}`);
+      if(cell.walls[2]) wallsPath.push(`M ${left} ${bottom} L ${right} ${bottom}`);
+      if(cell.walls[3]) wallsPath.push(`M ${left} ${top} L ${left} ${bottom}`);
+    }
+  }
+  const walls = document.createElementNS(svgns,'path');
+  walls.setAttribute('d', wallsPath.join(' '));
+  walls.setAttribute('stroke', getComputedStyle(document.documentElement).getPropertyValue('--ink').trim());
+  walls.setAttribute('stroke-width', 4);
+  walls.setAttribute('stroke-linecap', 'round');
+  walls.setAttribute('fill','none');
+  // slightly roughen with small stroke opacity
+  walls.setAttribute('stroke-linejoin','round');
+  g.appendChild(walls);
+
+  // draw start & exit markers
+  function cellCenter(r,c){
+    return {x: c*cellSize + cellSize/2, y: r*cellSize + cellSize/2};
+  }
+  const startCenter = cellCenter(0,0);
+  const exitCenter = cellCenter(exitCell.r, exitCell.c);
+
+  // Start flag (game-theme)
+  const startGroup = document.createElementNS(svgns,'g');
+  startGroup.setAttribute('transform', `translate(${startCenter.x},${startCenter.y})`);
+  startGroup.innerHTML = `
+    <rect x="-16" y="-12" width="32" height="24" rx="6" fill="#9ad3bc" stroke="#2b6f63" stroke-width="1.5"></rect>
+    <path d="M-6 0 L2 -5 L2 5 Z" fill="#2b6f63"></path>
+  `;
+  g.appendChild(startGroup);
+
+  // Exit treasure / chest
+  const exitGroup = document.createElementNS(svgns,'g');
+  exitGroup.setAttribute('transform', `translate(${exitCenter.x},${exitCenter.y})`);
+  exitGroup.innerHTML = `
+    <rect x="-14" y="-10" width="28" height="20" rx="4" fill="#ffd166" stroke="#c57e1b" stroke-width="1.4"></rect>
+    <circle cx="6" cy="-1" r="3" fill="#d65a31"></circle>
+  `;
+  g.appendChild(exitGroup);
+
+  // Player token (circle) added to its own group for animation
+  const playerGroup = document.createElementNS(svgns,'g');
+  playerGroup.setAttribute('id','playerGroup');
+  const pcenter = cellCenter(player.r, player.c);
+  playerGroup.setAttribute('transform', `translate(${pcenter.x},${pcenter.y})`);
+  playerGroup.innerHTML = `
+    <circle cx="0" cy="0" r="${Math.min(12, cellSize*0.22)}" fill="#7cc7ff" stroke="#2a6f8f" stroke-width="2"></circle>
+    <circle cx="-4" cy="-3" r="2" fill="#bfe8ff" opacity="0.9"></circle>
+    <circle cx="4" cy="-3" r="1.6" fill="#bfe8ff" opacity="0.85"></circle>
+  `;
+  g.appendChild(playerGroup);
+
+  // clickable overlay for cells (to support touch/click movement)
+  const overlay = document.createElementNS(svgns,'g');
+  overlay.setAttribute('aria-hidden','true');
+  for(let rr=0; rr<rows; rr++){
+    for(let cc=0; cc<cols; cc++){
+      const cellRect = document.createElementNS(svgns,'rect');
+      cellRect.setAttribute('x', cc*cellSize);
+      cellRect.setAttribute('y', rr*cellSize);
+      cellRect.setAttribute('width', cellSize);
+      cellRect.setAttribute('height', cellSize);
+      cellRect.setAttribute('fill','transparent');
+      cellRect.setAttribute('data-r', rr);
+      cellRect.setAttribute('data-c', cc);
+      // attach click
+      cellRect.style.cursor = 'pointer';
+      cellRect.addEventListener('click', (ev)=> {
+        const rr = +ev.currentTarget.getAttribute('data-r');
+        const cc = +ev.currentTarget.getAttribute('data-c');
+        handleClickToMove({r:rr,c:cc});
+      });
+      overlay.appendChild(cellRect);
+    }
+  }
+  g.appendChild(overlay);
+
+  // solution path visualization (hidden by default)
+  const solGroup = document.createElementNS(svgns,'g');
+  solGroup.setAttribute('id','solutionGroup');
+  solGroup.setAttribute('opacity','0.95');
+  if(solutionPath && showSolutionFlag){
+    const pathD = solutionPath.map((p,i)=>{
+      const cen = cellCenter(p.r,p.c);
+      return `${i===0?'M':'L'} ${cen.x} ${cen.y}`;
+    }).join(' ');
+    const solPath = document.createElementNS(svgns,'path');
+    solPath.setAttribute('d', pathD);
+    solPath.setAttribute('fill','none');
+    solPath.setAttribute('stroke','rgba(34,150,243,0.85)');
+    solPath.setAttribute('stroke-width','8');
+    solPath.setAttribute('stroke-linecap','round');
+    solPath.setAttribute('stroke-linejoin','round');
+    solPath.setAttribute('filter','url(#softShadow)');
+    solGroup.appendChild(solPath);
+  }
+  g.appendChild(solGroup);
+
+  // assembled
+  svgEl.appendChild(g);
+  boardWrap.appendChild(svgEl);
+
+  // update player position visually
+  updatePlayerVisual();
+}
+
+// Move validation: whether there is no wall between cell and neighbor
+function canMove(from, to){
+  const dr = to.r - from.r, dc = to.c - from.c;
+  if (Math.abs(dr)+Math.abs(dc) !== 1) return false; // only orthogonal moves
+  const r = from.r, c = from.c;
+  const cell = maze[r][c];
+  if(dr === -1) return cell.walls[0]===0;
+  if(dc === 1)  return cell.walls[1]===0;
+  if(dr === 1)  return cell.walls[2]===0;
+  if(dc === -1) return cell.walls[3]===0;
+  return false;
+}
+
+// animate player movement: update transform
+function updatePlayerVisual(){
+  const pg = svgEl.querySelector('#playerGroup');
+  if(!pg) return;
+  const cen = {x: player.c*cellSize + cellSize/2 + 6, y: player.r*cellSize + cellSize/2 + 6};
+  // Because the group 'g' is translated by padding earlier, we need movement relative to overall viewBox.
+  // Instead we simply change transform on the playerGroup's parent g transform: playerGroup's transform uses cell centers (we used local centers before)
+  pg.setAttribute('transform', `translate(${player.c*cellSize + cellSize/2} ${player.r*cellSize + cellSize/2})`);
+  // check for win
+  if(player.r===exitCell.r && player.c===exitCell.c){
+    // little celebration: pulse
+    pg.animate([
+      {transform: `translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) scale(1)`},
+      {transform: `translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) scale(1.25)`},
+      {transform: `translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) scale(1)`}
+    ], {duration:600, iterations:1, easing:'ease-out'});
+    // small confetti-ish: place some tiny rectangles that fade
+    confettiAt(player);
+  }
+}
+
+// confetti visual
+function confettiAt(pos){
+  const g = svgEl.querySelector('g');
+  for(let i=0;i<8;i++){
+    const s = document.createElementNS("http://www.w3.org/2000/svg",'rect');
+    const size = Math.random()*6+3;
+    s.setAttribute('x', pos.c*cellSize + cellSize/2 + (Math.random()*40-20));
+    s.setAttribute('y', pos.r*cellSize + cellSize/2 + (Math.random()*40-20));
+    s.setAttribute('width', size);
+    s.setAttribute('height', size*0.6);
+    s.setAttribute('rx',1.2);
+    s.setAttribute('fill', ['#ffd166','#f94144','#90be6d','#577590'][Math.floor(Math.random()*4)]);
+    s.setAttribute('opacity',1);
+    g.appendChild(s);
+    s.animate([{opacity:1, transform:'translateY(0px)'}, {opacity:0, transform:'translateY(-30px)'}], {duration:900 + Math.random()*500, easing:'ease-out'}).onfinish = ()=> s.remove();
+  }
+}
+
+// handle keyboard movement
+window.addEventListener('keydown', (ev)=>{
+  const key = ev.key.toLowerCase();
+  let target = null;
+  if(key==='arrowup' || key==='w') target = {r:player.r-1,c:player.c};
+  if(key==='arrowdown' || key==='s') target = {r:player.r+1,c:player.c};
+  if(key==='arrowleft' || key==='a') target = {r:player.r,c:player.c-1};
+  if(key==='arrowright' || key==='d') target = {r:player.r,c:player.c+1};
+  if(target) {
+    ev.preventDefault();
+    attemptMove(target);
+  }
+});
+
+// click/touch handler: attempt to move if clicked cell is adjacent and passage exists
+function handleClickToMove(cellPos){
+  // if clicked is adjacent to player and passage available, move
+  const dr = Math.abs(cellPos.r - player.r), dc = Math.abs(cellPos.c - player.c);
+  if(dr+dc !== 1) {
+    // if not adjacent, ignore (we could implement pathfinding-to-click but spec wants simple walking)
+    // small hint shimmer to nearest allowed neighbor if reachable? For now ignore
+    return;
+  }
+  attemptMove(cellPos);
+}
+
+function attemptMove(target){
+  if(target.r<0 || target.c<0 || target.r>=rows || target.c>=cols) return;
+  if(canMove(player, target)){
+    player = {r: target.r, c: target.c};
+    updatePlayerVisual();
+    // update solution path if showing (so it stays correct if start moves)
+    if(showSolutionFlag){
+      solutionPath = bfsPath(maze, player, exitCell);
+      renderSVG(); // re-render to show updated path (keeps code simpler)
+    }
+  } else {
+    // playful shake to indicate blocked
+    const pg = svgEl.querySelector('#playerGroup');
+    if(pg){
+      pg.animate([{transform:`translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) translateX(0)`},
+                  {transform:`translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) translateX(-6px)`},
+                  {transform:`translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) translateX(6px)`},
+                  {transform:`translate(${player.c*cellSize + cellSize/2}px, ${player.r*cellSize + cellSize/2}px) translateX(0)`}], {duration:260, iterations:1});
+    }
+  }
+}
+
+// UI events
+const falsePathSelect = document.getElementById('falsePathSelect');
+
+regenBtn.addEventListener('click', ()=> {
+  const s = parseInt(sizeSelect.value);
+  const falsePathRatio = parseFloat(falsePathSelect.value);
+  buildAndRender(s,s, falsePathRatio);
+});
+sizeSelect.addEventListener('change', ()=> {
+  const s = parseInt(sizeSelect.value);
+  const falsePathRatio = parseFloat(falsePathSelect.value);
+  // adjust cell size for visual balance
+  cellSize = s <= 11 ? 56 : (s <= 17 ? 44 : 32);
+  buildAndRender(s,s, falsePathRatio);
+});
+falsePathSelect.addEventListener('change', ()=> {
+  const s = parseInt(sizeSelect.value);
+  const falsePathRatio = parseFloat(falsePathSelect.value);
+  buildAndRender(s,s, falsePathRatio);
+});
+showSolBtn.addEventListener('click', ()=> {
+  showSolutionFlag = !showSolutionFlag;
+  showSolBtn.textContent = showSolutionFlag ? 'Hide solution' : 'Show solution';
+  // recompute solution from current player pos
+  solutionPath = bfsPath(maze, player, exitCell);
+  renderSVG();
+});
+exportBtn.addEventListener('click', ()=> {
+  // export SVG outerHTML with viewBox for vectorization
+  if(!svgEl) return;
+  const serializer = new XMLSerializer();
+  const s = serializer.serializeToString(svgEl);
+  const blob = new Blob([s], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `labyrinth-${cols}x${rows}.svg`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// initial build
+cellSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 48;
+const falsePathRatio = parseFloat(falsePathSelect.value);
+buildAndRender(cols, rows, falsePathRatio);
+
+// make accessible focus
+boardWrap.tabIndex = 0;
+boardWrap.addEventListener('focus', ()=> boardWrap.style.outline='2px solid rgba(0,0,0,0.06)');
+boardWrap.addEventListener('blur', ()=> boardWrap.style.outline='none');
+
+// small helpful tip: if user wants to reset player to start
+document.addEventListener('keydown', (ev)=>{
+  if(ev.key.toLowerCase()==='r'){
+    player = {r:0,c:0};
+    solutionPath = bfsPath(maze, player, exitCell);
+    renderSVG();
+  }
+});
+
+</script>
+</body>
+</html>

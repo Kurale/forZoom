@@ -30,5 +30,8 @@
         { "title": "'Месяцы ў годзе' пастаў на свае месцы", "file": "materials/belarusian/mesiatsi/mesiatsi_2.html" },
         { "title": "Птушкі Беларусі", "file": "materials/belarusian/ptushkiBelarusi/index_Items_2.html" },
         { "title": "Слоўнікавыя словы, 4 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova4klas.html" }
+    ],
+    "gamification": [
+        { "title": "Лабиринт", "file": "materials/gamification/Labirint.html" }
     ]
 }

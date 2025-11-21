@@ -68,6 +68,7 @@
     <button onclick="showMaterials('math')">Математика</button>
     <button onclick="showMaterials('russian')">Русский язык</button>
     <button onclick="showMaterials('belarusian')">Белорусский язык</button>
+    <button onclick="showMaterials('gamification')">Игровое мышление</button>
 </nav>
 
 <div id="content">
@@ -96,7 +97,9 @@ function showMaterials(subject) {
     list.innerHTML = "";
     document.querySelector("#materials h2").textContent =
         subject === "math" ? "Математика" :
-        subject === "russian" ? "Русский язык" : "Белорусский язык";
+        subject === "russian" ? "Русский язык" :
+        subject === "belarusian" ? "Белорусский язык" : "Игровое мышление";
+        
 
     if (!materialsData[subject]) return;
 
