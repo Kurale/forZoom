@@ -2,6 +2,7 @@
     "math": [
         { "title": "Разряды, 'Запиши число'", "file": "materials/math/3apishiChislo/index.html" },
         { "title": "Площадь и периметр", "file": "materials/math/PerimetrPloschadInteractiv/PerimetrPloschad.html" },
+        { "title": "Площадь и периметр_2", "file": "materials/math/AreaPerimeter/index_sonet.html" },
         { "title": "Площадь, интерактив", "file": "materials/math/PoleVvodaPloschad/PoleVvodaPloschad.html" },
         { "title": "Задачи на скорость и стоимость", "file": "materials/math/зdachiNaDvijICenaStoimost/index.html" },
         { "title": "Сложение через десяток", "file": "materials/math/SlojenieCherezDesiatok/deepseek_html_1.html" },

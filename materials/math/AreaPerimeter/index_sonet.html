@@ -1,0 +1,217 @@
+<!DOCTYPE html> <html lang="ru"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width,initial-scale=1.0"> <title>Тренажёр: Площадь и периметр составных фигур</title> <link rel="preconnect" href="https://fonts.googleapis.com"> <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet"> <style> :root { --main-bg: #f7f8fa; --card-bg: #fff; --accent: #7ec3c7; --accent-dark: #3ba7ab; --success: #92dbb3; --error: #fdafaf; --shadow: 0 4px 32px rgba(60,60,100,0.10), 0 1.5px 8px rgba(130,160,180,0.07); } html, body { height: 100%; margin: 0; background: var(--main-bg); font-family: 'Montserrat', Arial, sans-serif; color: #28323a; min-height: 100vh; } #app-container { min-height: 100vh; display: flex; justify-content: center; align-items: center; } .card { background: var(--card-bg); box-shadow: var(--shadow); border-radius: 24px; padding: 32px 24px 28px 24px; width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; gap: 28px; transition: box-shadow .2s; } #figure { max-width: 90vw; max-height: 48vh; width: auto; height: auto; display: block; margin: 0 auto 10px auto; border-radius: 15px; box-shadow: 0 2px 8px rgba(110,160,180,0.07); background: #f5fafd; /* fadeWrap uses for fading; figure itself is unanimated directly */ } .form { display: flex; flex-direction: column; gap: 18px; width: 100%; opacity: 0; transform: translateY(20px); } .inputs-row { display: flex; gap: 16px; width: 100%; } .field { flex: 1 1 0; font-size: 1.1em; padding: 12px 10px; border: 2px solid #e2e7ed; border-radius: 11px; background: #f7f9fb; outline: none; transition: background 0.28s, border 0.19s; } .field:focus { border-color: var(--accent-dark); background: #f4f7fa; } .field.success { background: var(--success); border-color: #70be98; animation: pulseOk .5s; } .field.error { background: var(--error); border-color: #e07d7d; animation: shake .32s; } @keyframes pulseOk { 0% { box-shadow: 0 0 0 0 #92dbb388; } 100% { box-shadow: 0 0 0 18px #92dbb300; } } @keyframes shake { 0%, 100% {transform: translateX(0);} 15% {transform: translateX(-6px);} 35% {transform: translateX(7px);} 52% {transform: translateX(-5px);} 69% {transform: translateX(5px);} 85% {transform: translateX(-4px);} } .btn { display: inline-block; padding: 12px 0; margin-top: 8px; border: none; width: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent) 60%, #aad5e4 120%); color: #16424a; font-size: 1.08em; font-weight: 700; letter-spacing: 0.01em; cursor: pointer; box-shadow: 0 2px 7px rgba(61,161,161,0.05); transition: background 0.18s, box-shadow 0.18s; opacity: 0; transform: translateY(20px); } .btn:active { background: var(--accent-dark); color: #fff; } .btn-easy { background: linear-gradient(90deg, #92dbb3 60%, #b5e4d0 120%); } .btn-hard { background: linear-gradient(90deg, #fdafaf 60%, #ffcccc 120%); } .btn-extra { background: linear-gradient(90deg, #ffd89b 60%, #ffe8c8 120%); } .score { font-size: 1rem; color: #7cb2be; margin-bottom: 0; font-weight: 500; letter-spacing: 0.01em; } .fadeWrap { will-change: opacity; transition: opacity .55s; opacity: 1; width: 100%; display: flex; flex-direction: column; align-items: center; } .fadeWrap--hidden { opacity: 0; pointer-events: none; } .final-screen { text-align: center; width: 100%; animation: finalFadeIn .8s cubic-bezier(.7, .13, .27, 1.22); } @keyframes finalFadeIn { from {opacity: 0; transform: scale(0.9);} to {opacity: 1; transform: scale(1);} } .final-screen h2 { font-size: 2em; color: var(--accent-dark); margin-bottom: 18px; margin-top: 0; font-weight: 800; letter-spacing: 0.02em; } .final-score { font-size: 1.36em; color: #183a46; font-weight: 700; margin-bottom: 28px; margin-top: 0; } .level-selection { text-align: center; width: 100%; } .level-selection h2 { font-size: 1.8em; color: var(--accent-dark); margin-bottom: 24px; margin-top: 0; font-weight: 700; } .level-buttons { display: flex; flex-direction: column; gap: 16px; width: 100%; } .level-btn { padding: 16px 0; font-size: 1.2em; opacity: 1; transform: translateY(0); } @media (max-width: 900px) { .card { padding: 18px 6vw; } } @media (max-width: 600px) { .card { max-width: 99vw; padding: 10px 2vw 18px 2vw; border-radius: 13px; } .final-screen h2 { font-size: 1.1em } } @media (max-width: 420px) { .card {padding: 4px 1vw 12px 1vw;} .final-score {font-size: 1em;} .score {font-size: 0.86em;} } ::selection { background: #b0eae0; color: #222;} </style> </head> <body> <div id="app-container"> <div class="card"> <div class="score" id="score" style="display:none"></div> <div id="quiz-zone"> <!-- Content injected --> </div> </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> <script> const figures = { easy: [ 'img/easy1_S20P18.png', 'img/easy2_S12P14.png', 'img/easy3_S12P16.png', 'img/easy4_S5P12.png', 'img/easy5_S6P14.png' ], hard: [ 'img/hard1_S24P22.png', 'img/hard2_S14P18.png', 'img/hard3_S13P20.png', 'img/hard4_S12P26.png', 'img/hard5_S16P20.png' ], extra: [ 'img/extra1_S18P18.png', 'img/extra2_S15P18.png' ] }; let quizOrder = [], currentIdx = 0, score = 0, currentLevel = ''; let locked = false;
+// Helpers
+function shuffle(arr) {
+  arr = [...arr];
+  for (let i=arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function parseFilename(path) {
+  const filename = path.split('/').pop();
+  const match = filename.match(/S(\d+)P(\d+)/i);
+  return {
+    area: match ? parseInt(match[1]) : null,
+    perimeter: match ? parseInt(match[2]) : null
+  };
+}
+function showConfetti() {
+  confetti({
+    particleCount: 67,
+    startVelocity: 27,
+    spread: 82,
+    origin: { y: 0.62 },
+    colors: ['#7ec3c7','#ffba83','#f5cf90','#8fc7b5','#ee7693','#7b92d8']
+  });
+}
+
+// Main UI
+function renderQuizItem(n) {
+  const figSrc = quizOrder[n];
+  const {area: correctArea, perimeter: correctPerimeter} = parseFilename(figSrc);
+
+  // Create DOM
+  const fadeWrap = document.createElement('div');
+  fadeWrap.className = 'fadeWrap';
+  fadeWrap.innerHTML = `
+    <img id="figure" src="${figSrc}" alt="Составная фигура">
+    <form class="form" autocomplete="off">
+      <div class="inputs-row">
+        <input type="number" min="0" max="999" inputmode="numeric" class="field area" placeholder="Площадь, кв. см" required>
+        <input type="number" min="0" max="999" inputmode="numeric" class="field perimeter" placeholder="Периметр, см" required>
+      </div>
+      <button type="submit" id="checkBtn" class="btn">Проверить</button>
+    </form>
+  `;
+  const zone = document.getElementById('quiz-zone');
+  zone.innerHTML = '';
+  zone.appendChild(fadeWrap);
+
+  // Animate appearance
+  gsap.set(fadeWrap, {opacity:0});
+  gsap.to(fadeWrap, {opacity:1, duration:.51});
+
+  const img = fadeWrap.querySelector('#figure');
+  gsap.set(img, {scale:0.8, opacity:0});
+  img.onload = () => {
+    gsap.to(img, {scale:1, opacity:1, duration:0.8, ease:"back.out(1.4)"});
+    setTimeout(() => {
+      gsap.to(fadeWrap.querySelector('.form'), {opacity:1, y:0, duration:.62, delay:0, onStart:function(){
+          fadeWrap.querySelector('.form').style.transform = 'translateY(0)';
+        }
+      });
+      gsap.to(fadeWrap.querySelector('.btn'), {opacity:1, y:0, duration:.65, delay:.15, onStart:function(){
+        fadeWrap.querySelector('.btn').style.transform = 'translateY(0)';
+      }});
+    }, 160);
+  };
+  img.onerror = () => {
+    img.alt = "Ошибка загрузки изображения!";
+  };
+
+  // Handler
+  const form = fadeWrap.querySelector('form');
+  const areaField = form.querySelector('.area');
+  const perimField = form.querySelector('.perimeter');
+  const checkBtn = fadeWrap.querySelector('#checkBtn');
+
+  locked = false;
+
+  form.onsubmit = e => {
+    e.preventDefault();
+    if (locked) return;
+    locked = true;
+    const userArea = Number(areaField.value);
+    const userPerim = Number(perimField.value);
+    let areaOk = userArea === correctArea;
+    let perimOk = userPerim === correctPerimeter;
+    // Style fields
+    areaField.classList.remove('success','error');
+    perimField.classList.remove('success','error');
+    if(areaOk) areaField.classList.add('success');
+    else areaField.classList.add('error');
+    if(perimOk) perimField.classList.add('success');
+    else perimField.classList.add('error');
+    // Effects
+    if (areaOk && perimOk) {
+      score++;
+      showConfetti();
+      checkBtn.disabled = true;
+    } else {
+      setTimeout(()=>{locked=false;}, 600);
+    }
+    // Next
+    setTimeout(()=>{
+      if (areaOk && perimOk) {
+        renderNextBtn(fadeWrap, n);
+      } else {
+        // Shake on error, clean after 800ms
+        setTimeout(()=>{
+          areaField.classList.remove('success','error');
+          perimField.classList.remove('success','error');
+        }, 900);
+      }
+    }, 1500);
+  };
+}
+
+function renderNextBtn(parent, idx) {
+  let btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.style.marginTop = "16px";
+  const totalQuestions = quizOrder.length;
+  btn.textContent = idx === totalQuestions - 1 ? 'Завершить' : 'Дальше';
+  btn.onclick = () => {
+    // Fade out old card
+    gsap.to(parent, {opacity:0, duration:.47, onComplete:()=>{
+      currentIdx++;
+      if (currentIdx < totalQuestions) {
+        renderQuizItem(currentIdx);
+        updateScorebar();
+      } else {
+        renderFinal();
+        updateScorebar();
+      }
+    }});
+  };
+  parent.appendChild(btn);
+  gsap.fromTo(btn, {opacity:0, y:20}, {opacity:1, y:0, duration:.54});
+}
+
+function renderFinal() {
+  const zone = document.getElementById('quiz-zone');
+  const totalQuestions = quizOrder.length;
+  zone.innerHTML = `
+    <div class="final-screen">
+      <h2>Ты молодец!</h2>
+      <div class="final-score">${score} / ${totalQuestions}</div>
+      <button class="btn" id="restartBtn" style="opacity:1;transform:translateY(0);margin-bottom: 12px;">Пройти заново</button>
+      <button class="btn" id="levelBtn" style="opacity:1;transform:translateY(0);">Выбрать уровень</button>
+    </div>
+  `;
+  document.getElementById('restartBtn').onclick = startQuiz;
+  document.getElementById('levelBtn').onclick = renderLevelSelection;
+  score = 0;
+}
+
+function updateScorebar() {
+  const el = document.getElementById('score');
+  el.style.display = 'block';
+  const totalQuestions = quizOrder.length;
+  if (currentIdx < totalQuestions) el.textContent = `Задание ${currentIdx+1} / ${totalQuestions}`;
+  else el.textContent = "";
+}
+
+function renderLevelSelection() {
+  const zone = document.getElementById('quiz-zone');
+  zone.innerHTML = `
+    <div class="level-selection">
+      <h2>Выбери уровень сложности</h2>
+      <div class="level-buttons">
+        <button class="btn level-btn btn-easy" data-level="easy">Легкий</button>
+        <button class="btn level-btn btn-hard" data-level="hard">Сложный</button>
+        <button class="btn level-btn btn-extra" data-level="extra">Дополнительный</button>
+      </div>
+    </div>
+  `;
+  
+  // Добавляем обработчики для кнопок уровня
+  document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.onclick = () => {
+      currentLevel = btn.getAttribute('data-level');
+      startQuiz();
+    };
+  });
+  
+  // Анимация появления
+  gsap.fromTo('.level-btn', {opacity: 0, y: 20}, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    stagger: 0.1
+  });
+}
+
+function startQuiz() {
+  const levelFigures = figures[currentLevel];
+  quizOrder = shuffle(levelFigures).slice(0, Math.min(5, levelFigures.length));
+  currentIdx = 0;
+  score = 0;
+  updateScorebar();
+  renderQuizItem(0);
+}
+
+// Start
+renderLevelSelection();
+
+// UX: Restart with Enter if on final screen
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter'){
+    const restartBtn = document.getElementById('restartBtn');
+    const levelBtn = document.getElementById('levelBtn');
+    if(restartBtn) restartBtn.click();
+    else if(levelBtn) levelBtn.click();
+  }
+});
+</script> </body> </html>
