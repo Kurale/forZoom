@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Flashcards App v1.3 (File Selector)</title>
+    <style>
+        /* =========================================
+           CSS VARIABLES & RESET
+           ========================================= */
+        :root {
+            --neon-primary: #FF00FF; /* Magenta */
+            --neon-secondary: #00FFFF; /* Cyan */
+            --bg-color: #121212;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --font-main: system-ui, -apple-system, sans-serif;
+            --card-width: 300px;
+            --card-height: 200px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* =========================================
+           PROGRESS BAR
+           ========================================= */
+        .progress-container {
+            width: var(--card-width);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .progress-container.visible { opacity: 1; }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary));
+            box-shadow: 0 0 10px var(--neon-primary);
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .progress-text {
+            text-align: right;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: var(--neon-secondary);
+            text-shadow: 0 0 5px var(--neon-secondary);
+            font-family: monospace;
+        }
+
+        /* =========================================
+           SCENE & 3D CARD STYLES
+           ========================================= */
+        .scene {
+            width: var(--card-width);
+            height: var(--card-height);
+            perspective: 1000px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s ease-in-out;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        .card.is-flipped { transform: rotateY(180deg); }
+
+        .card__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--neon-primary), 0 0 20px var(--neon-secondary);
+            border: 2px solid var(--neon-secondary);
+        }
+
+        .card__face--front {
+            transform: rotateY(0deg);
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        }
+
+        .card__face--back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #e0ffff 0%, #fff 100%);
+            color: #000;
+            border-color: var(--neon-primary);
+            box-shadow: 0 0 15px var(--neon-secondary), 0 0 30px var(--neon-primary);
+        }
+
+        /* =========================================
+           UI CONTROLS
+           ========================================= */
+        .controls {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-next {
+            background: transparent;
+            color: var(--neon-secondary);
+            border: 2px solid var(--neon-secondary);
+            padding: 10px 30px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-secondary);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+        }
+
+        .btn-next.visible {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .btn-next:hover, .btn-next:focus {
+            background: var(--neon-secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-secondary), 0 0 40px var(--neon-secondary);
+            outline: none;
+        }
+
+        .status-message {
+            position: absolute;
+            top: 20px;
+            color: var(--neon-primary);
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px var(--neon-primary);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .loading { animation: pulse 1s infinite alternate; }
+
+        /* =========================================
+           НОВЫЕ СТИЛИ: МОДАЛЬНОЕ ОКНО И ИКОНКА
+           ========================================= */
+        
+        /* Кнопка настроек в углу */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 2px solid var(--neon-primary);
+            color: var(--neon-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 0 10px var(--neon-primary);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .settings-btn:hover {
+            background: var(--neon-primary);
+            color: white;
+            box-shadow: 0 0 20px var(--neon-primary);
+        }
+
+        /* Модальное окно (фон) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Контент модального окна */
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid var(--neon-secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            color: var(--neon-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-secondary);
+        }
+
+        /* Список файлов */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .file-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-btn:hover {
+            border-color: var(--neon-primary);
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        .file-btn.active {
+            border-color: var(--neon-secondary);
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .close-modal-btn {
+            margin-top: 1.5rem;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .close-modal-btn:hover { background: #555; }
+
+    </style>
+</head>
+<body>
+
+    <button id="settings-trigger" class="settings-btn" title="Выбрать файл">
+        📂
+    </button>
+
+    <div id="file-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">Выберите файл</h2>
+            <div id="file-list" class="file-list">
+                </div>
+            <button id="close-modal" class="close-modal-btn">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="status" class="status-message loading">Loading data...</div>
+
+    <div id="progress-container" class="progress-container">
+        <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="progress-label" class="progress-text">0 / 0</div>
+    </div>
+
+    <div class="scene">
+        <div class="card" id="card" role="button" tabindex="0" aria-label="Flashcard: Press Enter to flip">
+            <div class="card__face card__face--front">
+                <p id="question-text">...</p>
+            </div>
+            <div class="card__face card__face--back">
+                <p id="answer-text">...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="next-btn" class="btn-next" tabindex="0">Дальше ➔</button>
+    </div>
+
+    <script>
+        /**
+         * =========================================
+         * JAVASCRIPT LOGIC
+         * =========================================
+         */
+
+        const CONFIG = {
+            // Базовый путь теперь будет меняться динамически
+            baseFolder: 'data_files/', 
+            // СПИСОК ФАЙЛОВ (Добавьте сюда названия ваших файлов из папки data_files)
+            files: [
+                'data.csv',
+                'math_1.csv',
+                'engl_1.csv',
+                'rus_1.csv'
+            ],
+            audio: { click: 'audio/click.wav', flip: 'audio/flip.wav', next: 'audio/next.wav' }
+        };
+
+        const state = {
+            cards: [],
+            currentIndex: 0,
+            isFlipped: false,
+            isLoading: true,
+            currentFile: CONFIG.files[0] // По умолчанию первый файл
+        };
+
+        const dom = {
+            card: document.getElementById('card'),
+            question: document.getElementById('question-text'),
+            answer: document.getElementById('answer-text'),
+            nextBtn: document.getElementById('next-btn'),
+            status: document.getElementById('status'),
+            progressContainer: document.getElementById('progress-container'),
+            progressFill: document.getElementById('progress-fill'),
+            progressLabel: document.getElementById('progress-label'),
+            // Новые элементы DOM для модального окна
+            settingsBtn: document.getElementById('settings-trigger'),
+            modal: document.getElementById('file-modal'),
+            fileListContainer: document.getElementById('file-list'),
+            closeModalBtn: document.getElementById('close-modal')
+        };
+
+        const sounds = {
+            click: new Audio(CONFIG.audio.click),
+            flip: new Audio(CONFIG.audio.flip),
+            next: new Audio(CONFIG.audio.next)
+        };
+
+        function playSound(name) {
+            const sound = sounds[name];
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(err => console.warn(`Audio play failed:`, err));
+            }
+        }
+
+        // --- CSV PARSING LOGIC ---
+        function splitCSVLine(str) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < str.length; i++) {
+                const char = str[i];
+                if (char === '"') { inQuotes = !inQuotes; } 
+                else if (char === ',' && !inQuotes) { result.push(current); current = ''; } 
+                else { current += char; }
+            }
+            result.push(current);
+            return result.map(val => val.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                const columns = splitCSVLine(line);
+                if (columns.length >= 2) {
+                    result.push({ question: columns[0], answer: columns[1] });
+                }
+            }
+            return result;
+        }
+
+        // --- CORE UI FUNCTIONS ---
+
+        function updateProgress() {
+            const total = state.cards.length;
+            const current = state.currentIndex + 1;
+            const percent = total === 0 ? 0 : (current / total) * 100;
+            dom.progressFill.style.width = `${percent}%`;
+            dom.progressLabel.textContent = `${current} / ${total}`;
+        }
+
+        /**
+         * 3. ЗАГРУЗКА ДАННЫХ (Обновленная)
+         * Теперь функция принимает имя файла в качестве аргумента.
+         */
+        async function loadData(filename) {
+            // 1. Сброс UI перед загрузкой
+            state.isLoading = true;
+            dom.status.textContent = `Loading ${filename}...`;
+            dom.status.classList.add('loading');
+            dom.card.style.opacity = '0.5'; // Визуально показать, что идет процесс
+            
+            // Скрываем кнопку "Дальше" и сбрасываем карточку
+            dom.nextBtn.classList.remove('visible');
+            dom.card.classList.remove('is-flipped');
+            state.isFlipped = false;
+
+            try {
+                // Строим путь: data_files/имя_файла
+                // Если файл лежит в корне (как data.csv в прошлом примере), можно убрать CONFIG.baseFolder
+                // Но по заданию файлы в "data_files"
+                const path = (filename === 'data.csv') ? filename : CONFIG.baseFolder + filename;
+                
+                // ВАЖНО: для теста локально, если data.csv в корне, я использую условие выше.
+                // В реальности уберите условие, если все файлы строго в папке data_files.
+                
+                const response = await fetch(path);
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+                
+                const csvText = await response.text();
+                state.cards = parseCSV(csvText);
+                state.currentIndex = 0; // Сброс на первую карточку
+                state.currentFile = filename;
+
+                if (state.cards.length === 0) {
+                    dom.status.textContent = "CSV empty or invalid.";
+                    dom.status.classList.remove('loading');
+                    return;
+                }
+
+                // Успешная загрузка
+                dom.status.textContent = "";
+                dom.status.classList.remove('loading');
+                dom.progressContainer.classList.add('visible');
+                dom.card.style.opacity = '1';
+                
+                renderCard(0);
+                updateProgress();
+                updateFileListUI(); // Обновить подсветку активного файла в меню
+
+            } catch (error) {
+                console.error('Error:', error);
+                dom.status.textContent = `Error loading ${filename}`;
+                dom.status.classList.remove('loading');
+            }
+        }
+
+        function renderCard(index) {
+            if (!state.cards[index]) return;
+            const cardData = state.cards[index];
+            dom.question.textContent = cardData.question;
+            dom.answer.textContent = cardData.answer;
+        }
+
+        function flipCard() {
+            if (state.isFlipped) return;
+            playSound('click');
+            setTimeout(() => {
+                dom.card.classList.add('is-flipped');
+                playSound('flip');
+                state.isFlipped = true;
+                setTimeout(() => {
+                    dom.nextBtn.classList.add('visible');
+                    dom.nextBtn.focus();
+                }, 600);
+            }, 100);
+        }
+
+        function nextCard() {
+            playSound('next');
+            dom.nextBtn.classList.remove('visible');
+            dom.card.style.transition = 'none';
+            dom.card.classList.remove('is-flipped');
+            state.isFlipped = false;
+            state.currentIndex = (state.currentIndex + 1) % state.cards.length;
+            renderCard(state.currentIndex);
+            updateProgress();
+            dom.card.focus();
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    dom.card.style.transition = 'transform 0.6s ease-in-out';
+                }, 50);
+            });
+        }
+
+        // --- НОВАЯ ЛОГИКА МОДАЛЬНОГО ОКНА ---
+
+        // Генерация списка кнопок
+        function initModal() {
+            dom.fileListContainer.innerHTML = '';
+            
+            CONFIG.files.forEach(file => {
+                const btn = document.createElement('button');
+                btn.className = 'file-btn';
+                // Убираем .csv для красоты, если нужно, или оставляем полное имя
+                btn.innerHTML = `<span>📄 ${file}</span> ${file === state.currentFile ? '✅' : ''}`;
+                
+                btn.onclick = () => {
+                    if (file !== state.currentFile) {
+                        loadData(file);
+                    }
+                    toggleModal(false);
+                };
+                dom.fileListContainer.appendChild(btn);
+            });
+        }
+
+        // Обновление галочек в списке
+        function updateFileListUI() {
+            // Перерисовываем список, чтобы обновить галочки ✅
+            initModal(); 
+        }
+
+        function toggleModal(show) {
+            if (show) {
+                dom.modal.classList.add('open');
+                initModal(); // Обновляем состояние при открытии
+            } else {
+                dom.modal.classList.remove('open');
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+
+        dom.card.addEventListener('click', flipCard);
+        dom.nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextCard(); });
+        dom.card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(); }});
+        dom.nextBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nextCard(); }});
+        
+        // Листенеры для модального окна
+        dom.settingsBtn.addEventListener('click', () => toggleModal(true));
+        dom.closeModalBtn.addEventListener('click', () => toggleModal(false));
+        dom.modal.addEventListener('click', (e) => {
+            // Закрыть, если клик по темному фону (мимо контента)
+            if (e.target === dom.modal) toggleModal(false);
+        });
+
+        // Запуск
+        loadData(state.currentFile);
+
+    </script>
+</body>
+</html>

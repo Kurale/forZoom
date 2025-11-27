@@ -34,6 +34,7 @@
         { "title": "Слоўнікавыя словы, 4 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova4klas.html" }
     ],
     "gamification": [
-        { "title": "Лабиринт", "file": "materials/gamification/Labirint.html" }
+        { "title": "Лабиринт", "file": "materials/gamification/Labirint.html" },
+        { "title": "Карточки", "file": "materials/gamification/Card/index.html" }
     ]
 }
