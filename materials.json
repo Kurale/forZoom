@@ -35,6 +35,7 @@
     ],
     "gamification": [
         { "title": "Лабиринт", "file": "materials/gamification/Labirint.html" },
+        { "title": "Печатаем слова", "file": "materials/gamification/PechataemSova/index.html" },
         { "title": "Карточки", "file": "materials/gamification/Card/index.html" }
     ]
 }
