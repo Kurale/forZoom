@@ -2,14 +2,14 @@
   {
     "id": 1,
     "type": "image",
-    "content": "img/cat.png",
+    "content": "../img/cat.png",
     "answer": "Кот",
     "hint": "Мяукает"
   },
   {
     "id": 2,
     "type": "image",
-    "content": "img/dog.png",
+    "content": "../img/dog.png",
     "answer": "Собака",
     "hint": "Гавкает"
   },
@@ -23,14 +23,14 @@
   {
     "id": 4,
     "type": "image",
-    "content": "img/apple.png",
+    "content": "../img/apple.png",
     "answer": "Яблоко",
     "hint": "Растет на дереве"
   },
   {
     "id": 5,
     "type": "image",
-    "content": "img/soccer-ball.png",
+    "content": "../img/soccer-ball.png",
     "answer": "Мяч",
     "hint": "Им играют в футбол"
   },
@@ -44,7 +44,7 @@
   {
     "id": 7,
     "type": "image",
-    "content": "img/sun.png",
+    "content": "../img/sun.png",
     "answer": "Солнце",
     "hint": "Светит в небе"
   },
@@ -58,7 +58,7 @@
   {
     "id": 9,
     "type": "image",
-    "content": "img/house.png",
+    "content": "../img/house.png",
     "answer": "Дом",
     "hint": "Там живут люди"
   },
