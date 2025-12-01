@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "type": "image",
+    "content": "img/cat.png",
+    "answer": "Кот",
+    "hint": "Мяукает"
+  },
+  {
+    "id": 2,
+    "type": "image",
+    "content": "img/dog.png",
+    "answer": "Собака",
+    "hint": "Гавкает"
+  },
+  {
+    "id": 3,
+    "type": "text",
+    "content": "Желтый, кислый фрукт, который кладут в чай",
+    "answer": "Лимон",
+    "hint": "Цитрус"
+  },
+  {
+    "id": 4,
+    "type": "image",
+    "content": "img/apple.png",
+    "answer": "Яблоко",
+    "hint": "Растет на дереве"
+  },
+  {
+    "id": 5,
+    "type": "image",
+    "content": "img/soccer-ball.png",
+    "answer": "Мяч",
+    "hint": "Им играют в футбол"
+  },
+  {
+    "id": 6,
+    "type": "text",
+    "content": "Транспорт на двух колесах, который нужно крутить ногами",
+    "answer": "Велосипед",
+    "hint": "Два колеса"
+  },
+  {
+    "id": 7,
+    "type": "image",
+    "content": "img/sun.png",
+    "answer": "Солнце",
+    "hint": "Светит в небе"
+  },
+  {
+    "id": 8,
+    "type": "text",
+    "content": "Домик для птиц, который вешают на дерево",
+    "answer": "Скворечник",
+    "hint": "Для скворцов"
+  },
+  {
+    "id": 9,
+    "type": "image",
+    "content": "img/house.png",
+    "answer": "Дом",
+    "hint": "Там живут люди"
+  },
+  {
+    "id": 10,
+    "type": "text",
+    "content": "Белая жидкость, которую дают коровы",
+    "answer": "Молоко",
+    "hint": "Пьют дети"
+  }
+]

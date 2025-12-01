@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай Предмет: Викторина для детей</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #E0F7FA; /* Светло-голубой фон */
+            --card-bg: #FFFFFF;
+            --primary-btn: #4DD0E1;
+            --action-btn: #FFD54F; /* Желтый для действий */
+            --check-btn: #81C784; /* Зеленый для проверки */
+            --text-color: #37474F;
+            --error-color: #E57373;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        #app {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* Animation for app loading */
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        /* Question Area */
+        #question-area {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #question-img {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+            border: 4px solid var(--primary-btn);
+        }
+
+        #question-text {
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        /* Input Field */
+        #answer-input {
+            font-size: 32px;
+            padding: 10px;
+            border: 3px solid var(--primary-btn);
+            border-radius: 10px;
+            width: 80%;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            background-color: #FAFAFA;
+            color: var(--text-color);
+            pointer-events: none; /* Prevent native keyboard on mobile */
+        }
+
+        /* Feedback Message */
+        #feedback {
+            font-size: 20px;
+            height: 30px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+/* --- ИСПРАВЛЕНИЕ РАСПОЛОЖЕНИЯ --- */
+        
+        /* Этот блок отвечает за внутренности игры */
+        #game-screen {
+            display: flex;         /* Включаем флекс */
+            flex-direction: column; /* ВАЖНО: Строго сверху вниз */
+            align-items: center;    /* Центрируем всё по горизонтали */
+            width: 100%;            /* Растягиваем на всю ширину карточки */
+            gap: 15px;              /* Отступы между этажами (вопрос, инпут, кнопки) */
+        }
+
+        /* Блок с кнопками (Стереть, Очистить, Проверить) */
+        #controls {
+            display: flex;         
+            flex-direction: row;    /* Сами кнопки стоят в ряд */
+            justify-content: center;
+            width: 100%;            /* Блок кнопок на всю ширину */
+            gap: 10px;
+        }
+
+        /* Клавиатура */
+        #keyboard {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr); /* 7 колонок, как мы обсуждали */
+            gap: 5px;
+            width: 100%;            /* Клавиатура на всю ширину */
+            margin-top: 10px;
+        }
+
+        /* Поле ввода */
+        #answer-input {
+            width: 80%; /* Возвращаем нормальную ширину полю */
+            box-sizing: border-box; /* Чтобы паддинги не ломали ширину */
+        }
+
+        .key-btn {
+            background-color: var(--primary-btn);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            user-select: none;
+        }
+
+        .key-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Control Buttons Area */
+        #controls {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        #btn-back { background-color: #FFB74D; } /* Orange */
+        #btn-clear { background-color: #E57373; } /* Red */
+        #btn-check { background-color: var(--check-btn); font-size: 22px; flex: 2; }
+
+        /* Results Screen */
+        #results-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake { animation: shake 0.4s; }
+        .correct-bg { background-color: #C8E6C9 !important; }
+        .wrong-bg { background-color: #FFCDD2 !important; }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            #keyboard { grid-template-columns: repeat(7, 1fr); }
+            .key-btn { font-size: 16px; padding: 8px 0; }
+            #question-text { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="game-screen">
+        <header>
+            <h3 style="margin: 0; color: #90A4AE;">Вопрос <span id="q-current">1</span> из <span id="q-total">10</span></h3>
+        </header>
+
+        <div id="question-area">
+            <img id="question-img" src="" alt="Предмет">
+            <div id="question-text"></div>
+        </div>
+
+        <div id="feedback"></div>
+
+        <input type="text" id="answer-input" placeholder="..." readonly>
+
+        <div id="controls">
+            <button class="control-btn" id="btn-back">⌫</button>
+            <button class="control-btn" id="btn-clear">Очистить</button>
+            <button class="control-btn" id="btn-check">Проверить</button>
+        </div>
+
+        <div id="keyboard">
+            </div>
+    </div>
+
+    <div id="results-screen">
+        <h1 style="font-size: 40px; color: #FFD166;">Готово!</h1>
+        <p style="font-size: 24px;" id="result-stats">Правильных ответов: 0</p>
+        <p style="font-size: 20px; color: #4DD0E1;" id="result-msg">Ты молодец!</p>
+        <button class="control-btn" id="btn-restart" style="background-color: var(--check-btn); width: 100%;">Начать сначала</button>
+    </div>
+</div>
+
+<script>
+    /**
+     * --- JAVASCRIPT LOGIC ---
+     * * Основные модули:
+     * 1. State Manager: Хранит текущее состояние (счет, вопрос, попытки).
+     * 2. UI Render: Отвечает за обновление DOM элементов.
+     * 3. Logic: Проверка ответов, навигация.
+     * 4. Init: Загрузка данных и старт.
+     */
+
+    // --- 1. Global State & Config ---
+    const STATE = {
+        questions: [],
+        currentQuestionIndex: 0,
+        score: 0,
+        attempts: 0, // 0 = первая попытка, 1 = вторая попытка
+        maxQuestions: 10
+    };
+
+    // DOM Elements Cache (для оптимизации)
+    const DOM = {
+        app: document.getElementById('app'),
+        gameScreen: document.getElementById('game-screen'),
+        resultsScreen: document.getElementById('results-screen'),
+        qCurrent: document.getElementById('q-current'),
+        qTotal: document.getElementById('q-total'),
+        qImg: document.getElementById('question-img'),
+        qText: document.getElementById('question-text'),
+        input: document.getElementById('answer-input'),
+        feedback: document.getElementById('feedback'),
+        keyboard: document.getElementById('keyboard'),
+        btnCheck: document.getElementById('btn-check'),
+        btnBack: document.getElementById('btn-back'),
+        btnClear: document.getElementById('btn-clear'),
+        btnRestart: document.getElementById('btn-restart'),
+        resStats: document.getElementById('result-stats'),
+        resMsg: document.getElementById('result-msg')
+    };
+
+    // --- 2. Keyboard & Input Handling ---
+    
+    // Функция создания клавиатуры (А-Я + Ё)
+    function renderKeyboard() {
+        // Русский алфавит. Можно использовать массив, чтобы контролировать порядок
+        const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+        
+        DOM.keyboard.innerHTML = ''; // Очистка
+        
+        alphabet.forEach(char => {
+            const btn = document.createElement('button');
+            btn.className = 'key-btn';
+            btn.textContent = char;
+            // Event Listener для клика
+            btn.addEventListener('click', () => handleKeyPress(char));
+            DOM.keyboard.appendChild(btn);
+        });
+    }
+
+    // Обработка нажатия клавиши
+    function handleKeyPress(char) {
+        if (DOM.input.value.length < 15) { // Ограничение длины
+            DOM.input.value += char;
+            resetFeedback(); // Убрать красную подсветку, если пользователь начал печатать
+        }
+    }
+
+    // Функции управления вводом
+    DOM.btnBack.addEventListener('click', () => {
+        DOM.input.value = DOM.input.value.slice(0, -1);
+        resetFeedback();
+    });
+
+    DOM.btnClear.addEventListener('click', () => {
+        DOM.input.value = '';
+        resetFeedback();
+    });
+
+    // --- 3. Game Logic Functions ---
+
+    // Загрузка JSON файла
+    async function loadQuestions() {
+        try {
+            // Загружаем данные. Если файла нет, упадет в catch
+            const response = await fetch('questions_cha-scha.json'); 
+            if (!response.ok) throw new Error("HTTP error");
+            const data = await response.json();
+            
+            // Перемешиваем вопросы и берем нужное количество
+            STATE.questions = shuffleArray(data).slice(0, STATE.maxQuestions);
+            STATE.maxQuestions = STATE.questions.length; // Обновляем, если вопросов меньше 10
+            
+            startGame();
+        } catch (error) {
+            console.error("Failed to load questions:", error);
+            DOM.qText.textContent = "Ошибка загрузки вопросов. Проверьте JSON файл или запустите локальный сервер.";
+            DOM.qText.style.color = "red";
+        }
+    }
+
+    // Запуск игры
+    function startGame() {
+        STATE.currentQuestionIndex = 0;
+        STATE.score = 0;
+        
+        DOM.resultsScreen.style.display = 'none';
+        DOM.gameScreen.style.display = 'flex';
+        renderKeyboard();
+        
+        loadCurrentQuestion();
+    }
+
+    // Отображение текущего вопроса
+    function loadCurrentQuestion() {
+        const q = STATE.questions[STATE.currentQuestionIndex];
+        STATE.attempts = 0; // Сброс попыток
+        
+        // UI Reset
+        DOM.input.value = '';
+        resetFeedback();
+        DOM.input.disabled = false;
+        DOM.btnCheck.disabled = false;
+        
+        // Counters
+        DOM.qCurrent.textContent = STATE.currentQuestionIndex + 1;
+        DOM.qTotal.textContent = STATE.maxQuestions;
+
+        // Content
+        if (q.type === 'image') {
+            DOM.qImg.style.display = 'block';
+            DOM.qImg.src = q.content;
+            DOM.qText.textContent = ''; // Очистить текст, если есть картинка
+        } else {
+            DOM.qImg.style.display = 'none';
+            DOM.qText.textContent = q.content;
+        }
+        
+        // Animation effect
+        DOM.app.classList.remove('shake');
+        void DOM.app.offsetWidth; // Trigger reflow for animation restart if needed
+    }
+
+    // Основная логика проверки
+    DOM.btnCheck.addEventListener('click', checkAnswer);
+
+    function checkAnswer() {
+        const userInput = DOM.input.value.trim().toLowerCase();
+        const currentQ = STATE.questions[STATE.currentQuestionIndex];
+        const correctAnswer = currentQ.answer.toLowerCase();
+
+        if (userInput === '') return; // Игнорировать пустой ввод
+
+        if (userInput === correctAnswer) {
+            // --- Правильный ответ ---
+            handleCorrect();
+        } else {
+            // --- Неправильный ответ ---
+            handleIncorrect(currentQ);
+        }
+    }
+
+    function handleCorrect() {
+        DOM.feedback.textContent = "Верно! Молодец!";
+        DOM.feedback.style.color = "green";
+        DOM.input.classList.add('correct-bg');
+        
+        if (STATE.attempts === 0) STATE.score++; // Очки только за первую попытку (опционально)
+
+        disableControls();
+
+        // Задержка перед следующим вопросом
+        setTimeout(() => {
+            nextQuestion();
+        }, 1500);
+    }
+
+    function handleIncorrect(q) {
+        if (STATE.attempts === 0) {
+            // Первая ошибка - даем шанс
+            DOM.feedback.textContent = "Неверно. Попробуй еще раз!";
+            DOM.feedback.style.color = "#E57373";
+            DOM.input.classList.add('wrong-bg');
+            DOM.app.classList.add('shake'); // Эффект тряски
+            
+            // Убираем эффекты через время
+            setTimeout(() => {
+                DOM.input.classList.remove('wrong-bg');
+                DOM.app.classList.remove('shake');
+            }, 500);
+            
+            STATE.attempts++;
+        } else {
+            // Вторая ошибка - конец вопроса
+            DOM.feedback.textContent = `Жаль! Правильный ответ: ${q.answer}`;
+            DOM.feedback.style.color = "#D32F2F";
+            disableControls();
+            
+            setTimeout(() => {
+                nextQuestion();
+            }, 2500); // Чуть дольше, чтобы прочитать ответ
+        }
+    }
+
+    function nextQuestion() {
+        STATE.currentQuestionIndex++;
+        if (STATE.currentQuestionIndex < STATE.maxQuestions) {
+            loadCurrentQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    // Финальный экран
+    function showResults() {
+        DOM.gameScreen.style.display = 'none';
+        DOM.resultsScreen.style.display = 'flex'; // Flex для центрирования
+        
+        DOM.resStats.textContent = `Правильных ответов: ${STATE.score} из ${STATE.maxQuestions}`;
+        
+        // Мотивация
+        if (STATE.score === STATE.maxQuestions) {
+            DOM.resMsg.textContent = "Великолепно! Ты мастер!";
+        } else if (STATE.score > STATE.maxQuestions / 2) {
+            DOM.resMsg.textContent = "Хорошая работа! Давай еще раз?";
+        } else {
+            DOM.resMsg.textContent = "Не расстраивайся, попробуй снова!";
+        }
+    }
+
+    DOM.btnRestart.addEventListener('click', startGame);
+
+    // Вспомогательные функции
+    function resetFeedback() {
+        DOM.feedback.textContent = '';
+        DOM.input.classList.remove('correct-bg', 'wrong-bg');
+    }
+
+    function disableControls() {
+        DOM.input.disabled = true;
+        DOM.btnCheck.disabled = true;
+    }
+
+    // Функция перемешивания массива (Алгоритм Фишера-Йейтса)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- 4. Init ---
+    // Старт при загрузке страницы
+    loadQuestions();
+
+</script>
+</body>
+</html>
