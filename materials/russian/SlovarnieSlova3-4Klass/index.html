@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренировка словарных слов</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Вступительное окно -->
+    <div id="welcome-screen" class="screen">
+        <div class="welcome-container">
+            <h1>Тренировка словарных слов</h1>
+            <p>Выберите уровень сложности:</p>
+            <div class="level-buttons">
+                <button class="level-btn" data-level="grade3-part1">3 класс (1 часть)</button>
+                <button class="level-btn" data-level="grade3-part2">3 класс (2 часть)</button>
+                <button class="level-btn" data-level="grade4-part1">4 класс (1 часть)</button>
+                <button class="level-btn" data-level="grade4-part2">4 класс (2 часть)</button>
+            </div>
+            <button id="start-btn" class="start-btn" disabled>Старт</button>
+        </div>
+    </div>
+
+    <!-- Игровое поле -->
+    <div id="game-screen" class="screen hidden">
+        <div class="game-container">
+            <div class="game-header">
+                <button id="back-btn" class="back-btn">← Назад</button>
+                <div class="progress-info">
+                    <span id="word-counter">Слово 1 из 10</span>
+                    <button id="sound-btn" class="sound-btn" title="Произнести слово">🔊</button>
+                    <button id="mute-btn" class="mute-btn" title="Выключить звук">🔇</button>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <div class="drop-zone-placeholder">Кликай по слогам</div>
+                <div id="drop-zone-content" class="drop-zone-content"></div>
+            </div>
+
+            <div class="syllables-container" id="syllables-container">
+                <!-- Слоги будут добавлены динамически -->
+            </div>
+
+            <div class="game-controls">
+                <button id="check-btn" class="check-btn" disabled>Проверить</button>
+                <button id="skip-btn" class="skip-btn">Пропустить слово</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Результаты -->
+    <div id="results-screen" class="screen hidden">
+        <div class="results-container">
+            <h2>Результаты тренировки</h2>
+            <h3 id="level-title" class="level-title"></h3>
+            <div class="results-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Правильных ответов:</span>
+                    <span id="correct-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Всего слов:</span>
+                    <span id="total-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Точность:</span>
+                    <span id="accuracy" class="stat-value">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Время:</span>
+                    <span id="time-spent" class="stat-value">0:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Попыток всего:</span>
+                    <span id="total-attempts" class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="results-chart" width="400" height="200"></canvas>
+            </div>
+            <div class="results-buttons">
+                <button id="restart-btn" class="restart-btn">Начать заново</button>
+                <button id="menu-btn" class="menu-btn">В меню</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
