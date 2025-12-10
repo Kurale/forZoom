@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фотоальбом - игра для чтения</title>
+    <style>
+        /* Базовые стили и переменные */
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2691E;
+            --text-color: #333;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --frame-width: 220px;
+            --frame-height: 160px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Экраны */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Главный экран - Альбом */
+        #album-screen {
+            background: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=1920&auto=format&fit=crop') center/cover;
+            position: relative;
+        }
+
+        #album-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(139, 69, 19, 0.7);
+            z-index: 1;
+        }
+
+        .album-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .instruction {
+            color: #FFE4B5;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .photo-frame {
+            width: var(--frame-width);
+            height: var(--frame-height);
+            background: white;
+            border: 12px solid #8B4513;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            margin: 0 auto;
+        }
+
+        .photo-frame:hover:not(.captured) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+
+        .photo-frame.captured {
+            cursor: default;
+        }
+
+        .silhouette {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            font-size: 2.5em;
+            color: #ccc;
+        }
+
+        .captured-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            opacity: 0;
+            animation: photoAppear 0.8s ease-out forwards;
+        }
+
+        @keyframes photoAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotate(10deg);
+            }
+            50% {
+                transform: scale(1.1) rotate(-5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* Кнопка сброса */
+        .reset-btn {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Экраны заданий */
+        .task-screen {
+            background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920&auto=format&fit=crop') center/cover;
+            position: relative;
+        }
+
+        .task-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .task-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .animal-emoji {
+            font-size: 8em;
+            margin: 20px 0;
+            transition: transform 7s linear;
+            display: inline-block;
+        }
+
+        .animal-emoji.running {
+            transform: translateX(1500px) rotate(1080deg) scale(0.3);
+        }
+
+        .animal-word {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 5px;
+        }
+
+        .capture-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(238, 90, 36, 0.3);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .capture-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(238, 90, 36, 0.4);
+        }
+
+        .capture-btn:active {
+            transform: translateY(0);
+        }
+
+        .capture-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Экран неудачи */
+        #fail-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .fail-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .fail-emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .fail-text {
+            font-size: 1.5em;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Экран победы */
+        #win-screen {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .win-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .win-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .win-text {
+            font-size: 2em;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* Эффект вспышки камеры */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .flash-overlay.active {
+            animation: flash 0.5s ease-out;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Звуковая индикация */
+        .sound-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s;
+            font-size: 1.5em;
+        }
+
+        .sound-indicator:hover {
+            transform: scale(1.1);
+        }
+
+        .sound-indicator.muted {
+            opacity: 0.5;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .frames-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .frames-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .photo-frame {
+                width: 180px;
+                height: 130px;
+                border-width: 10px;
+            }
+            
+            .animal-word {
+                font-size: 2.7em;
+            }
+            
+            .animal-emoji {
+                font-size: 6em;
+            }
+            
+            .capture-btn {
+                padding: 15px 30px;
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .frames-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .photo-frame {
+                width: 220px;
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Индикатор звука -->
+    <div class="sound-indicator" id="soundToggle" title="Включить/выключить звук">
+        🔊
+    </div>
+
+    <!-- Эффект вспышки -->
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <!-- Главный экран - Альбом -->
+    <div class="screen active" id="album-screen">
+        <div class="album-container">
+            <h1>📸 Учимся читать слова! 📸</h1>
+            <p class="instruction">Выбери животное, которое хочешь сфотографировать, прочитай слово и успей сделать фото!</p>
+            <div class="frames-grid">
+                <div class="photo-frame" data-word="kasha">
+                    <div class="silhouette">🦆</div>
+                </div>
+                <div class="photo-frame" data-word="luna">
+                    <div class="silhouette">🦌</div>
+                </div>
+                <div class="photo-frame" data-word="mylo">
+                    <div class="silhouette">🐝</div>
+                </div>
+                <div class="photo-frame" data-word="noga">
+                    <div class="silhouette">🐬</div>
+                </div>
+                <div class="photo-frame" data-word="ruki">
+                    <div class="silhouette">🦚</div>
+                </div>
+                <div class="photo-frame" data-word="sani">
+                    <div class="silhouette">🦎</div>
+                </div>
+                <div class="photo-frame" data-word="sushu">
+                    <div class="silhouette">🐘</div>
+                </div>
+                <div class="photo-frame" data-word="usy">
+                    <div class="silhouette">🐄</div>
+                </div>
+            </div>
+            <button class="reset-btn" onclick="resetGame()">🔄 Начать сначала</button>
+        </div>
+    </div>
+
+    <!-- Экраны заданий -->
+    <div class="screen task-screen" id="task-kasha">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-kasha">🦆</div>
+            <div class="animal-word">КАША</div>
+            <button class="capture-btn" onclick="capturePhoto('kasha')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-luna">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-luna">🦌</div>
+            <div class="animal-word">ЛУНА</div>
+            <button class="capture-btn" onclick="capturePhoto('luna')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-mylo">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-mylo">🐝</div>
+            <div class="animal-word">МЫЛО</div>
+            <button class="capture-btn" onclick="capturePhoto('mylo')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-noga">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-noga">🐬</div>
+            <div class="animal-word">НОГА</div>
+            <button class="capture-btn" onclick="capturePhoto('noga')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-ruki">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-ruki">🦚</div>
+            <div class="animal-word">РУКИ</div>
+            <button class="capture-btn" onclick="capturePhoto('ruki')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-sani">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-sani">🦎</div>
+            <div class="animal-word">САНИ</div>
+            <button class="capture-btn" onclick="capturePhoto('sani')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-sushu">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-sushu">🐘</div>
+            <div class="animal-word">СУШУ</div>
+            <button class="capture-btn" onclick="capturePhoto('sushu')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <div class="screen task-screen" id="task-usy">
+        <div class="task-content">
+            <div class="animal-emoji" id="animal-usy">🐄</div>
+            <div class="animal-word">УСЫ</div>
+            <button class="capture-btn" onclick="capturePhoto('usy')">СНЯТЬ!</button>
+        </div>
+    </div>
+
+    <!-- Экран неудачи -->
+    <div class="screen" id="fail-screen">
+        <div class="fail-content">
+            <div class="fail-emoji">😢</div>
+            <div class="fail-text">
+                Ой, не успел!<br>
+                Попробуй ещё раз, будь быстрее!
+            </div>
+            <button class="back-btn" onclick="backToAlbum()">Вернуться в альбом</button>
+        </div>
+    </div>
+
+    <!-- Экран победы -->
+    <div class="screen" id="win-screen">
+        <div class="win-content">
+            <div class="win-emoji">🎉</div>
+            <div class="win-text">
+                Поздравляю!<br>
+                Ты прочитал все слова и сделал все фото!<br>
+                Ты молодец!
+            </div>
+            <button class="back-btn" onclick="resetGame()">Играть снова</button>
+        </div>
+    </div>
+
+    <!-- Аудио элементы -->
+    <audio id="shutterSound" preload="auto">
+        <source src="audio/ESM_MG3_fx_foley_plastic_click_press_cassette_01.wav" type="audio/mpeg">
+    </audio>
+    <audio id="runSound" preload="auto">
+        <source src="audio/notification3_1.wav" type="audio/mpeg">
+    </audio>
+    <audio id="winSound" preload="auto">
+        <source src="audio/click_marimba_5.wav" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Глобальное состояние приложения
+        const gameState = {
+            currentWord: null,
+            isSoundEnabled: true,
+            capturedWords: new Set(),
+            timer: null
+        };
+
+        // Данные о словах и связанных эмодзи
+        const wordsData = {
+            kasha: {
+                word: 'КАША',
+                emoji: '🦆',
+                photoEmoji: 'img/duck-1893080_640.jpg'
+            },
+            luna: {
+                word: 'ЛУНА',
+                emoji: '🦌',
+                photoEmoji: 'img/fallow-deer-4743238_640.jpg'
+            },
+            mylo: {
+                word: 'МЫЛО',
+                emoji: '🐝',
+                photoEmoji: 'img/bee-7650100_640.jpg'
+            },
+            noga: {
+                word: 'НОГА',
+                emoji: '🐬',
+                photoEmoji: 'img/dolphins-1939083_640.jpg'
+            },
+            ruki: {
+                word: 'РУКИ',
+                emoji: '🦚',
+                photoEmoji: 'img/indian-peafowl-50515_640.jpg'
+            },
+            sani: {
+                word: 'САНИ',
+                emoji: '🦎',
+                photoEmoji: 'img/iguana-1057830_640.jpg'
+            },
+            sushu: {
+                word: 'СУШУ',
+                emoji: '🐘',
+                photoEmoji: 'img/elephant-114543_640.jpg'
+            },
+            usy: {
+                word: 'УСЫ',
+                emoji: '🐄',
+                photoEmoji: 'img/cow-4269568_640.jpg'
+            }
+        };
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            loadProgress();
+        });
+
+        // Установка обработчиков событий
+        function initializeEventListeners() {
+            // Клик по рамкам
+            document.querySelectorAll('.photo-frame').forEach(frame => {
+                frame.addEventListener('click', (e) => {
+                    const word = e.currentTarget.dataset.word;
+                    if (!gameState.capturedWords.has(word)) {
+                        startTask(word);
+                    }
+                });
+            });
+
+            // Переключатель звука
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+        }
+
+        // Загрузка прогресса из localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('capturedWords');
+            if (saved) {
+                gameState.capturedWords = new Set(JSON.parse(saved));
+                updateAlbum();
+            }
+        }
+
+        // Сохранение прогресса
+        function saveProgress() {
+            localStorage.setItem('capturedWords', JSON.stringify([...gameState.capturedWords]));
+        }
+
+        // Начало задания
+        function startTask(word) {
+            gameState.currentWord = word;
+            showScreen(`task-${word}`);
+            
+            // Запуск анимации ухода эмодзи
+            const animalEmoji = document.getElementById(`animal-${word}`);
+            setTimeout(() => {
+                animalEmoji.classList.add('running');
+                playSound('runSound');
+                
+                // Таймер на 3 секунд
+                gameState.timer = setTimeout(() => {
+                    if (gameState.currentWord === word) {
+                        showFailScreen();
+                    }
+                }, 3500);
+            }, 100);
+        }
+
+        // Снятие фотографии
+        function capturePhoto(word) {
+            if (gameState.currentWord !== word) return;
+            
+            // Остановка таймера
+            clearTimeout(gameState.timer);
+            
+            // Эффект вспышки
+            const flash = document.getElementById('flashOverlay');
+            flash.classList.add('active');
+            playSound('shutterSound');
+            
+            setTimeout(() => {
+                flash.classList.remove('active');
+                
+                // Добавление слова в список пойманных
+                gameState.capturedWords.add(word);
+                saveProgress();
+                
+                // Возврат в альбом
+                backToAlbum();
+                
+                // Обновление альбома
+                setTimeout(() => {
+                    addPhotoToFrame(word);
+                    checkWinCondition();
+                }, 300);
+            }, 500);
+        }
+
+        // Добавление фото в рамку
+        function addPhotoToFrame(word) {
+            const frame = document.querySelector(`[data-word="${word}"]`);
+            const photo = document.createElement('div');
+            photo.className = 'captured-photo';
+            
+            // Создаем элемент изображения вместо текста
+            const img = document.createElement('img');
+            img.src = wordsData[word].photoEmoji;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            
+            photo.appendChild(img);
+            frame.appendChild(photo);
+            frame.classList.add('captured');
+        }
+
+        // Проверка условия победы
+        function checkWinCondition() {
+            if (gameState.capturedWords.size === Object.keys(wordsData).length) {
+                setTimeout(() => {
+                    showScreen('win-screen');
+                    playSound('winSound');
+                }, 500);
+            }
+        }
+
+        // Показ экрана неудачи
+        function showFailScreen() {
+            gameState.currentWord = null;
+            showScreen('fail-screen');
+            
+            // Сброс анимации
+            document.querySelectorAll('.animal-emoji').forEach(emoji => {
+                emoji.classList.remove('running');
+            });
+        }
+
+        // Возврат в альбом
+        function backToAlbum() {
+            gameState.currentWord = null;
+            clearTimeout(gameState.timer);
+            
+            // Сброс анимаций
+            document.querySelectorAll('.animal-emoji').forEach(emoji => {
+                emoji.classList.remove('running');
+            });
+            
+            showScreen('album-screen');
+        }
+
+        // Сброс игры
+        function resetGame() {
+            gameState.capturedWords.clear();
+            gameState.currentWord = null;
+            clearTimeout(gameState.timer);
+            localStorage.removeItem('capturedWords');
+            
+            // Очистка всех рамок
+            document.querySelectorAll('.photo-frame').forEach(frame => {
+                const photo = frame.querySelector('.captured-photo');
+                if (photo) {
+                    photo.remove();
+                }
+                frame.classList.remove('captured');
+            });
+            
+            // Сброс анимаций
+            document.querySelectorAll('.animal-emoji').forEach(emoji => {
+                emoji.classList.remove('running');
+            });
+            
+            showScreen('album-screen');
+        }
+
+        // Переключение экранов
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Переключение звука
+        function toggleSound() {
+            gameState.isSoundEnabled = !gameState.isSoundEnabled;
+            const indicator = document.getElementById('soundToggle');
+            indicator.textContent = gameState.isSoundEnabled ? '🔊' : '🔇';
+            indicator.classList.toggle('muted');
+        }
+
+        // Воспроизведение звука
+        function playSound(soundId) {
+            if (!gameState.isSoundEnabled) return;
+            
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log('Ошибка воспроизведения звука:', e));
+            }
+        }
+
+        // Обновление альбома при загрузке
+        function updateAlbum() {
+            gameState.capturedWords.forEach(word => {
+                addPhotoToFrame(word);
+            });
+        }
+
+        // Предотвращение закрытия окна во время игры
+        window.addEventListener('beforeunload', (e) => {
+            if (gameState.currentWord) {
+                e.preventDefault();
+                e.returnValue = 'Игра не завершена! Вы уверены, что хотите уйти?';
+            }
+        });
+    </script>
+</body>
+</html>
