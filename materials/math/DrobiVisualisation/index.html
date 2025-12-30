@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дроби: Визуализация</title>
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .fraction-app {
+            width: 1000px;
+            height: 600px;
+            background: #E8E8E8;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Левая часть: Визуал */
+        .visual-area {
+            width: 600px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        svg {
+            width: 450px;
+            height: 450px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.1));
+        }
+
+        path {
+            stroke: black;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        path:hover {
+            opacity: 0.9;
+        }
+
+        /* Правая часть: Управление */
+        .controls-area {
+            width: 400px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 20px;
+        }
+
+        .input-card {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+
+        .fraction-input {
+            width: 80px;
+            font-size: 60px;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .fraction-input:focus {
+            border-color: #1EB159;
+            background-color: #f9fff9;
+        }
+
+        .divider {
+            width: 100px;
+            height: 6px;
+            background: black;
+            border-radius: 2px;
+            margin: 10px 0;
+        }
+
+        .check-btn {
+            background: #1EB159;
+            color: white;
+            font-size: 20px;
+            font-family: 'Roboto Mono', monospace;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #157a3e;
+        }
+
+        .check-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #157a3e;
+        }
+
+        .feedback {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="fraction-app">
+    
+    <div class="visual-area">
+        <svg id="fraction-svg" viewBox="0 0 200 200"></svg>
+    </div>
+
+    <div class="controls-area">
+        <div id="feedback" class="feedback"></div>
+
+        <div class="input-card">
+            <input type="number" id="inp-num" class="fraction-input" placeholder="?">
+            <div class="divider"></div>
+            <input type="number" id="inp-denom" class="fraction-input" placeholder="?">
+        </div>
+
+        <button id="btn-check" class="check-btn">ПРОВЕРИТЬ</button>
+    </div>
+
+</div>
+
+<script>
+    /* --- НАСТРОЙКИ --- */
+    const CONFIG = {
+        denominators: [3, 5, 8, 7, 12],
+        colors: {
+            fill: '#FF5555',    
+            empty: '#E8E8E8',   
+            stroke: '#000000'   
+        }
+        // Убрали scatterChance, чтобы не было хаоса
+    };
+
+    /* --- ПЕРЕМЕННЫЕ СОСТОЯНИЯ --- */
+    let state = {
+        numerator: 0,
+        denominator: 0,
+        solved: false
+    };
+
+    // Для предотвращения повторов сохраняем предыдущее задание
+    let lastTask = { num: 0, den: 0 };
+
+    /* --- ЭЛЕМЕНТЫ DOM --- */
+    const svg = document.getElementById('fraction-svg');
+    const inpNum = document.getElementById('inp-num');
+    const inpDenom = document.getElementById('inp-denom');
+    const btn = document.getElementById('btn-check');
+    const feedback = document.getElementById('feedback');
+
+    /* --- ФУНКЦИИ --- */
+
+    /**
+     * Генерация задания
+     * Изменения:
+     * 1. Цикл do-while предотвращает повтор одинакового задания подряд.
+     * 2. Числитель генерируется до (denominator - 1), чтобы не было 3/3, 5/5.
+     */
+    function generateTask() {
+        inpNum.value = '';
+        inpDenom.value = '';
+        feedback.innerText = '';
+        feedback.style.color = 'black';
+        btn.innerText = 'ПРОВЕРИТЬ';
+        state.solved = false;
+
+        let newDenom, newNum;
+
+        // Крутим цикл, пока не найдем новую комбинацию (защита от повторов)
+        do {
+            // Выбираем знаменатель
+            const dIndex = Math.floor(Math.random() * CONFIG.denominators.length);
+            newDenom = CONFIG.denominators[dIndex];
+            
+            // Выбираем числитель. 
+            // Множитель (newDenom - 1) гарантирует, что результат < знаменателя.
+            // Пример: если знам=5, (5-1)=4. Рандом даст 0..3. Плюс 1 = 1..4.
+            // Итог: 5/5 никогда не выпадет.
+            newNum = Math.floor(Math.random() * (newDenom - 1)) + 1;
+
+        } while (newNum === lastTask.num && newDenom === lastTask.den);
+
+        // Сохраняем текущее задание как "прошлое"
+        state.numerator = newNum;
+        state.denominator = newDenom;
+        lastTask = { num: newNum, den: newDenom };
+
+        drawCircle(state.numerator, state.denominator);
+    }
+
+    /**
+     * Отрисовка круга
+     * Изменения:
+     * Убрана логика scatter/activeIndices. Теперь заливка идет строго по порядку (if i < num).
+     */
+    function drawCircle(num, total) {
+        svg.innerHTML = ''; 
+
+        const cx = 100; 
+        const cy = 100; 
+        const radius = 90; 
+        
+        for (let i = 0; i < total; i++) {
+            // Углы для отрисовки сектора
+            const startAngle = (i * 2 * Math.PI) / total - Math.PI / 2;
+            const endAngle = ((i + 1) * 2 * Math.PI) / total - Math.PI / 2;
+
+            const x1 = cx + radius * Math.cos(startAngle);
+            const y1 = cy + radius * Math.sin(startAngle);
+            const x2 = cx + radius * Math.cos(endAngle);
+            const y2 = cy + radius * Math.sin(endAngle);
+
+            const d = `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", d);
+            path.setAttribute("stroke", CONFIG.colors.stroke);
+            path.setAttribute("stroke-width", "2");
+            
+            // ПРОСТАЯ ЛОГИКА ЗАЛИВКИ:
+            // Если текущий номер сектора меньше числителя — красим.
+            // Так как i идет по порядку (0, 1, 2...), закрашенные части всегда будут рядом.
+            if (i < num) {
+                path.setAttribute("fill", CONFIG.colors.fill);
+            } else {
+                path.setAttribute("fill", CONFIG.colors.empty);
+            }
+
+            svg.appendChild(path);
+        }
+    }
+
+    function check() {
+        if (state.solved) {
+            generateTask();
+            return;
+        }
+
+        const uNum = parseInt(inpNum.value);
+        const uDenom = parseInt(inpDenom.value);
+
+        if (isNaN(uNum) || isNaN(uDenom)) {
+            feedback.innerText = "Введите цифры!";
+            feedback.style.color = "#orange";
+            return;
+        }
+
+        if (uNum === state.numerator && uDenom === state.denominator) {
+            feedback.innerText = "ВЕРНО!";
+            feedback.style.color = "#1EB159";
+            btn.innerText = "ДАЛЬШЕ →";
+            state.solved = true;
+        } else {
+            feedback.innerText = "ОШИБКА";
+            feedback.style.color = "#FF5555";
+            inpNum.style.borderColor = 'red';
+            setTimeout(() => inpNum.style.borderColor = '#ddd', 1000);
+        }
+    }
+
+    btn.addEventListener('click', check);
+    generateTask();
+
+</script>
+
+</body>
+</html>

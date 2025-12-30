@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дроби: Конструктор</title>
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            user-select: none; /* Чтобы текст не выделялся при активных кликах */
+        }
+
+        .fraction-app {
+            width: 1000px;
+            height: 600px;
+            background: #E8E8E8;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Левая часть: Визуал */
+        .visual-area {
+            width: 600px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #fff; /* Немного светлее фон для области рисования */
+            border-right: 1px solid #ddd;
+        }
+
+        svg {
+            width: 450px;
+            height: 450px;
+            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.15));
+            /* Переход для плавного изменения цвета заливки */
+            transition: transform 0.3s ease;
+        }
+
+        path {
+            stroke: black;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: fill 0.2s ease, transform 0.1s;
+        }
+        
+        path:hover {
+            opacity: 0.8;
+            transform: scale(1.01); /* Легкое увеличение при наведении */
+            transform-origin: center;
+        }
+
+        /* Правая часть: Управление */
+        .controls-area {
+            width: 400px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .task-card {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Стиль для отображения дроби (вместо input) */
+        .fraction-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+        }
+
+        .target-num {
+            font-size: 80px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .divider {
+            width: 120px;
+            height: 8px;
+            background: black;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .target-denom {
+            font-size: 80px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .check-btn {
+            background: #1EB159;
+            color: white;
+            font-size: 20px;
+            font-family: 'Roboto Mono', monospace;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #157a3e;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .check-btn:hover {
+            background-color: #23c865;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #157a3e;
+        }
+
+        .check-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #157a3e;
+        }
+
+        .check-btn:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            height: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .instruction {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="fraction-app">
+    
+    <div class="visual-area">
+        <!-- SVG будет генерироваться JS -->
+        <svg id="fraction-svg" viewBox="0 0 200 200"></svg>
+    </div>
+
+    <div class="controls-area">
+        <div id="feedback" class="feedback"></div>
+        <div class="instruction">Задание: закрасьте часть круга</div>
+
+        <!-- Здесь мы показываем ЦЕЛЬ, а не вводим данные -->
+        <div class="task-card">
+            <div class="fraction-display">
+                <span id="target-num" class="target-num">?</span>
+                <div class="divider"></div>
+                <span id="target-denom" class="target-denom">?</span>
+            </div>
+        </div>
+
+        <button id="btn-check" class="check-btn">ПРОВЕРИТЬ</button>
+    </div>
+
+</div>
+
+<script>
+    /* --- НАСТРОЙКИ --- */
+    const CONFIG = {
+        denominators: [3, 4, 5, 7, 8, 12], // Возможные знаменатели
+        colors: {
+            fill: '#FF5555',    // Цвет закрашенной части
+            empty: '#E0E0E0',   // Цвет пустой части (немного темнее фона)
+            stroke: '#000000'   
+        }
+    };
+
+    /* --- ПЕРЕМЕННЫЕ СОСТОЯНИЯ --- */
+    let state = {
+        targetNum: 0,      // Какое число нужно получить (числитель)
+        targetDenom: 0,    // На сколько частей делится (знаменатель)
+        filledIndices: new Set(), // Какие сегменты сейчас закрашены (индексы)
+        solved: false
+    };
+
+    let lastTask = { num: 0, den: 0 };
+
+    /* --- ЭЛЕМЕНТЫ DOM --- */
+    const svg = document.getElementById('fraction-svg');
+    const elNum = document.getElementById('target-num');
+    const elDenom = document.getElementById('target-denom');
+    const btn = document.getElementById('btn-check');
+    const feedback = document.getElementById('feedback');
+
+    /* --- ФУНКЦИИ --- */
+
+    /**
+     * Генерация нового задания
+     */
+    function generateTask() {
+        // Сброс UI
+        feedback.innerText = '';
+        feedback.style.color = 'black';
+        btn.innerText = 'ПРОВЕРИТЬ';
+        btn.disabled = false;
+        state.solved = false;
+        state.filledIndices.clear();
+
+        let newDenom, newNum;
+
+        do {
+            const dIndex = Math.floor(Math.random() * CONFIG.denominators.length);
+            newDenom = CONFIG.denominators[dIndex];
+            // Генерируем числитель от 1 до (знаменатель - 1)
+            newNum = Math.floor(Math.random() * (newDenom - 1)) + 1;
+        } while (newNum === lastTask.num && newDenom === lastTask.den);
+
+        state.targetNum = newNum;
+        state.targetDenom = newDenom;
+        lastTask = { num: newNum, den: newDenom };
+
+        // Обновляем текст цели
+        elNum.innerText = state.targetNum;
+        elDenom.innerText = state.targetDenom;
+
+        drawCircle(state.targetDenom);
+    }
+
+    /**
+     * Отрисовка круга с пустыми секторами
+     */
+    function drawCircle(total) {
+        svg.innerHTML = ''; 
+
+        const cx = 100; 
+        const cy = 100; 
+        const radius = 90; 
+        
+        for (let i = 0; i < total; i++) {
+            // Углы сектора
+            const startAngle = (i * 2 * Math.PI) / total - Math.PI / 2;
+            const endAngle = ((i + 1) * 2 * Math.PI) / total - Math.PI / 2;
+
+            const x1 = cx + radius * Math.cos(startAngle);
+            const y1 = cy + radius * Math.sin(startAngle);
+            const x2 = cx + radius * Math.cos(endAngle);
+            const y2 = cy + radius * Math.sin(endAngle);
+
+            const d = `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", d);
+            path.setAttribute("stroke", CONFIG.colors.stroke);
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("fill", CONFIG.colors.empty);
+            
+            // Добавляем data-атрибут для удобства
+            path.dataset.index = i;
+
+            // Обработчик клика по сектору
+            path.addEventListener('click', () => toggleSlice(i, path));
+
+            svg.appendChild(path);
+        }
+    }
+
+    /**
+     * Логика клика по сегменту
+     */
+    function toggleSlice(index, pathElement) {
+        if (state.solved) return; // Если задание решено, блокируем изменения
+
+        if (state.filledIndices.has(index)) {
+            // Убираем заливку
+            state.filledIndices.delete(index);
+            pathElement.setAttribute("fill", CONFIG.colors.empty);
+        } else {
+            // Ставим заливку
+            state.filledIndices.add(index);
+            pathElement.setAttribute("fill", CONFIG.colors.fill);
+        }
+    }
+
+    /**
+     * Проверка результата
+     */
+    function check() {
+        if (state.solved) {
+            generateTask(); // Если уже решено, кнопка работает как "Далее"
+            return;
+        }
+
+        const filledCount = state.filledIndices.size;
+
+        if (filledCount === state.targetNum) {
+            // Успех
+            feedback.innerText = "ВЕРНО!";
+            feedback.style.color = "#1EB159";
+            btn.innerText = "ДАЛЬШЕ →";
+            btn.style.background = "#333"; // Меняем стиль кнопки для следующего действия
+            state.solved = true;
+        } else {
+            // Ошибка
+            let msg = filledCount > state.targetNum 
+                ? `Много! Нужно ${state.targetNum}, а закрашено ${filledCount}.`
+                : `Мало! Нужно ${state.targetNum}, а закрашено ${filledCount}.`;
+            
+            feedback.innerText = "ОШИБКА";
+            feedback.style.color = "#FF5555";
+            
+            // Показываем детальную подсказку (можно вывести в консоль или временно изменить текст)
+            // Здесь просто тряснем кнопку для визуальной обратной связи
+            btn.classList.add('shake');
+            setTimeout(() => {
+                feedback.innerText = msg; // Уточняем ошибку через секунду
+                btn.classList.remove('shake');
+            }, 500);
+        }
+    }
+
+    btn.addEventListener('click', check);
+
+    // Запуск первой задачи
+    generateTask();
+
+</script>
+
+</body>
+</html>
