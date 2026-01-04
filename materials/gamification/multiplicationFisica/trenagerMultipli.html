@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Гравитация Умножения 2.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a252f; /* Темный фон страницы */
+            color: white;
+            display: flex;
+            justify-content: center; /* Центрируем игру */
+        }
+
+        /* Контейнер игры: фиксированная ширина, полная высота */
+        #game-container {
+            position: relative;
+            width: 600px; /* Узкое поле */
+            height: 100vh;
+            background: #2c3e50; /* Фон самой игры */
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* UI слой поверх канваса */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* Общие стили для экранов (Меню, Финал) */
+        .screen {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            pointer-events: auto;
+            color: #333;
+            display: none; /* Скрыты по умолчанию */
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+        }
+
+        /* Активный экран показываем через flex */
+        .screen.active { display: flex; }
+
+        h1 { margin: 0; font-size: 1.8rem; color: #2c3e50; }
+        .stats { font-size: 1.2rem; color: #555; }
+        
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+            font-weight: bold;
+        }
+        button:hover { background: #2ecc71; transform: scale(1.05); }
+        button.secondary { background: #e67e22; }
+        button.secondary:hover { background: #f39c12; }
+
+        /* HUD (Верхняя панель) */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="hud">
+        <div>Осталось пар: <span id="pairs-count">0</span></div>
+        <div id="timer-display" style="display:none">Время: <span id="time-val">00</span></div>
+    </div>
+
+    <div id="ui-layer">
+        
+        <div id="start-screen" class="screen active">
+            <h1>Таблица Умножения</h1>
+            <p>Выбери режим игры:</p>
+            <button onclick="startGame(true)">⏱️ На время (60 сек)</button>
+            <button class="secondary" onclick="startGame(false)">🧘 Дзен (Без таймера)</button>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h1 id="end-title">Уровень пройден!</h1>
+            <div class="stats">Правильно: <span id="stat-correct">0</span></div>
+            <div class="stats">Ошибки: <span id="stat-wrong">0</span></div>
+            <button onclick="showMenu()">В главное меню</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- 0. АУДИО СИСТЕМА (Синтезатор) ---
+    // Создаем звуки программно, чтобы не грузить файлы
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') audioCtx.resume(); // Активация аудио для браузеров
+        
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'select') {
+            // Короткий "блип" (синусоида)
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } 
+        else if (type === 'match') {
+            // Приятный мажорный звук (треугольная волна)
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } 
+        else if (type === 'error') {
+            // Низкий "базз" (пила)
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+        else if (type === 'spawn') {
+            // Звук падения
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+            gainNode.gain.setValueAtTime(0.1, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+    }
+
+    // --- 1. НАСТРОЙКИ ИГРЫ ---
+    
+    // Matter.js алиасы
+    const Engine = Matter.Engine,
+          Render = Matter.Render,
+          Runner = Matter.Runner,
+          Bodies = Matter.Bodies,
+          Composite = Matter.Composite,
+          Events = Matter.Events,
+          Mouse = Matter.Mouse,
+          MouseConstraint = Matter.MouseConstraint;
+
+    // Ссылки на DOM
+    const gameContainer = document.getElementById('game-container');
+    const timerDisplay = document.getElementById('timer-display');
+    const timeVal = document.getElementById('time-val');
+
+    // Переменные состояния
+    let engine, render, runner;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let selectedBody = null;
+    let walls = [];
+    
+    // Таймер
+    let isTimerMode = false;
+    let timeLeft = 60;
+    let timerInterval = null;
+    let gameActive = false;
+
+    // Константы
+    const GAME_WIDTH = 600;
+    const GAME_HEIGHT = window.innerHeight;
+    const START_PAIRS = 10;
+
+    // --- 2. ИНИЦИАЛИЗАЦИЯ ДВИЖКА (Запускается один раз) ---
+    function initPhysics() {
+        engine = Engine.create();
+        
+        render = Render.create({
+            element: gameContainer,
+            engine: engine,
+            options: {
+                width: GAME_WIDTH,
+                height: GAME_HEIGHT,
+                wireframes: false,
+                background: '#2c3e50'
+            }
+        });
+
+        // Кастомная отрисовка текста
+        Events.on(render, 'afterRender', function() {
+            const ctx = render.context;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 18px "Segoe UI"';
+            ctx.fillStyle = 'white';
+
+            Composite.allBodies(engine.world).forEach(body => {
+                if (body.label === 'gameBall' && body.gameData) {
+                    ctx.fillText(body.gameData.text, body.position.x, body.position.y);
+                }
+            });
+        });
+
+        // Мышь
+        const mouse = Mouse.create(render.canvas);
+        const mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: { stiffness: 0.2, render: { visible: false } }
+        });
+        Composite.add(engine.world, mouseConstraint);
+
+        // Обработчик клика
+        Events.on(mouseConstraint, 'mousedown', function(event) {
+            if (!gameActive) return; // Не реагировать, если игра закончена
+            
+            const mousePosition = event.mouse.position;
+            const clickedBody = Composite.allBodies(engine.world).find(b => 
+                Matter.Bounds.contains(b.bounds, mousePosition) && 
+                Matter.Vertices.contains(b.vertices, mousePosition) &&
+                b.label === 'gameBall'
+            );
+
+            if (clickedBody) handleSelection(clickedBody);
+        });
+
+        Render.run(render);
+        runner = Runner.create();
+        Runner.run(runner, engine);
+    }
+
+    // --- 3. ИГРОВАЯ ЛОГИКА ---
+
+    function createWalls() {
+        const thickness = 60;
+        const w = GAME_WIDTH;
+        const h = GAME_HEIGHT;
+
+        const ground = Bodies.rectangle(w/2, h + thickness/2 - 10, w, thickness, { isStatic: true, render: { fillStyle: '#34495e' } });
+        const leftWall = Bodies.rectangle(0 - thickness/2, h/2, thickness, h*3, { isStatic: true, render: { fillStyle: '#34495e' } });
+        const rightWall = Bodies.rectangle(w + thickness/2, h/2, thickness, h*3, { isStatic: true, render: { fillStyle: '#34495e' } });
+
+        walls = [ground, leftWall, rightWall];
+        Composite.add(engine.world, walls);
+    }
+
+    function spawnCircle(x, y, text, numericValue, isProblem) {
+        const size = 38 + Math.random() * 5; 
+        
+        const circle = Bodies.circle(x, y, size, {
+            restitution: 0.7,
+            friction: 0.005,
+            label: 'gameBall',
+            gameData: {
+                text: text,
+                value: numericValue,
+                isSelected: false,
+                originalColor: isProblem ? '#e74c3c' : '#3498db'
+            },
+            render: { fillStyle: isProblem ? '#e74c3c' : '#3498db' }
+        });
+
+        Composite.add(engine.world, circle);
+    }
+
+    function spawnPair() {
+        if (!gameActive) return;
+        const a = Math.floor(Math.random() * 8) + 2; // 2..9
+        const b = Math.floor(Math.random() * 8) + 2;
+        const res = a * b;
+
+        const x1 = Math.random() * (GAME_WIDTH - 100) + 50;
+        const x2 = Math.random() * (GAME_WIDTH - 100) + 50;
+
+        spawnCircle(x1, -50, `${a}×${b}`, res, true);
+        playSound('spawn');
+        
+        setTimeout(() => {
+            if(gameActive) spawnCircle(x2, -100, res.toString(), res, false);
+        }, 300);
+
+        updateHUD();
+    }
+
+    function handleSelection(body) {
+        playSound('select');
+
+        if (selectedBody === body) {
+            deselectBody(body);
+            selectedBody = null;
+            return;
+        }
+
+        if (selectedBody === null) {
+            selectBody(body);
+            selectedBody = body;
+        } else {
+            checkMatch(selectedBody, body);
+        }
+    }
+
+    function selectBody(body) {
+        body.gameData.isSelected = true;
+        body.render.fillStyle = '#f1c40f';
+    }
+
+    function deselectBody(body) {
+        body.gameData.isSelected = false;
+        body.render.fillStyle = body.gameData.originalColor;
+    }
+
+    function checkMatch(body1, body2) {
+        if (body1.gameData.value === body2.gameData.value) {
+            // Правильно
+            playSound('match');
+            correctAnswers++;
+            Composite.remove(engine.world, [body1, body2]);
+            selectedBody = null;
+            checkWinCondition();
+        } else {
+            // Ошибка
+            playSound('error');
+            wrongAnswers++;
+            deselectBody(body1);
+            selectedBody = null;
+            
+            // Визуальный штраф
+            gameContainer.style.background = '#4a2c2c';
+            setTimeout(() => gameContainer.style.background = '#2c3e50', 200);
+
+            // Штрафной спавн
+            spawnPair();
+        }
+        updateHUD();
+    }
+
+    // --- 4. УПРАВЛЕНИЕ ПОТОКОМ (Start/End) ---
+
+    function showMenu() {
+        gameActive = false;
+        clearWorld();
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('start-screen').classList.add('active');
+        clearInterval(timerInterval);
+    }
+
+    function startGame(timerMode) {
+        isTimerMode = timerMode;
+        
+        // UI
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        timerDisplay.style.display = isTimerMode ? 'block' : 'none';
+
+        // Сброс статистики
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        gameActive = true;
+        
+        clearWorld();
+        createWalls();
+
+        // Таймер
+        if (isTimerMode) {
+            timeLeft = 60; // Секунды
+            timeVal.innerText = timeLeft;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeVal.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame("Время вышло!");
+                }
+            }, 1000);
+        }
+
+        // Стартовые шары
+        for(let i=0; i<START_PAIRS; i++) {
+            setTimeout(spawnPair, i * 400);
+        }
+    }
+
+    function checkWinCondition() {
+        const remainingBalls = Composite.allBodies(engine.world).filter(b => b.label === 'gameBall').length;
+        if (remainingBalls === 0) {
+            // Небольшая задержка перед победой
+            setTimeout(() => endGame("Поле зачищено!"), 500); 
+        }
+    }
+
+    function endGame(titleText) {
+        gameActive = false;
+        clearInterval(timerInterval);
+        
+        document.getElementById('end-title').innerText = titleText;
+        document.getElementById('stat-correct').innerText = correctAnswers;
+        document.getElementById('stat-wrong').innerText = wrongAnswers;
+        
+        document.getElementById('end-screen').classList.add('active');
+    }
+
+    function clearWorld() {
+        const allBodies = Composite.allBodies(engine.world);
+        Composite.clear(engine.world, false); // Очищаем всё
+        // Стены создадим заново в startGame, так проще управлять
+        walls = [];
+    }
+
+    function updateHUD() {
+        if (!engine) return;
+        const remaining = Composite.allBodies(engine.world).filter(b => b.label === 'gameBall').length;
+        document.getElementById('pairs-count').innerText = Math.ceil(remaining / 2);
+    }
+
+    // --- ЗАПУСК ---
+    // Сначала инициализируем движок, потом показываем меню
+    initPhysics();
+    showMenu(); // Сразу показываем меню при загрузке
+
+</script>
+</body>
+</html>
