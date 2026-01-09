@@ -1,0 +1,62 @@
+[
+  {
+    "type": "text",
+    "left": "2 ч",
+    "right": "120 мин",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "45 мин",
+    "right": "2700 с",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "1 сут 6 ч",
+    "right": "30 ч",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "90 мин",
+    "right": "1 ч 25 мин",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "400 с",
+    "right": "7 мин",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "1 нед",
+    "right": "170 ч",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "3 ч 10 мин",
+    "right": "185 мин",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "72 ч",
+    "right": "3 сут",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "1 ч 15 мин",
+    "right": "80 мин",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "600 мин",
+    "right": "10 ч",
+    "correct": "="
+  }
+]

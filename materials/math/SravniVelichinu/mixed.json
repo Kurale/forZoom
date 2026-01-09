@@ -1,0 +1,32 @@
+[
+  {
+    "left": { "t": "img", "v": "assets/6яблок.png" },
+    "right": { "t": "text", "v": "5 яблок" },
+    "correct": ">"
+  },
+  {
+    "left": { "t": "fraction", "v": { "w": 1, "n": 1, "d": 2 } },
+    "right": { "t": "img", "v": "assets/1(1_2).png" },
+    "correct": "="
+  },
+    {
+    "left": { "t": "img", "v": "assets/(4_6).png" },
+    "right": { "t": "img", "v": "assets/(2_3).png" },
+    "correct": "="
+  },
+    {
+    "left": { "t": "img", "v": "assets/(4_5).png" },
+    "right": { "t": "img", "v": "assets/(8_10).png" },
+    "correct": "="
+  },
+    {
+    "left": { "t": "img", "v": "assets/(4_5).png" },
+    "right": { "t": "img", "v": "assets/(4_6).png" },
+    "correct": ">"
+  },
+  {
+    "left": { "t": "text", "v": "100 см" },
+    "right": { "t": "img", "v": "assets/1метр.png" },
+    "correct": "="
+  }
+]

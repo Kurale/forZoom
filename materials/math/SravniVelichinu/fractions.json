@@ -1,0 +1,59 @@
+[
+  {
+    "type": "fraction",
+    "left": { "w": 0, "n": 3, "d": 4 },
+    "right": { "w": 0, "n": 6, "d": 8 },
+    "correct": "="
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 2, "n": 1, "d": 3 },
+    "right": { "w": 1, "n": 4, "d": 3 },
+    "correct": "="
+  },
+  {
+    "left": { "t": "fraction", "v": { "w": 0, "n": 16, "d": 6 } },
+    "right": { "t": "img", "v": "assets/(2)4_6.png" },
+    "correct": "="
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 3, "n": 1, "d": 5 },
+    "right": { "w": 3, "n": 2, "d": 10 },
+    "correct": "="
+  },
+  {
+    "left": { "t": "fraction", "v": { "w": 0, "n": 6, "d": 3 } },
+    "right": { "t": "img", "v": "assets/1(2_3).png" },
+    "correct": ">"
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 4, "n": 2, "d": 7 },
+    "right": { "w": 4, "n": 1, "d": 3 },
+    "correct": "<"
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 1, "n": 3, "d": 8 },
+    "right": { "w": 1, "n": 5, "d": 12 },
+    "correct": ">"
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 0, "n": 9, "d": 5 },
+    "right": { "w": 1, "n": 4, "d": 5 },
+    "correct": "="
+  },
+  {
+    "type": "fraction",
+    "left": { "w": 2, "n": 2, "d": 9 },
+    "right": { "w": 2, "n": 1, "d": 4 },
+    "correct": "<"
+  },
+  {
+    "left": { "t": "fraction", "v": { "w": 3, "n": 4, "d": 7 } },
+    "right": { "t": "img", "v": "assets/3(4_7).png" },
+    "correct": "="
+  }
+]

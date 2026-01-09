@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер: Сравнение величин</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #C3E7F1;
+            --card-bg: #20373B;
+            --text-gold: #FFC64F;
+            --accent-blue: #59A5B2;
+            --border-color: #707070;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        #app-container {
+            width: 90%;
+            max-width: 800px;
+            /* Убрали фиксированную высоту, чтобы контент влезал гибко, но задали мин. высоту */
+            min-height: 90vh; 
+            background: var(--bg-color);
+            border-radius: 35px;
+            border: 8px solid var(--card-bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px 0;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: var(--card-bg);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: var(--card-bg);
+            color: var(--text-gold);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 20px; /* Чуть меньше шрифт кнопок */
+            padding: 12px 30px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 0 #122225;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+        .btn:hover { filter: brightness(1.2); }
+
+        /* Игровая зона */
+        .game-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .value-card {
+            width: 180px;
+            height: 150px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gold);
+            font-size: 28px;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+        }
+
+        /* Дроби и числа */
+        .mixed-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .whole-part { font-size: 50px; line-height: 1; }
+        .fraction {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 36px;
+            line-height: 1;
+        }
+        .numerator {
+            border-bottom: 3px solid var(--text-gold);
+            padding-bottom: 2px;
+            margin-bottom: 2px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Дроп-зона */
+        .drop-zone {
+            width: 110px;
+            height: 110px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            border: 2px dashed #969393;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .drop-zone.hovered {
+            background-color: var(--accent-blue);
+            border-color: var(--text-gold);
+            transform: scale(1.1);
+        }
+        .drop-zone-content {
+            color: var(--text-gold);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 120px;
+            transform: translateY(-10px);
+        }
+
+        /* Панель инструментов */
+        .tools-panel {
+            background: var(--accent-blue);
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center; /* Вертикальное выравнивание */
+        }
+        .sign-tool {
+            width: 100px;
+            height: 100px;
+            /* border-radius: 50%; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gold);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 100px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            transform: translateY(-6px);
+            /* background: rgba(32, 55, 59, 0);  */
+        }
+        .sign-tool:hover { transform: scale(1.1); background: rgba(32, 55, 59, 0); }
+
+        /* Курсор */
+        #cursor-follower {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            color: var(--text-gold);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 100px;
+            font-weight: bold;
+            transform: translate(-50%, -50%);
+            display: none;
+            text-shadow: 2px 2px 0px #000;
+        }
+        
+        .correct { animation: pulse-green 0.5s; border-color: #4CAF50 !important; background-color: #4CAF50 !important; }
+        .wrong { animation: shake 0.5s; border-color: #F44336 !important; background-color: #F44336 !important; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+        }
+
+        /* --- Стили для Сертификата --- */
+        #certificate-card {
+            background-color: white; /* Белый фон для контраста на картинке */
+            border: 4px solid var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            color: #333; /* Темный текст для белого фона */
+        }
+
+        #certificate-card h2 {
+            color: var(--card-bg);
+            font-family: 'Inter', sans-serif;
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 10px;
+        }
+
+        .cert-stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin: 10px 0;
+            font-family: 'Roboto Mono', monospace;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .cert-name {
+            font-size: 24px;
+            color: var(--accent-blue);
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+            min-height: 30px;
+        }
+
+        /* Инпут для имени */
+        .name-input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 2px solid var(--card-bg);
+            width: 70%;
+            margin-bottom: 10px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #error-msg { color: red; display: none; margin-top: 10px; }
+
+        .value-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Чтобы картинка не вылезала за границы */
+}
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+                <div id="menu-screen" class="screen active">
+            <h1>Сравнение величин. Тренажёр.</h1>
+            <button class="btn" onclick="startGame('fractions.json')">Дроби</button>
+            <button class="btn" onclick="startGame('length.json')">Длина</button>
+            <button class="btn" onclick="startGame('time.json')">Время</button>
+            <button class="btn" onclick="startGame('area.json')">Площадь</button>
+            <button class="btn" onclick="startGame('mixed.json')">Смешанные задачи</button>
+            <p id="error-msg">Ошибка загрузки данных. Проверьте консоль.</p>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <h2 id="level-title">Сравни значения</h2>
+            
+            <div class="game-area">
+                <div class="value-card" id="left-item"></div>
+                <div class="drop-zone" id="drop-zone">
+                    <span class="drop-zone-content" id="drop-content"></span>
+                </div>
+                <div class="value-card" id="right-item"></div>
+            </div>
+
+            <div class="tools-panel">
+                <div class="sign-tool" data-sign="<">&lt;</div>
+                <div class="sign-tool" data-sign="=">=</div>
+                <div class="sign-tool" data-sign=">">&gt;</div>
+            </div>
+            
+            <div style="margin-top: 20px; font-family: 'Roboto Mono'; color: var(--card-bg);">
+                Вопрос: <span id="current-q">1</span> / <span id="total-q">10</span>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h1>Результат</h1>
+            
+            <input type="text" id="username-input" class="name-input" placeholder="Введите ваше имя" oninput="updateCertName(this.value)">
+
+            <div id="certificate-card">
+                <h2>СЕРТИФИКАТ</h2>
+                <div>Ученик:</div>
+                <span id="cert-name-display" class="cert-name">...</span>
+                
+                <div class="cert-stat-row">
+                    <span>Верно:</span> <span id="res-correct">0</span>
+                </div>
+                <div class="cert-stat-row">
+                    <span>Ошибок:</span> <span id="res-wrong">0</span>
+                </div>
+                <div class="cert-stat-row">
+                    <span>Точность:</span> <span id="res-accuracy">0%</span>
+                </div>
+                <div class="cert-stat-row">
+                    <span>Время:</span> <span id="res-time">00:00</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 12px; color: #777;">
+                    Тренажёр "Сравнение величин"
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="downloadCertificate()">Сохранить результат</button>
+                <button class="btn" onclick="showMenu()">В меню</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cursor-follower"></div>
+
+    <script>
+        // --- JAVASCRIPT LOGIC ---
+
+        let gameState = {
+            questions: [],
+            currentIndex: 0,
+            correctAnswers: 0,
+            wrongAnswers: 0,
+            activeSign: null,
+            startTime: 0, // Время старта
+            endTime: 0    // Время окончания
+        };
+
+        const follower = document.getElementById('cursor-follower');
+        const dropZone = document.getElementById('drop-zone');
+        const dropContent = document.getElementById('drop-content');
+        const errorMsg = document.getElementById('error-msg');
+
+        // --- 1. ЗАГРУЗКА ---
+        async function startGame(jsonFileName) {
+            errorMsg.style.display = 'none';
+            gameState.correctAnswers = 0;
+            gameState.wrongAnswers = 0;
+            gameState.currentIndex = 0;
+            gameState.activeSign = null;
+            
+            // Фиксируем время старта
+            gameState.startTime = Date.now();
+
+            try {
+                const response = await fetch(jsonFileName);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                
+                // Нормализуем все вопросы сразу при загрузке
+                const normalizedData = data.map(q => normalizeQuestion(q));
+                gameState.questions = shuffleArray([...normalizedData]);
+
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('game-screen').classList.add('active');
+                
+                document.getElementById('total-q').innerText = gameState.questions.length;
+                renderQuestion();
+
+            } catch (error) {
+                console.error("Error:", error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Ошибка загрузки: " + jsonFileName;
+            }
+        }
+
+        // --- 2. РЕНДЕРИНГ ---
+        
+        /**
+         * Универсальный адаптер для конвертации старого формата в новый
+         * @param {Object} question - вопрос в старом или новом формате
+         * @returns {Object} - вопрос в новом формате
+         */
+        function normalizeQuestion(question) {
+            // Если формат уже новый (left и right имеют структуру { t, v })
+            if (question.left && typeof question.left === 'object' && 't' in question.left && 'v' in question.left) {
+                return question;
+            }
+            
+            // Конвертация старого формата в новый
+            const type = question.type || 'text';
+            let leftType, leftValue, rightType, rightValue;
+            
+            if (type === 'fraction') {
+                leftType = 'fraction';
+                leftValue = question.left;
+                rightType = 'fraction';
+                rightValue = question.right;
+            } else {
+                leftType = 'text';
+                leftValue = question.left;
+                rightType = 'text';
+                rightValue = question.right;
+            }
+            
+            return {
+                left: { t: leftType, v: leftValue },
+                right: { t: rightType, v: rightValue },
+                correct: question.correct
+            };
+        }
+
+       /**
+ * Функция отрисовки вопроса (обновленная для смешанного типа)
+ */
+function renderQuestion() {
+    const q = gameState.questions[gameState.currentIndex];
+    const leftEl = document.getElementById('left-item');
+    const rightEl = document.getElementById('right-item');
+    
+    // Сброс зоны ответа
+    dropZone.className = 'drop-zone';
+    dropZone.style.backgroundColor = '';
+    dropContent.innerText = '';
+
+    document.getElementById('current-q').innerText = gameState.currentIndex + 1;
+
+    // Вопросы уже нормализованы при загрузке, используем напрямую
+    renderContent(leftEl, q.left);
+    renderContent(rightEl, q.right);
+}
+
+/**
+ * Универсальный рендерер контента
+ * @param {HTMLElement} container - блок карточки
+ * @param {Object} data - объект вида { t: "тип", v: "значение" }
+ */
+function renderContent(container, data) {
+    container.innerHTML = ''; // Очистка
+    const type = data.t;
+    const val = data.v;
+
+    if (type === 'fraction') {
+        // Логика дроби
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mixed-container';
+        if (val.w && val.w !== 0) {
+            const whole = document.createElement('div');
+            whole.className = 'whole-part';
+            whole.innerText = val.w;
+            wrapper.appendChild(whole);
+        }
+        const frac = document.createElement('div');
+        frac.className = 'fraction';
+        frac.innerHTML = `<div class="numerator">${val.n}</div><div class="denominator">${val.d}</div>`;
+        wrapper.appendChild(frac);
+        container.appendChild(wrapper);
+
+    } else if (type === 'img') {
+        // Логика картинки
+        const img = document.createElement('img');
+        img.src = val;
+        img.style.maxWidth = "90%";
+        img.style.maxHeight = "90%";
+        img.style.objectFit = "contain";
+        img.onerror = () => { container.innerText = "Ошибка фото"; };
+        container.appendChild(img);
+
+    } else {
+        // Логика текста (по умолчанию)
+        container.innerText = val;
+    }
+}
+
+        // --- 3. МЕХАНИКА ---
+        document.querySelectorAll('.sign-tool').forEach(tool => {
+            tool.addEventListener('click', (e) => {
+                const sign = e.target.getAttribute('data-sign');
+                gameState.activeSign = sign;
+                follower.innerText = sign === '<' ? '<' : (sign === '>' ? '>' : '=');
+                follower.style.display = 'block';
+                follower.style.left = e.pageX + 'px';
+                follower.style.top = e.pageY + 'px';
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (gameState.activeSign) {
+                follower.style.left = e.pageX + 'px';
+                follower.style.top = e.pageY + 'px';
+                const rect = dropZone.getBoundingClientRect();
+                const isInside = (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom);
+                if (isInside) dropZone.classList.add('hovered');
+                else dropZone.classList.remove('hovered');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!gameState.activeSign) return;
+            if (e.target.classList.contains('sign-tool')) return;
+            if (dropZone.contains(e.target) || e.target === dropZone) {
+                checkAnswer();
+            } else {
+                gameState.activeSign = null;
+                follower.style.display = 'none';
+                dropZone.classList.remove('hovered');
+            }
+        });
+
+        function checkAnswer() {
+            const currentQ = gameState.questions[gameState.currentIndex];
+            const userSign = gameState.activeSign;
+
+            dropContent.innerText = userSign;
+            follower.style.display = 'none';
+            gameState.activeSign = null;
+
+            if (userSign === currentQ.correct) {
+                gameState.correctAnswers++;
+                dropZone.classList.add('correct');
+                setTimeout(nextQuestion, 1000);
+            } else {
+                gameState.wrongAnswers++;
+                dropZone.classList.add('wrong');
+                setTimeout(nextQuestion, 1000);
+            }
+        }
+
+        function nextQuestion() {
+            gameState.currentIndex++;
+            if (gameState.currentIndex < gameState.questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // --- 4. РЕЗУЛЬТАТЫ И СЕРТИФИКАТ ---
+        
+        // Вспомогательная функция для форматирования времени
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function showResults() {
+            gameState.endTime = Date.now();
+            const duration = gameState.endTime - gameState.startTime;
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('result-screen').classList.add('active');
+
+            // Заполняем статистику
+            document.getElementById('res-correct').innerText = gameState.correctAnswers;
+            document.getElementById('res-wrong').innerText = gameState.wrongAnswers;
+            
+            const total = gameState.correctAnswers + gameState.wrongAnswers;
+            const acc = total === 0 ? 0 : Math.round((gameState.correctAnswers / total) * 100);
+            document.getElementById('res-accuracy').innerText = acc + '%';
+            
+            // Заполняем время
+            document.getElementById('res-time').innerText = formatTime(duration);
+            
+            // Сброс имени
+            document.getElementById('username-input').value = '';
+            document.getElementById('cert-name-display').innerText = '...';
+        }
+
+        // Обновление имени в реальном времени при вводе
+        function updateCertName(value) {
+            const display = document.getElementById('cert-name-display');
+            display.innerText = value.trim() === '' ? '...' : value;
+        }
+
+        // Функция скачивания сертификата
+        function downloadCertificate() {
+            const input = document.getElementById('username-input');
+            const certNode = document.getElementById('certificate-card');
+
+            // Проверка на пустое имя
+            if (input.value.trim() === "") {
+                alert("Пожалуйста, введите имя!");
+                input.focus();
+                return;
+            }
+
+            // Использование библиотеки html2canvas
+            html2canvas(certNode, {
+                scale: 2, // Улучшаем качество картинки (2x зум)
+                backgroundColor: null // Прозрачный фон вокруг (хотя у нас card белый)
+            }).then(canvas => {
+                // Создаем ссылку для скачивания
+                const link = document.createElement('a');
+                link.download = `Result_${input.value}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+
+        function showMenu() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('menu-screen').classList.add('active');
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>

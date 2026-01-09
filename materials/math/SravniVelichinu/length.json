@@ -1,0 +1,62 @@
+[
+  {
+    "type": "text",
+    "left": "1 км",
+    "right": "1000 м",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "250 см",
+    "right": "2 дм 50 см",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "7 дм",
+    "right": "700 мм",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "3200 м",
+    "right": "3 км 2000 м",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "45 мм",
+    "right": "4 см 5 мм",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "1 дм 500 мм",
+    "right": "150 см",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "8 км 40 м",
+    "right": "8040 м",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "120 дм",
+    "right": "12 м",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "900 см",
+    "right": "9 дм",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "6 м",
+    "right": "500 см 100 мм",
+    "correct": ">"
+  }
+]

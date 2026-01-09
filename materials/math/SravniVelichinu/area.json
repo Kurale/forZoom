@@ -1,0 +1,62 @@
+[
+  {
+    "type": "text",
+    "left": "1500 м²",
+    "right": "15 а",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "1800 м²",
+    "right": "1 а 80 м²",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "5 га",
+    "right": "5000 а",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "7000 м²",
+    "right": "7 а",
+    "correct": ">"
+  },
+  {
+    "type": "text",
+    "left": "9 га 20 а",
+    "right": "920 а",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "6 а 50 м²",
+    "right": "65 а",
+    "correct": "<"
+  },
+  {
+    "type": "text",
+    "left": "2 га 99 а",
+    "right": "299 а",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "2400 м²",
+    "right": "24 а",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "1 км²",
+    "right": "10000 а",
+    "correct": "="
+  },
+  {
+    "type": "text",
+    "left": "450 м²",
+    "right": "4 а 5 м²",
+    "correct": ">"
+  }
+]
