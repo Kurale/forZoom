@@ -1,0 +1,309 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Чтобы перетаскивание не вызывало скролл */
+    position: relative;
+}
+
+/* Кнопка загрузки данных */
+.load-data-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.load-data-btn:hover {
+    transform: scale(1.1);
+    background: #8e44ad;
+}
+
+.load-data-btn:active {
+    transform: scale(0.95);
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.filename-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.filename-input:focus {
+    outline: none;
+    border-color: #9b59b6;
+}
+
+.load-btn {
+    width: 100%;
+    padding: 12px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.load-btn:hover {
+    background: #8e44ad;
+}
+
+.load-error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-bottom: 0;
+    min-height: 20px;
+}
+
+.app-container {
+    width: 95%;          /* Занимаем почти всю ширину экрана */
+    max-width: 1100px;   /* Увеличили с 800px до 1100px */
+    height: 85vh;        /* Чуть увеличили высоту */
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 30px;       /* Чуть больше воздуха внутри */
+}
+
+/* Верхняя часть: Слайд с текстом */
+/* Верхняя часть: Слайд с текстом */
+.slide-area {
+    flex: 2;
+    display: flex;
+    justify-content: center; /* Центрируем блок текста по горизонтали */
+    align-items: center;    /* Центрируем блок текста по вертикали */
+    background-color: #eef2f5;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 40px; /* Отступы внутри слайда */
+    position: relative;
+}
+
+.sentence {
+    font-size: 2.5rem;
+    line-height: 1.6;    /* Оптимальный интервал */
+    font-weight: 500;
+    color: #333;
+    
+    /* УБРАЛИ display: flex! Возвращаем обычный текстовый поток */
+    display: block;      
+    text-align: left;
+    
+    /* Защита от случайных переносов внутри слов */
+    word-wrap: break-word; 
+}
+
+/* Текст внутри предложения */
+.text-part {
+    /* Важно: это заставляет браузер учитывать пробелы из JSON, 
+       но позволяет переносить строки по пробелам */
+    white-space: pre-wrap; 
+}
+
+/* Стиль для пропуска (зоны сброса) */
+.drop-zone {
+    /* inline-block позволяет элементу стоять в строке текста */
+    display: inline-block; 
+    
+    min-width: 40px;     /* Минимальная ширина, чтобы было видно черту */
+    height: auto;        /* Высота подстроится под шрифт */
+    min-height: 40px;    /* Но не меньше этого */
+    
+    border-bottom: 3px solid #333;
+    text-align: center;
+    color: transparent;
+    font-weight: bold;
+    
+    /* margin: 0; Убираем отступы, чтобы зона сливалась с буквами слова */
+    margin: 0 1px;
+    
+    /* Самое важное: выравнивание по базовой линии шрифта */
+    vertical-align: baseline; 
+    
+    transition: all 0.3s;
+    cursor: default;
+}
+
+.drop-zone.filled {
+    color: #27ae60;
+    border-bottom: 3px solid transparent; 
+}
+
+/* Нижняя часть: Алфавит и навигация */
+.controls-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.alphabet {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.letter-card {
+    width: 40px;
+    height: 40px;
+    background: #3498db;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
+}
+
+.letter-card:active {
+    cursor: grabbing;
+}
+
+/* Класс для "Призрака" - элемента, который мы тащим */
+.draggable-ghost {
+    position: fixed; /* Важно: поверх всего */
+    pointer-events: none; /* Чтобы события мыши проходили сквозь него */
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    background: #3498db;
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    opacity: 0.9;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Анимации обратной связи */
+@keyframes shake-red {
+    0% { transform: translateX(0); background: #e74c3c; }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); background: #3498db; }
+}
+
+@keyframes flash-green {
+    0% { transform: scale(1); background: #2ecc71; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); background: transparent; color: #2ecc71; }
+}
+
+.error-anim {
+    animation: shake-red 0.4s ease-in-out;
+}
+
+.success-anim {
+    animation: flash-green 0.5s ease-in-out;
+}
+
+/* Навигация */
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    background: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

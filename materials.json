@@ -28,13 +28,15 @@
         { "title": "Фразеологический квиз", "file": "materials/russian/FraseoQwiz/FraseoQwiz.html" },
         { "title": "Словарный диктант", "file": "materials/russian/DiktantSlovarni/index.html" },
         { "title": "Собери словарное слово из слогов", "file": "https://kurale.github.io/SlovarnieSlova3-4klass/" },
-        { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" }
+        { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" },
+        { "title": "Вставить пропущенные буквы в предложениях", "file": "materials/russian/interactivVstavliaemBukvi/index.html" }
     ],
     "belarusian": [
         { "title": "Слоўнікавыя словы, 3 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova3klas.html" },
         { "title": "Гульня мемары: 'Ягады па-беларуску'", "file": "materials/belarusian/memoryJagodiPaBelarusku/index.html" },
         { "title": "'Месяцы ў годзе' пастаў на свае месцы", "file": "materials/belarusian/mesiatsi/mesiatsi_2.html" },
         { "title": "Птушкі Беларусі", "file": "materials/belarusian/ptushkiBelarusi/index_Items_2.html" },
+        { "title": "Канчаткі дзеясловаў, 4 клас", "file": "materials/belarusian/kanchatkiDzeiaslovau/index.html" },
         { "title": "Слоўнікавыя словы, 4 клас", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlovaBelMova4klas.html" }
     ],
     "gamification": [

@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "words": [
+      { "stem": "Адрэж", "options": ["аш", "ыш"], "correctIndex": 0 },
+      { "stem": "Адчыня", "options": ["ем", "ім"], "correctIndex": 0 },
+      { "stem": "Рыхту", "options": ["е", "іць"], "correctIndex": 0 },
+      { "stem": "Тлумач", "options": ["аце", "ыце"], "correctIndex": 1 }
+    ]
+  },
+  {
+    "id": 2,
+    "words": [
+      { "stem": "Снеда", "options": ["е", "іць"], "correctIndex": 0 },
+      { "stem": "вар", "options": ["ым", "ам"], "correctIndex": 0 },
+      { "stem": "ладз", "options": ["еш", "іш"], "correctIndex": 1 },
+      { "stem": "збіра", "options": ["еце", "іце"], "correctIndex": 0 }
+    ]
+  },
+  {
+    "id": 3,
+    "words": [
+      { "stem": "Выходз", "options": ["яце", "іце"], "correctIndex": 1 },
+      { "stem": "туш", "options": ["а", "ыць"], "correctIndex": 1 },
+      { "stem": "падор", "options": ["ам", "ым"], "correctIndex": 1 },
+      { "stem": "ахоўва", "options": ["еш", "іш"], "correctIndex": 0 }
+    ]
+  },
+  {
+    "id": 4,
+    "words": [
+      { "stem": "Няньч", "options": ["аш", "ыш"], "correctIndex": 1 },
+      { "stem": "вышыва", "options": ["ем", "ім"], "correctIndex": 0 },
+      { "stem": "чысц", "options": ["е", "іць"], "correctIndex": 1 },
+      { "stem": "называ", "options": ["еце", "іце"], "correctIndex": 0 }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "words": [
+      { "stem": "Законч", "options": ["аш", "ыш"], "correctIndex": 1 },
+      { "stem": "знаходз", "options": ["еш", "іш"], "correctIndex": 1 },
+      { "stem": "запраша", "options": ["еш", "іш"], "correctIndex": 0 },
+      { "stem": "кіда", "options": ["ем", "ім"], "correctIndex": 0 }
+    ]
+  },
+  {
+    "id": 2,
+    "words": [
+      { "stem": "Суш", "options": ["ам", "ым"], "correctIndex": 1 },
+      { "stem": "аберага", "options": ["ем", "ім"], "correctIndex": 0 },
+      { "stem": "дапамож", "options": ["аш", "ыш"], "correctIndex": 0 },
+      { "stem": "вызнач", "options": ["ам", "ым"], "correctIndex": 1 }
+    ]
+  },
+  {
+    "id": 3,
+    "words": [
+      { "stem": "Вылеч", "options": ["а", "ыць"], "correctIndex": 1 },
+      { "stem": "леп", "options": ["е", "іць"], "correctIndex": 1 },
+      { "stem": "выціра", "options": ["е", "іць"], "correctIndex": 0 },
+      { "stem": "атрыма", "options": ["е", "іць"], "correctIndex": 0 }
+    ]
+  },
+  {
+    "id": 4,
+    "words": [
+      { "stem": "Ружаве", "options": ["еце", "іце"], "correctIndex": 0 },
+      { "stem": "круж", "options": ["аце", "ыце"], "correctIndex": 1 },
+      { "stem": "накос", "options": ["яце", "іце"], "correctIndex": 1 },
+      { "stem": "цягн", "options": ["еце", "іце"], "correctIndex": 0 }
+    ]
+  }
+]
