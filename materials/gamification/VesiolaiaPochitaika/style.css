@@ -1,0 +1,158 @@
+/* Базовые настройки шрифта и фона */
+body {
+    margin: 0;
+    font-family: 'Comic Sans MS', 'Verdana', sans-serif; /* "Детский" шрифт */
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 90%;
+    max-width: 800px;
+    height: 600px;
+    background: #fff;
+    border-radius: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    border: 5px solid #FFD700; /* Золотая рамка */
+}
+
+/* Экраны (слои) */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+    z-index: 10;
+}
+
+/* Кнопки */
+.big-btn {
+    padding: 15px 40px;
+    font-size: 24px;
+    background-color: #FF6B6B;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #c0392b;
+    transition: transform 0.1s;
+}
+
+.big-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #c0392b;
+}
+
+/* Стили для плавающего слова */
+.floating-word {
+    position: absolute;
+    font-size: 60px;
+    font-weight: bold;
+    color: #4A90E2;
+    background: #E0F7FA;
+    padding: 20px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.floating-word.hidden {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.floating-word.visible {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Сетка эмодзи */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    width: 100px;
+    height: 100px;
+    font-size: 50px;
+    background: #F0F3F4;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: #E1E8EA;
+}
+
+/* Состояния карточек */
+.card.correct {
+    border-color: #2ECC71;
+    background: #D5F5E3;
+    pointer-events: none; /* Нельзя нажать снова */
+}
+
+/* Галочка */
+.card.correct::after {
+    content: '✔';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #2ECC71;
+    color: white;
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card.wrong {
+    animation: shake 0.5s;
+    border-color: #E74C3C;
+    background: #FADBD8;
+}
+
+/* Анимация тряски при ошибке */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+#win-screen {
+    background: rgba(255, 255, 255, 0.95);
+}

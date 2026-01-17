@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "words": ["КОТ", "ДОМ", "МЯЧ", "СОК"],
+    "options": [
+      { "emoji": "🐱", "isCorrect": true },
+      { "emoji": "🏠", "isCorrect": true },
+      { "emoji": "⚽", "isCorrect": true },
+      { "emoji": "🧃", "isCorrect": true },
+      { "emoji": "🚗", "isCorrect": false },
+      { "emoji": "🌵", "isCorrect": false },
+      { "emoji": "🥾", "isCorrect": false },
+      { "emoji": "🎈", "isCorrect": false }
+    ]
+  },
+  {
+    "id": 2,
+    "words": ["ЛЕС", "ЖУК", "ДЕД", "СЫР"],
+    "options": [
+      { "emoji": "🌲", "isCorrect": true },
+      { "emoji": "🐞", "isCorrect": true },
+      { "emoji": "👴", "isCorrect": true },
+      { "emoji": "🧀", "isCorrect": true },
+      { "emoji": "🚲", "isCorrect": false },
+      { "emoji": "🐟", "isCorrect": false },
+      { "emoji": "🦊", "isCorrect": false },
+      { "emoji": "👓", "isCorrect": false }
+    ]
+  }
+]

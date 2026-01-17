@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай слова!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="start-screen" class="screen active">
+            <h1>Играем в слова! 🎓</h1>
+            <button id="start-btn" class="big-btn">Начать</button>
+        </div>
+
+        <div id="word-screen" class="screen">
+            <div id="word-display" class="floating-word hidden">ТЕСТ</div>
+        </div>
+
+        <div id="choice-screen" class="screen">
+            <h2>Что ты прочитал?</h2>
+            <div id="emoji-grid" class="grid-container">
+                </div>
+        </div>
+
+        <div id="win-screen" class="screen">
+            <div class="win-content">
+                <h1>Великолепно! 🎉</h1>
+                <!-- <p>Ты нашел все слова!</p> -->
+                <button id="next-level-btn" class="big-btn">Дальше ➡</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
