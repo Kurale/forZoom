@@ -826,29 +826,18 @@
                 // Случайно определяем, какой столбец будет пропущен (0, 1 или 2)
                 const emptyCol = Math.floor(Math.random() * 3);
 
-                let speed, distance, time;
+                // Генерируем скорость (от 10 до 100 км/ч, кратно 10)
+                const speed = Math.floor(Math.random() * 10) * 10 + 10; // 10, 20, ..., 100
 
-                // Генерируем данные так, чтобы все числа были целыми
-                for (let attempt = 0; attempt < 100; attempt++) {
-                    // Генерируем скорость (от 10 до 100 км/ч)
-                    speed = Math.floor(Math.random() * 10) * 10 + 10; // 10, 20, ..., 100
+                // Генерируем время (только целые часы, от 1 до 5)
+                const time = Math.floor(Math.random() * 5) + 1; // 1, 2, 3, 4, 5
 
-                    // Генерируем время в минутах (от 30 до 300 минут, кратно 10)
-                    const timeMinutes = Math.floor(Math.random() * 28) * 10 + 30; // 30, 40, ..., 300
-                    time = timeMinutes / 60; // переводим в часы
-
-                    // Рассчитываем расстояние (должно быть целым)
-                    distance = Math.round(speed * time);
-
-                    // Проверяем, что расстояние действительно целое и время "красивое"
-                    if (Math.abs(speed * time - distance) < 0.01 && time >= 0.5 && time <= 5) {
-                        break;
-                    }
-                }
+                // Рассчитываем расстояние (всегда целое)
+                const distance = speed * time;
 
                 // Форматируем значения
                 const speedStr = `${speed} км/ч`;
-                const timeStr = formatTime(time);
+                const timeStr = `${time} ч`;
                 const distanceStr = `${distance} км`;
 
                 // Создаем объект строки
@@ -927,12 +916,10 @@
                     case 0: // Нужно найти скорость
                         stepText = `Строка ${index+1}: Чтобы найти скорость, нужно расстояние разделить на время.`;
                         stepText += `<br>Расстояние: ${row.distanceValue} км`;
-                        stepText += `<br>Время: ${formatTime(row.timeValue)}`;
+                        stepText += `<br>Время: ${row.timeValue} ч`;
 
                         const speed = row.distanceValue / row.timeValue;
-                        // Проверяем, целое ли число
-                        const speedFormatted = Number.isInteger(speed) ? speed : speed.toFixed(1);
-                        result = `Скорость: ${speedFormatted} км/ч`;
+                        result = `Скорость: ${speed} км/ч`;
                         break;
 
                     case 1: // Нужно найти время
@@ -941,16 +928,16 @@
                         stepText += `<br>Скорость: ${row.speedValue} км/ч`;
 
                         const time = row.distanceValue / row.speedValue;
-                        result = `Время: ${formatTime(time)}`;
+                        result = `Время: ${time} ч`;
                         break;
 
                     case 2: // Нужно найти расстояние
                         stepText = `Строка ${index+1}: Чтобы найти расстояние, нужно скорость умножить на время.`;
                         stepText += `<br>Скорость: ${row.speedValue} км/ч`;
-                        stepText += `<br>Время: ${formatTime(row.timeValue)}`;
+                        stepText += `<br>Время: ${row.timeValue} ч`;
 
                         const distance = row.speedValue * row.timeValue;
-                        result = `Расстояние: ${Math.round(distance)} км`;
+                        result = `Расстояние: ${distance} км`;
                         break;
                 }
                 
