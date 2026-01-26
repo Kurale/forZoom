@@ -480,8 +480,15 @@
     <script>
         // Функция для форматирования времени в формате "X ч Y мин" вместо десятичных дробей
         function formatTime(hoursDecimal) {
-            const hours = Math.floor(hoursDecimal);
-            const minutes = Math.round((hoursDecimal - hours) * 60);
+            let hours = Math.floor(hoursDecimal);
+            let minutes = Math.round((hoursDecimal - hours) * 60);
+
+            // Корректируем, если минуты округлились до 60
+            if (minutes === 60) {
+                hours += 1;
+                minutes = 0;
+            }
+
             if (minutes === 0) {
                 return `${hours} ч`;
             } else {
@@ -813,28 +820,37 @@
             const task = {
                 rows: []
             };
-            
+
             // Генерируем 3 строки для таблицы
             for (let i = 0; i < 3; i++) {
                 // Случайно определяем, какой столбец будет пропущен (0, 1 или 2)
                 const emptyCol = Math.floor(Math.random() * 3);
-                
-                // Генерируем скорость (от 20 до 120 км/ч, кратно 5)
-                const speed = Math.floor(Math.random() * 21) * 5 + 20; // от 20 до 120, кратно 5
-                
-                // Генерируем время (целые часы и минуты, кратные 5)
-                const travelHours = Math.floor(Math.random() * 5) + 1; // от 1 до 5 часов
-                const travelMinutes = Math.floor(Math.random() * 12) * 5; // кратно 5: 0, 5, 10, ..., 55
-                const time = travelHours + travelMinutes / 60;
-                
-                // Рассчитываем расстояние
-                const distance = speed * time;
-                
+
+                let speed, distance, time;
+
+                // Генерируем данные так, чтобы все числа были целыми
+                for (let attempt = 0; attempt < 100; attempt++) {
+                    // Генерируем скорость (от 10 до 100 км/ч)
+                    speed = Math.floor(Math.random() * 10) * 10 + 10; // 10, 20, ..., 100
+
+                    // Генерируем время в минутах (от 30 до 300 минут, кратно 10)
+                    const timeMinutes = Math.floor(Math.random() * 28) * 10 + 30; // 30, 40, ..., 300
+                    time = timeMinutes / 60; // переводим в часы
+
+                    // Рассчитываем расстояние (должно быть целым)
+                    distance = Math.round(speed * time);
+
+                    // Проверяем, что расстояние действительно целое и время "красивое"
+                    if (Math.abs(speed * time - distance) < 0.01 && time >= 0.5 && time <= 5) {
+                        break;
+                    }
+                }
+
                 // Форматируем значения
                 const speedStr = `${speed} км/ч`;
                 const timeStr = formatTime(time);
                 const distanceStr = `${distance} км`;
-                
+
                 // Создаем объект строки
                 const row = {
                     speed: emptyCol === 0 ? null : speedStr,
@@ -846,10 +862,10 @@
                     distanceValue: distance,
                     emptyCol: emptyCol
                 };
-                
+
                 task.rows.push(row);
             }
-            
+
             currentSpeedTask = task;
             renderSpeedTask();
             speedSolution.classList.remove('active');
@@ -912,27 +928,29 @@
                         stepText = `Строка ${index+1}: Чтобы найти скорость, нужно расстояние разделить на время.`;
                         stepText += `<br>Расстояние: ${row.distanceValue} км`;
                         stepText += `<br>Время: ${formatTime(row.timeValue)}`;
-                        
+
                         const speed = row.distanceValue / row.timeValue;
-                        result = `Скорость: ${speed.toFixed(1)} км/ч`;
+                        // Проверяем, целое ли число
+                        const speedFormatted = Number.isInteger(speed) ? speed : speed.toFixed(1);
+                        result = `Скорость: ${speedFormatted} км/ч`;
                         break;
-                        
+
                     case 1: // Нужно найти время
                         stepText = `Строка ${index+1}: Чтобы найти время, нужно расстояние разделить на скорость.`;
                         stepText += `<br>Расстояние: ${row.distanceValue} км`;
                         stepText += `<br>Скорость: ${row.speedValue} км/ч`;
-                        
+
                         const time = row.distanceValue / row.speedValue;
                         result = `Время: ${formatTime(time)}`;
                         break;
-                        
+
                     case 2: // Нужно найти расстояние
                         stepText = `Строка ${index+1}: Чтобы найти расстояние, нужно скорость умножить на время.`;
                         stepText += `<br>Скорость: ${row.speedValue} км/ч`;
                         stepText += `<br>Время: ${formatTime(row.timeValue)}`;
-                        
+
                         const distance = row.speedValue * row.timeValue;
-                        result = `Расстояние: ${distance.toFixed(1)} км`;
+                        result = `Расстояние: ${Math.round(distance)} км`;
                         break;
                 }
                 
@@ -1126,27 +1144,27 @@
                         stepText = `Строка ${index+1}: Чтобы найти цену, нужно стоимость разделить на количество.`;
                         stepText += `<br>Стоимость: ${row.costValue} руб.`;
                         stepText += `<br>Количество: ${row.quantityValue} шт.`;
-                        
+
                         const price = row.costValue / row.quantityValue;
-                        result = `Цена: ${price.toFixed(0)} руб.`;
+                        result = `Цена: ${price} руб.`;
                         break;
-                        
+
                     case 1: // Нужно найти количество
                         stepText = `Строка ${index+1}: Чтобы найти количество, нужно стоимость разделить на цену.`;
                         stepText += `<br>Стоимость: ${row.costValue} руб.`;
                         stepText += `<br>Цена: ${row.priceValue} руб.`;
-                        
+
                         const quantity = row.costValue / row.priceValue;
-                        result = `Количество: ${quantity.toFixed(0)} шт.`;
+                        result = `Количество: ${quantity} шт.`;
                         break;
-                        
+
                     case 2: // Нужно найти стоимость
                         stepText = `Строка ${index+1}: Чтобы найти стоимость, нужно цену умножить на количество.`;
                         stepText += `<br>Цена: ${row.priceValue} руб.`;
                         stepText += `<br>Количество: ${row.quantityValue} шт.`;
-                        
+
                         const cost = row.priceValue * row.quantityValue;
-                        result = `Стоимость: ${cost.toFixed(0)} руб.`;
+                        result = `Стоимость: ${cost} руб.`;
                         break;
                 }
                 
