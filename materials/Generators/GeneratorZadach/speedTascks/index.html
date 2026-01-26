@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор задач + Экспорт</title>
+    <style>
+        :root { --primary: #3498db; --secondary: #2c3e50; --accent: #e67e22; --bg: #f0f4f8; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--secondary); padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--secondary); margin-bottom: 30px; }
+        
+        /* Controls */
+        .controls-group { margin-bottom: 20px; text-align: center; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; margin: 0 5px; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-gen:hover { background: #2980b9; transform: translateY(-2px); }
+        .btn-exp { background: var(--accent); color: white; display: none; } /* Скрыты до генерации */
+        .btn-exp:hover { background: #d35400; }
+        
+        /* Select styles */
+        select.btn {
+            background: white;
+            color: var(--secondary);
+            border: 2px solid var(--primary);
+            min-width: 180px;
+        }
+        select.btn:hover {
+            background: #f8f9fa;
+        }
+        select.btn:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+        }
+        label {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* Loading State */
+        #loading { text-align: center; font-style: italic; color: #7f8c8d; margin-top: 50px; }
+
+        /* Task Area */
+        #appContent { display: none; } /* Скрыт до загрузки JSON */
+        .task-card { border-left: 5px solid var(--primary); background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; font-size: 1.1rem; }
+        
+        /* Visualization */
+        .canvas-container { text-align: center; margin: 20px 0; border: 1px solid #eee; padding: 10px; background: white; }
+        #taskSvg { width: 100%; height: auto; max-height: 200px; background: white; }
+        .arrow-head { fill: var(--secondary); }
+        .diagram-text { font-size: 14px; font-family: sans-serif; fill: var(--secondary); }
+        .distance-line { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5,5; }
+
+        /* Answer Section */
+        .answer-section { border-top: 2px solid #eee; padding-top: 20px; display: flex; align-items: center; gap: 10px; }
+        input[type=number] { padding: 8px; width: 80px; border: 2px solid #ddd; border-radius: 5px; text-align: center; font-size: 1rem; }
+        .feedback { font-weight: bold; margin-left: 15px; }
+        .feedback.correct { color: #27ae60; }
+        .feedback.wrong { color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📐 Генератор задач на движение</h1>
+
+    <div id="loading">Загрузка базы данных участников...</div>
+
+    <div id="appContent">
+        <div class="controls-group">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;">
+                <label for="taskType">Тип задачи:</label>
+                <select id="taskType" class="btn">
+                    <option value="meeting">Навстречу</option>
+                    <option value="opposite">В стороны</option>
+                    <option value="same">Вдогонку</option>
+                    <option value="ratio">Через коэффициент</option>
+                </select>
+                
+                <label for="unknownVar">Найти:</label>
+                <select id="unknownVar" class="btn">
+                    <!-- Заполняется динамически -->
+                </select>
+                
+                <button class="btn btn-gen" onclick="ui.generate()">Сгенерировать</button>
+            </div>
+        </div>
+
+        <div id="taskText" class="task-card">
+            Нажмите кнопку выше, чтобы сгенерировать задачу.
+        </div>
+        
+        <div class="canvas-container">
+             <svg id="taskSvg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#ccc">Схема задачи появится здесь</text>
+            </svg>
+        </div>
+
+        <div class="controls-group" id="exportControls">
+            <button class="btn btn-exp" onclick="exporter.saveSVG()">💾 Скачать SVG</button>
+            <button class="btn btn-exp" onclick="exporter.savePNG()">🖼️ Скачать PNG</button>
+        </div>
+
+        <div class="answer-section">
+            <label for="userAnswer">Ответ:</label>
+            <input type="number" id="userAnswer"> <span id="unitDisplay"></span>
+            <button class="btn btn-gen" onclick="ui.check()">Проверить</button>
+            <span id="feedback" class="feedback"></span>
+        </div>
+    </div>
+</div>
+
+<canvas id="pngCanvas" width="600" height="200" style="display:none;"></canvas>
+
+<script>
+// Глобальные переменные для данных
+let ACTORS_DB = [];
+let currentTaskData = null;
+
+/**
+ * 1. ИНИЦИАЛИЗАЦИЯ И ЗАГРУЗКА ДАННЫХ
+ */
+async function initApp() {
+    try {
+        const response = await fetch('actors.json');
+        if (!response.ok) throw new Error('Ошибка загрузки JSON');
+        ACTORS_DB = await response.json();
+        
+        // Скрываем загрузку, показываем приложение
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+    } catch (error) {
+        document.getElementById('loading').innerHTML = `Ошибка: ${error.message}.<br>Убедитесь, что запустили файл через локальный сервер.`;
+        document.getElementById('loading').style.color = 'red';
+    }
+}
+
+// Запускаем при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+    // Инициализация списка неизвестных
+    ui.updateUnknownOptions();
+    // Обновление списка при смене типа задачи
+    document.getElementById('taskType').addEventListener('change', ui.updateUnknownOptions.bind(ui));
+});
+
+
+/**
+ * 2. ДВИЖОК ГЕНЕРАЦИИ
+ */
+const engine = {
+    random(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; },
+    pick(arr) { return arr[this.random(0, arr.length - 1)]; },
+
+    // Сценарии (логика остается здесь, данные берутся из аргументов)
+    meeting(a, b, unknown = 't') {
+        const v1 = this.random(a.speed.min, a.speed.max);
+        const v2 = this.random(b.speed.min, b.speed.max);
+        const t = this.random(2, 5);
+        const S = (v1 + v2) * t;
+
+        let text, answer, unit, unknownVar;
+
+        switch(unknown) {
+            case 't':
+                text = `Из двух пунктов, расстояние между которыми <b>${S} км</b>, выехали навстречу друг другу ${a.labels.nom} и ${b.labels.nom}. Скорость первого — <b>${v1} км/ч</b>, второго — <b>${v2} км/ч</b>. Через сколько часов они встретятся?`;
+                answer = t;
+                unit = "ч.";
+                unknownVar = 't';
+                break;
+            case 'S':
+                text = `${a.labels.cap} и ${b.labels.nom} выехали навстречу друг другу из двух пунктов. Скорость первого — <b>${v1} км/ч</b>, второго — <b>${v2} км/ч</b>. Они встретились через <b>${t} ч</b>. Каково расстояние между пунктами?`;
+                answer = S;
+                unit = "км";
+                unknownVar = 'S';
+                break;
+            case 'v1':
+                text = `Из двух пунктов, расстояние между которыми <b>${S} км</b>, выехали навстречу друг другу ${a.labels.nom} и ${b.labels.nom}. Скорость второго — <b>${v2} км/ч</b>, и они встретились через <b>${t} ч</b>. Найдите скорость первого.`;
+                answer = v1;
+                unit = "км/ч";
+                unknownVar = 'v1';
+                break;
+            case 'v2':
+                text = `Из двух пунктов, расстояние между которыми <b>${S} км</b>, выехали навстречу друг другу ${a.labels.nom} и ${b.labels.nom}. Скорость первого — <b>${v1} км/ч</b>, и они встретились через <b>${t} ч</b>. Найдите скорость второго.`;
+                answer = v2;
+                unit = "км/ч";
+                unknownVar = 'v2';
+                break;
+        }
+
+        return {
+            type: 'meeting',
+            actors: { a, b },
+            values: { v1, v2, S, t },
+            unknownVar,
+            text,
+            answer,
+            unit
+        };
+    },
+
+    opposite(a, b, unknown = 'S') {
+        const v1 = this.random(a.speed.min, a.speed.max);
+        const v2 = this.random(b.speed.min, b.speed.max);
+        const t = this.random(2, 5);
+        const S = (v1 + v2) * t;
+
+        let text, answer, unit, unknownVar;
+
+        switch(unknown) {
+            case 'S':
+                text = `Из одного пункта одновременно в противоположных направлениях отправились ${a.labels.nom} и ${b.labels.nom}. Скорость ${a.labels.gen} — <b>${v1} км/ч</b>, ${b.labels.gen} — <b>${v2} км/ч</b>. Какое расстояние будет между ними через <b>${t} ч</b>?`;
+                answer = S;
+                unit = "км";
+                unknownVar = 'S';
+                break;
+            case 't':
+                text = `Из одного пункта одновременно в противоположных направлениях отправились ${a.labels.nom} и ${b.labels.nom}. Скорость ${a.labels.gen} — <b>${v1} км/ч</b>, ${b.labels.gen} — <b>${v2} км/ч</b>. Через сколько часов расстояние между ними будет <b>${S} км</b>?`;
+                answer = t;
+                unit = "ч.";
+                unknownVar = 't';
+                break;
+            case 'v1':
+                text = `Из одного пункта одновременно в противоположных направлениях отправились ${a.labels.nom} и ${b.labels.nom}. Скорость ${b.labels.gen} — <b>${v2} км/ч</b>. Через <b>${t} ч</b> расстояние между ними стало <b>${S} км</b>. Найдите скорость ${a.labels.gen}.`;
+                answer = v1;
+                unit = "км/ч";
+                unknownVar = 'v1';
+                break;
+            case 'v2':
+                text = `Из одного пункта одновременно в противоположных направлениях отправились ${a.labels.nom} и ${b.labels.nom}. Скорость ${a.labels.gen} — <b>${v1} км/ч</b>. Через <b>${t} ч</b> расстояние между ними стало <b>${S} км</b>. Найдите скорость ${b.labels.gen}.`;
+                answer = v2;
+                unit = "км/ч";
+                unknownVar = 'v2';
+                break;
+        }
+
+        return {
+            type: 'opposite',
+            actors: { a, b },
+            values: { v1, v2, S, t },
+            unknownVar,
+            text,
+            answer,
+            unit
+        };
+    },
+
+    same(fast, slow, unknown = 't') {
+        let vF, vS;
+        do {
+            vF = this.random(fast.speed.min, fast.speed.max);
+            vS = this.random(slow.speed.min, slow.speed.max);
+        } while (vF <= vS + 5);
+        const t = this.random(2, 4);
+        const S = (vF - vS) * t;
+
+        let text, answer, unit, unknownVar;
+
+        switch(unknown) {
+            case 't':
+                text = `${slow.labels.cap} двигался со скоростью <b>${vS} км/ч</b>. Вдогонку ему выехал ${fast.labels.nom} со скоростью <b>${vF} км/ч</b>. Через сколько часов он догонит, если изначально между ними было <b>${S} км</b>?`;
+                answer = t;
+                unit = "ч.";
+                unknownVar = 't';
+                break;
+            case 'S':
+                text = `${slow.labels.cap} двигался со скоростью <b>${vS} км/ч</b>. Вдогонку ему выехал ${fast.labels.nom} со скоростью <b>${vF} км/ч</b>. Какое расстояние было между ними изначально, если догнал он через <b>${t} ч</b>?`;
+                answer = S;
+                unit = "км";
+                unknownVar = 'S';
+                break;
+            case 'vF':
+                text = `${slow.labels.cap} двигался со скоростью <b>${vS} км/ч</b>. Вдогонку ему выехал ${fast.labels.nom} и догнал через <b>${t} ч</b>. Какова была скорость ${fast.labels.gen}, если изначально между ними было <b>${S} км</b>?`;
+                answer = vF;
+                unit = "км/ч";
+                unknownVar = 'vF';
+                break;
+            case 'vS':
+                text = `${slow.labels.cap} двигался с некоторой скоростью. Вдогонку ему выехал ${fast.labels.nom} со скоростью <b>${vF} км/ч</b> и догнал через <b>${t} ч</b>. Какова была скорость ${slow.labels.gen}, если изначально между ними было <b>${S} км</b>?`;
+                answer = vS;
+                unit = "км/ч";
+                unknownVar = 'vS';
+                break;
+        }
+
+        return {
+            type: 'same',
+            actors: { fast, slow },
+            values: { vF, vS, S, t },
+            unknownVar,
+            text,
+            answer,
+            unit
+        };
+    },
+
+    // Новый сценарий: время через коэффициент скорости
+    ratio(a, b, ratio, unknown = 't2') {
+        // Выбираем v1 так, чтобы оно делилось на ratio без остатка
+        let v1;
+        do {
+            v1 = this.random(a.speed.min, a.speed.max);
+        } while (v1 % ratio !== 0);
+        
+        const t1 = this.random(2, 6);
+        const S = v1 * t1;
+        const t2 = t1 * ratio;
+        const v2 = v1 / ratio; // точно делится
+
+        let text, answer, unit, unknownVar;
+
+        switch(unknown) {
+            case 't2':
+                text = `${a.labels.cap} был в пути <b>${t1} ч</b>, двигаясь со скоростью <b>${v1} км/ч</b>. За сколько часов может проехать это расстояние ${b.labels.nom}, если скорость его движения будет в <b>${ratio}</b> раз меньше скорости ${a.labels.gen}?`;
+                answer = t2;
+                unit = "ч.";
+                unknownVar = 't2';
+                break;
+            case 'v2':
+                text = `${a.labels.cap} был в пути <b>${t1} ч</b>, двигаясь со скоростью <b>${v1} км/ч</b>. Какова скорость ${b.labels.gen}, если он проехал это же расстояние за <b>${t2} ч</b>?`;
+                answer = v2;
+                unit = "км/ч";
+                unknownVar = 'v2';
+                break;
+            case 'S':
+                text = `${a.labels.cap} двигался со скоростью <b>${v1} км/ч</b> в течение <b>${t1} ч</b>. ${b.labels.cap} проехал это же расстояние за <b>${t2} ч</b>. Каково это расстояние?`;
+                answer = S;
+                unit = "км";
+                unknownVar = 'S';
+                break;
+            case 'ratio':
+                text = `${a.labels.cap} был в пути <b>${t1} ч</b>, двигаясь со скоростью <b>${v1} км/ч</b>. ${b.labels.cap} проехал это же расстояние за <b>${t2} ч</b>. Во сколько раз скорость ${a.labels.gen} больше скорости ${b.labels.gen}?`;
+                answer = ratio;
+                unit = "раз";
+                unknownVar = 'ratio';
+                break;
+        }
+
+        return {
+            type: 'ratio',
+            actors: { a, b },
+            values: { v1, v2, S, t1, t2, ratio },
+            unknownVar,
+            text,
+            answer,
+            unit
+        };
+    }
+};
+
+/**
+ * 3. ВИЗУАЛИЗАЦИЯ (SVG Drawing) - Стиль "Учебник"
+ */
+const visualizer = {
+    svg: document.getElementById('taskSvg'),
+    
+    // Настройки стилей (цвета из скриншотов)
+    colors: {
+        path: '#004085',      // Темно-синий для дороги
+        arrow: '#00BFFF',     // Голубой для стрелок
+        text: '#212529',      // Темно-серый для текста
+        flag: '#FF3333',      // Красный для флага
+        dot: '#004085'        // Цвет точек на линии
+    },
+
+    clear() { this.svg.innerHTML = ''; },
+
+    // --- Базовые примитивы ---
+
+    // Создание SVG элемента
+    el(tag, attrs = {}) {
+        const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (let key in attrs) elem.setAttribute(key, attrs[key]);
+        return elem;
+    },
+
+    // Рисует жирную дорогу
+    drawPathLine(x1, x2, y) {
+        this.svg.appendChild(this.el('line', {
+            x1, y1: y, x2, y2: y,
+            stroke: this.colors.path,
+            'stroke-width': 4,
+            'stroke-linecap': 'round'
+        }));
+    },
+
+    // Рисует точку на дороге
+    drawDot(x, y) {
+        this.svg.appendChild(this.el('circle', {
+            cx: x, cy: y, r: 4,
+            fill: 'white',
+            stroke: this.colors.dot,
+            'stroke-width': 3
+        }));
+    },
+
+    // Рисует красный флажок (path)
+    drawFlag(x, y) {
+        const group = this.el('g', { transform: `translate(${x}, ${y - 22.5}) scale(0.5)` }); // Сдвиг вверх, чтобы ножка стояла на y, и уменьшение в 2 раза
+        
+        // Ножка
+        group.appendChild(this.el('line', {
+            x1: 0, y1: 0, x2: 0, y2: 45,
+            stroke: '#333', 'stroke-width': 2
+        }));
+
+        // Полотно флага (волной)
+        const flagPath = "M0,2 Q10,-3 20,2 T40,2 L40,22 Q30,17 20,22 T0,22 Z";
+        group.appendChild(this.el('path', {
+            d: flagPath,
+            fill: this.colors.flag,
+            stroke: '#cc0000',
+            'stroke-width': 1
+        }));
+
+        this.svg.appendChild(group);
+    },
+
+    // Рисует фигурную скобку снизу (Кривая Безье)
+    drawBrace(x1, x2, y, text) {
+        const midX = (x1 + x2) / 2;
+        const depth = 15; // Глубина прогиба
+        
+        // Рисуем "улыбку" (дугу)
+        const pathData = `M ${x1} ${y+10} Q ${midX} ${y+10+depth} ${x2} ${y+10}`;
+        
+        this.svg.appendChild(this.el('path', {
+            d: pathData,
+            fill: 'none',
+            stroke: '#333',
+            'stroke-width': 1
+        }));
+
+        // Текст под скобкой (например, "?" или "100 км")
+        const textEl = this.el('text', {
+            x: midX, y: y + 40,
+            'text-anchor': 'middle',
+            'font-family': 'Arial, sans-serif',
+            'font-size': '16px',
+            fill: this.colors.text
+        });
+        textEl.textContent = text;
+        this.svg.appendChild(textEl);
+    },
+
+    // Рисует стрелку со скоростью
+    drawArrow(x, y, length, speedVal, direction = 'right') {
+        const group = this.el('g');
+        const endX = direction === 'right' ? x + length : x - length;
+        const arrowY = y - 20; // Стрелка висит над дорогой
+
+        // Линия стрелки
+        group.appendChild(this.el('line', {
+            x1: x, y1: arrowY, x2: endX, y2: arrowY,
+            stroke: this.colors.arrow, 'stroke-width': 3
+        }));
+
+        // Наконечник
+        const headSize = 8;
+        const headPoints = direction === 'right' 
+            ? `${endX},${arrowY} ${endX-headSize},${arrowY-4} ${endX-headSize},${arrowY+4}`
+            : `${endX},${arrowY} ${endX+headSize},${arrowY-4} ${endX+headSize},${arrowY+4}`;
+        
+        group.appendChild(this.el('polygon', {
+            points: headPoints, fill: this.colors.arrow
+        }));
+
+        // Текст скорости (НАД стрелкой)
+        const textX = (x + endX) / 2;
+        const textEl = this.el('text', {
+            x: textX, y: arrowY - 8,
+            'text-anchor': 'middle',
+            'font-family': 'Arial, sans-serif',
+            'font-size': '18px',
+            'font-weight': 'bold',
+            fill: '#333'
+        });
+        textEl.textContent = `${speedVal} км/ч`;
+        group.appendChild(textEl);
+
+        this.svg.appendChild(group);
+    },
+
+    // --- ГЛАВНАЯ ФУНКЦИЯ ОТРИСОВКИ ---
+    draw(task) {
+        this.clear();
+        
+        // Координаты
+        const W = 600; // Ширина холста
+        const cY = 120; // Y-координата дороги
+        const pad = 50; // Отступы
+
+        // 1. Рисуем схему в зависимости от типа
+        if (task.type === 'meeting') {
+            // Длинная дорога
+            this.drawPathLine(pad, W-pad, cY);
+            
+            // Точки А и Б
+            this.drawDot(pad, cY);
+            this.drawDot(W-pad, cY);
+            
+            // Флажок посередине (место встречи)
+            this.drawFlag(W/2, cY);
+
+            // Стрелки навстречу
+            const v1Text = task.unknownVar === 'v1' ? '?' : task.values.v1;
+            const v2Text = task.unknownVar === 'v2' ? '?' : task.values.v2;
+            this.drawArrow(pad, cY, 120, v1Text, 'right');
+            this.drawArrow(W-pad, cY, 120, v2Text, 'left');
+
+            // Скобка снизу (S)
+            const sText = task.unknownVar === 'S' ? '?' : task.values.S;
+            this.drawBrace(pad, W-pad, cY, `${sText} км`);
+        } 
+        else if (task.type === 'opposite') {
+            // Дорога
+            this.drawPathLine(pad, W-pad, cY);
+
+            // Точка старта посередине
+            this.drawDot(W/2, cY);
+            // Флажок на старте
+            this.drawFlag(W/2, cY);
+
+            // Стрелки врозь
+            const v1Text = task.unknownVar === 'v1' ? '?' : task.values.v1;
+            const v2Text = task.unknownVar === 'v2' ? '?' : task.values.v2;
+            this.drawArrow(W/2, cY, 120, v1Text, 'left');
+            this.drawArrow(W/2, cY, 120, v2Text, 'right');
+
+            // Скобка снизу (расстояние)
+            const sText = task.unknownVar === 'S' ? '?' : task.values.S;
+            this.drawBrace(pad, W-pad, cY, `${sText} км`);
+        } 
+        else if (task.type === 'same') {
+            // Расчет пропорций для визуализации отставания
+            const startFast = pad; 
+            const startSlow = pad + 150; // Медленный впереди
+            const catchPoint = W - pad; // Точка встречи (флаг)
+
+            // Дорога
+            this.drawPathLine(pad, W-pad, cY);
+
+            // Точки
+            this.drawDot(startFast, cY); // Старт быстрого
+            this.drawDot(startSlow, cY); // Старт медленного
+            this.drawDot(catchPoint, cY); // Финиш
+
+            // Флажок на финише
+            this.drawFlag(catchPoint, cY);
+
+            // Стрелки (обе вправо)
+            // Быстрый (длиннее стрелка)
+            const vFText = task.unknownVar === 'vF' ? '?' : task.values.vF;
+            const vSText = task.unknownVar === 'vS' ? '?' : task.values.vS;
+            this.drawArrow(startFast, cY, 100, vFText, 'right');
+            // Медленный (короче стрелка, начинается дальше)
+            this.drawArrow(startSlow, cY, 80, vSText, 'right');
+
+            // Скобка (начальное расстояние между ними)
+            const sText = task.unknownVar === 'S' ? '?' : task.values.S;
+            this.drawBrace(startFast, startSlow, cY, `${sText} км`);
+        }
+        else if (task.type === 'ratio') {
+            // Визуализация задачи через коэффициент
+            // Показываем два участника, проходящих одно и то же расстояние
+            // с разными скоростями
+            
+            const startX = pad;
+            const endX = W - pad;
+            const midY = cY;
+            
+            // Дорога (общее расстояние)
+            this.drawPathLine(startX, endX, midY);
+            
+            // Точки старта и финиша
+            this.drawDot(startX, midY);
+            this.drawDot(endX, midY);
+            
+            // Флажок на финише
+            this.drawFlag(endX, midY);
+            
+            // Верхняя стрелка - быстрый участник (v1)
+            const fastArrowLength = endX - startX - 20;
+            const v1Text = task.unknownVar === 'v2' ? '?' : task.values.v1;
+            this.drawArrow(startX, midY, fastArrowLength, v1Text, 'right');
+            
+            // Нижняя стрелка - медленный участник (v2)
+            // Смещаем вниз для наглядности
+            const v2Text = task.unknownVar === 'v2' ? '?' : task.values.v2;
+            this.drawArrow(startX, midY, fastArrowLength * 0.3, v2Text);
+            
+            // Скобка снизу с расстоянием
+            const sText = task.unknownVar === 'S' ? '?' : task.values.S;
+            this.drawBrace(startX, endX, midY, `${sText} км`);
+            
+            // Добавляем текст с временем и коэффициентом
+            const timeGroup = this.el('g', {
+                'font-family': 'Arial, sans-serif',
+                'font-size': '14px',
+                fill: this.colors.text
+            });
+            
+            // Время быстрого участника
+            const fastTimeText = this.el('text', {
+                x: startX + 80,
+                y: midY - 70,
+                'font-weight': 'bold',
+                fill: '#0066cc'
+            });
+            fastTimeText.textContent = `t₁ = ${task.values.t1} ч`;
+            timeGroup.appendChild(fastTimeText);
+            
+            // Время медленного участника
+            const slowTimeText = this.el('text', {
+                x: startX + 80,
+                y: midY + 60,
+                'font-weight': 'bold',
+                fill: '#cc6600'
+            });
+            const t2Text = task.unknownVar === 't2' ? '?' : task.values.t2;
+            slowTimeText.textContent = `t₂ = ${t2Text} ч`;
+            timeGroup.appendChild(slowTimeText);
+            
+            // Коэффициент посередине
+            const ratioText = this.el('text', {
+                x: W / 2,
+                y: midY - 10,
+                'text-anchor': 'middle',
+                'font-size': '16px',
+                'font-weight': 'bold',
+                fill: '#e74c3c'
+            });
+            const ratioTextValue = task.unknownVar === 'ratio' ? '?' : task.values.ratio;
+            ratioText.textContent = `×${ratioTextValue}`;
+            timeGroup.appendChild(ratioText);
+            
+            // Линия связи между стрелками
+            if (task.unknownVar !== 'ratio') {
+                const connectorLine = this.el('line', {
+                    x1: W / 2,
+                    y1: midY - 30,
+                    x2: W / 2,
+                    y2: midY + 10,
+                    stroke: '#e74c3c',
+                    'stroke-width': 2,
+                    'stroke-dasharray': '4,4'
+                });
+                timeGroup.appendChild(connectorLine);
+            }
+            
+            this.svg.appendChild(timeGroup);
+        }
+    }
+};
+
+
+/**
+ * 4. ИНТЕРФЕЙС
+ */
+const ui = {
+    // Варианты неизвестных для каждого типа задачи
+    unknownOptions: {
+        meeting: [
+            { value: 't', label: 'Время встречи (t)' },
+            { value: 'S', label: 'Расстояние (S)' },
+            { value: 'v1', label: 'Скорость первого (v₁)' },
+            { value: 'v2', label: 'Скорость второго (v₂)' }
+        ],
+        opposite: [
+            { value: 'S', label: 'Расстояние (S)' },
+            { value: 't', label: 'Время (t)' },
+            { value: 'v1', label: 'Скорость первого (v₁)' },
+            { value: 'v2', label: 'Скорость второго (v₂)' }
+        ],
+        same: [
+            { value: 't', label: 'Время (t)' },
+            { value: 'S', label: 'Начальное расстояние (S)' },
+            { value: 'vF', label: 'Скорость догоняющего (v₁)' },
+            { value: 'vS', label: 'Скорость убегающего (v₂)' }
+        ],
+        ratio: [
+            { value: 't2', label: 'Время второго (t₂)' },
+            { value: 'v2', label: 'Скорость второго (v₂)' },
+            { value: 'S', label: 'Расстояние (S)' },
+            { value: 'ratio', label: 'Коэффициент (k)' }
+        ]
+    },
+
+    // Обновление списка неизвестных при смене типа задачи
+    updateUnknownOptions() {
+        const taskType = document.getElementById('taskType').value;
+        const unknownSelect = document.getElementById('unknownVar');
+        unknownSelect.innerHTML = '';
+        
+        this.unknownOptions[taskType].forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.value;
+            opt.textContent = option.label;
+            unknownSelect.appendChild(opt);
+        });
+    },
+
+    generate() {
+        // Сброс UI
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('userAnswer').value = '';
+        document.querySelectorAll('.btn-exp').forEach(b => b.style.display = 'inline-block');
+
+        const type = document.getElementById('taskType').value;
+        const unknown = document.getElementById('unknownVar').value;
+
+        // Выбор участников из загруженной базы
+        // Клоны (с суффиксом "2") используются только в паре с оригиналом
+        const baseActors = ACTORS_DB.filter(actor => !actor.id.endsWith('2'));
+        const useSameType = Math.random() < 0.3; // 30% шанс выбрать одинаковые типы
+        
+        let a, b;
+        if (useSameType) {
+            // Выбираем один тип и берём оригинал и клон
+            const baseActor = engine.pick(baseActors);
+            a = baseActor;
+            b = ACTORS_DB.find(actor => actor.id === baseActor.id + '2');
+        } else {
+            // Выбираем два разных типа (только оригиналы)
+            a = engine.pick(baseActors);
+            b = engine.pick(baseActors);
+            while (a.id === b.id) b = engine.pick(baseActors);
+        }
+
+        // Генерация
+        if (type === 'same') {
+            const sorted = [a, b].sort((x, y) => x.speed.max - y.speed.max);
+            currentTaskData = engine.same(sorted[1], sorted[0], unknown); // fast, slow
+        } else if (type === 'ratio') {
+            // Для ratio выбираем коэффициент от 2 до 6
+            const ratio = engine.random(2, 6);
+            currentTaskData = engine.ratio(a, b, ratio, unknown);
+        } else {
+            currentTaskData = engine[type](a, b, unknown);
+        }
+
+        // Вывод текста и единиц измерения
+        document.getElementById('taskText').innerHTML = currentTaskData.text;
+        document.getElementById('unitDisplay').textContent = currentTaskData.unit;
+        
+        // Рисуем схему
+        visualizer.draw(currentTaskData);
+    },
+
+    check() {
+        if(!currentTaskData) return;
+        const userVal = parseInt(document.getElementById('userAnswer').value);
+        const feedback = document.getElementById('feedback');
+        
+        if (userVal === currentTaskData.answer) {
+            feedback.textContent = "✅ Верно! Молодец!";
+            feedback.className = 'feedback correct';
+        } else {
+            feedback.textContent = `❌ Ошибка. Правильный ответ: ${currentTaskData.answer}`;
+            feedback.className = 'feedback wrong';
+        }
+    }
+};
+
+/**
+ * 5. ЭКСПОРТ (SVG и PNG)
+ */
+const exporter = {
+    // Хелпер для скачивания файла
+    triggerDownload(href, filename) {
+        const link = document.createElement('a');
+        link.href = href;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    },
+
+    saveSVG() {
+        if (!currentTaskData) return;
+        const svgData = document.getElementById('taskSvg').outerHTML;
+        const svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+        const svgUrl = URL.createObjectURL(svgBlob);
+        this.triggerDownload(svgUrl, `task_${currentTaskData.type}_${Date.now()}.svg`);
+    },
+
+    savePNG() {
+        if (!currentTaskData) return;
+        const svgElement = document.getElementById('taskSvg');
+        const canvas = document.getElementById('pngCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 1. Получаем SVG данные
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+        // Добавляем белый фон, иначе PNG будет прозрачным
+        const svgDataWithBg = svgData.replace('<svg', '<svg style="background-color: white;"');
+        
+        const img = new Image();
+        // 2. Создаем Blob из SVG для загрузки в Image
+        const svgBlob = new Blob([svgDataWithBg], {type: "image/svg+xml;charset=utf-8"});
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = function() {
+            // 3. Рисуем изображение на Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            // 4. Конвертируем Canvas в PNG Data URL
+            const pngUrl = canvas.toDataURL("image/png");
+            exporter.triggerDownload(pngUrl, `task_${currentTaskData.type}_${Date.now()}.png`);
+            
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор табличных задач</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: #f0f2f5;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background-color: #e4e7eb;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 3px solid #4b6cb7;
+            color: #4b6cb7;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #182848;
+            border-left: 5px solid #4b6cb7;
+            padding-left: 15px;
+        }
+        
+        .description {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .task-table th {
+            background-color: #4b6cb7;
+            color: white;
+            padding: 18px 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        .task-table td {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .task-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .task-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .empty-cell {
+            color: #e74c3c;
+            background-color: #fff5f5;
+            border: 2px dashed #e74c3c;
+            border-radius: 6px;
+            min-width: 100px;
+            display: inline-block;
+            padding: 8px 15px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .generate-btn {
+            background-color: #4b6cb7;
+            color: white;
+        }
+        
+        .generate-btn:hover {
+            background-color: #3a5795;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 108, 183, 0.3);
+        }
+        
+        .show-solution-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .show-solution-btn:hover {
+            background-color: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .new-task-btn {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        .new-task-btn:hover {
+            background-color: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .export-svg-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .export-svg-btn:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        .solution {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #27ae60;
+            display: none;
+        }
+        
+        .solution.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        .solution h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .solution-step {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .solution-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background-color: #f1f3f4;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border-left: 3px solid #4b6cb7;
+            margin: 5px 0;
+            display: inline-block;
+        }
+        
+        .result {
+            font-weight: bold;
+            color: #182848;
+            font-size: 1.2rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .svg-preview {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+        }
+        
+        .svg-preview.active {
+            display: block;
+        }
+        
+        .svg-preview h3 {
+            color: #9b59b6;
+            margin-bottom: 15px;
+        }
+        
+        .svg-container {
+            display: inline-block;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: white;
+            max-width: 100%;
+            overflow: auto;
+        }
+        
+        .download-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #9b59b6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .download-link:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tab {
+                padding: 15px 10px;
+                font-size: 1rem;
+            }
+            
+            .task-table th, .task-table td {
+                padding: 15px 10px;
+                font-size: 1.1rem;
+            }
+            
+            button {
+                padding: 12px 20px;
+                width: 100%;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Генератор табличных задач</h1>
+            <p class="subtitle">Генерируйте задачи на время, скорость-расстояние-время и цена-количество-стоимость. Проверяйте решения и экспортируйте задачи в SVG.</p>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="time">Задачи на время</div>
+            <div class="tab" data-tab="speed">Скорость, время, расстояние</div>
+            <div class="tab" data-tab="price">Цена, количество, стоимость</div>
+        </div>
+        
+        <div class="content">
+            <!-- Вкладка "Задачи на время" -->
+            <div class="tab-content active" id="time">
+                <h2 class="section-title">Задачи на время</h2>
+                <p class="description">В таблице представлены данные об отправлении, времени в пути и прибытии. В каждом задании один из параметров пропущен. Найдите его, используя известные данные. Для решения используйте формулу: <span class="formula">Прибытие = Отправление + Время в пути</span> или соответствующие преобразования.</p>
+                
+                <table class="task-table" id="time-table">
+                    <thead>
+                        <tr>
+                            <th>Отправление</th>
+                            <th>Время в пути</th>
+                            <th>Прибытие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="time-table-body">
+                        <!-- Данные будут сгенерированы JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <button class="generate-btn" id="generate-time">Сгенерировать задачу</button>
+                    <button class="show-solution-btn" id="show-time-solution">Показать решение</button>
+                    <button class="new-task-btn" id="new-time-task">Новая задача</button>
+                    <button class="export-svg-btn" id="export-time-svg">Экспорт в SVG</button>
+                </div>
+                
+                <div class="solution" id="time-solution">
+                    <h3>Решение задачи</h3>
+                    <div id="time-solution-steps"></div>
+                </div>
+                
+                <div class="svg-preview" id="time-svg-preview">
+                    <h3>SVG версия задачи</h3>
+                    <div class="svg-container" id="time-svg-container"></div>
+                    <br>
+                    <a href="#" id="time-svg-download" class="download-link" download="задача_время.svg">Скачать SVG</a>
+                </div>
+            </div>
+            
+            <!-- Вкладка "Скорость, время, расстояние" -->
+            <div class="tab-content" id="speed">
+                <h2 class="section-title">Скорость, время, расстояние</h2>
+                <p class="description">В таблице представлены данные о скорости, времени и расстоянии. В каждом задании один из параметров пропущен. Найдите его, используя формулу: <span class="formula">Расстояние = Скорость × Время</span> или соответствующие преобразования.</p>
+                
+                <table class="task-table" id="speed-table">
+                    <thead>
+                        <tr>
+                            <th>Скорость (км/ч)</th>
+                            <th>Время (ч)</th>
+                            <th>Расстояние (км)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="speed-table-body">
+                        <!-- Данные будут сгенерированы JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <button class="generate-btn" id="generate-speed">Сгенерировать задачу</button>
+                    <button class="show-solution-btn" id="show-speed-solution">Показать решение</button>
+                    <button class="new-task-btn" id="new-speed-task">Новая задача</button>
+                    <button class="export-svg-btn" id="export-speed-svg">Экспорт в SVG</button>
+                </div>
+                
+                <div class="solution" id="speed-solution">
+                    <h3>Решение задачи</h3>
+                    <div id="speed-solution-steps"></div>
+                </div>
+                
+                <div class="svg-preview" id="speed-svg-preview">
+                    <h3>SVG версия задачи</h3>
+                    <div class="svg-container" id="speed-svg-container"></div>
+                    <br>
+                    <a href="#" id="speed-svg-download" class="download-link" download="задача_скорость.svg">Скачать SVG</a>
+                </div>
+            </div>
+            
+            <!-- Вкладка "Цена, количество, стоимость" -->
+            <div class="tab-content" id="price">
+                <h2 class="section-title">Цена, количество, стоимость</h2>
+                <p class="description">В таблице представлены данные о цене, количестве и стоимости товара. В каждом задании один из параметров пропущен. Найдите его, используя формулу: <span class="formula">Стоимость = Цена × Количество</span> или соответствующие преобразования.</p>
+                
+                <table class="task-table" id="price-table">
+                    <thead>
+                        <tr>
+                            <th>Цена (руб.)</th>
+                            <th>Количество</th>
+                            <th>Стоимость (руб.)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="price-table-body">
+                        <!-- Данные будут сгенерированы JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <button class="generate-btn" id="generate-price">Сгенерировать задачу</button>
+                    <button class="show-solution-btn" id="show-price-solution">Показать решение</button>
+                    <button class="new-task-btn" id="new-price-task">Новая задача</button>
+                    <button class="export-svg-btn" id="export-price-svg">Экспорт в SVG</button>
+                </div>
+                
+                <div class="solution" id="price-solution">
+                    <h3>Решение задачи</h3>
+                    <div id="price-solution-steps"></div>
+                </div>
+                
+                <div class="svg-preview" id="price-svg-preview">
+                    <h3>SVG версия задачи</h3>
+                    <div class="svg-container" id="price-svg-container"></div>
+                    <br>
+                    <a href="#" id="price-svg-download" class="download-link" download="задача_цена.svg">Скачать SVG</a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Генератор табличных задач &copy; 2023 | Используется для обучения решению задач с табличными данными</p>
+        </footer>
+    </div>
+
+    <script>
+        // Функция для форматирования времени в формате "X ч Y мин" вместо десятичных дробей
+        function formatTime(hoursDecimal) {
+            const hours = Math.floor(hoursDecimal);
+            const minutes = Math.round((hoursDecimal - hours) * 60);
+            if (minutes === 0) {
+                return `${hours} ч`;
+            } else {
+                return `${hours} ч ${minutes} мин`;
+            }
+        }
+        
+        // Объекты для хранения текущих задач и решений
+        let currentTimeTask = null;
+        let currentSpeedTask = null;
+        let currentPriceTask = null;
+        
+        // Элементы DOM для вкладки "Время"
+        const timeTableBody = document.getElementById('time-table-body');
+        const generateTimeBtn = document.getElementById('generate-time');
+        const showTimeSolutionBtn = document.getElementById('show-time-solution');
+        const newTimeTaskBtn = document.getElementById('new-time-task');
+        const exportTimeSvgBtn = document.getElementById('export-time-svg');
+        const timeSolution = document.getElementById('time-solution');
+        const timeSolutionSteps = document.getElementById('time-solution-steps');
+        const timeSvgPreview = document.getElementById('time-svg-preview');
+        const timeSvgContainer = document.getElementById('time-svg-container');
+        const timeSvgDownload = document.getElementById('time-svg-download');
+        
+        // Элементы DOM для вкладки "Скорость"
+        const speedTableBody = document.getElementById('speed-table-body');
+        const generateSpeedBtn = document.getElementById('generate-speed');
+        const showSpeedSolutionBtn = document.getElementById('show-speed-solution');
+        const newSpeedTaskBtn = document.getElementById('new-speed-task');
+        const exportSpeedSvgBtn = document.getElementById('export-speed-svg');
+        const speedSolution = document.getElementById('speed-solution');
+        const speedSolutionSteps = document.getElementById('speed-solution-steps');
+        const speedSvgPreview = document.getElementById('speed-svg-preview');
+        const speedSvgContainer = document.getElementById('speed-svg-container');
+        const speedSvgDownload = document.getElementById('speed-svg-download');
+        
+        // Элементы DOM для вкладки "Цена"
+        const priceTableBody = document.getElementById('price-table-body');
+        const generatePriceBtn = document.getElementById('generate-price');
+        const showPriceSolutionBtn = document.getElementById('show-price-solution');
+        const newPriceTaskBtn = document.getElementById('new-price-task');
+        const exportPriceSvgBtn = document.getElementById('export-price-svg');
+        const priceSolution = document.getElementById('price-solution');
+        const priceSolutionSteps = document.getElementById('price-solution-steps');
+        const priceSvgPreview = document.getElementById('price-svg-preview');
+        const priceSvgContainer = document.getElementById('price-svg-container');
+        const priceSvgDownload = document.getElementById('price-svg-download');
+        
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Убираем активный класс у всех вкладок
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс к выбранной вкладке
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Генерация задач на время
+        function generateTimeTask() {
+            const task = {
+                rows: []
+            };
+            
+            // Генерируем 3 строки для таблицы
+            for (let i = 0; i < 3; i++) {
+                // Случайно определяем, какой столбец будет пропущен (0, 1 или 2)
+                const emptyCol = Math.floor(Math.random() * 3);
+                
+                // Генерируем отправление (часы и минуты)
+                const departureHour = Math.floor(Math.random() * 22) + 1; // от 1 до 22
+                const departureMinute = Math.floor(Math.random() * 12) * 5; // кратно 5: 0, 5, 10, ...
+                
+                // Генерируем время в пути (часы и минуты)
+                const travelHours = Math.floor(Math.random() * 5) + 1; // от 1 до 5 часов
+                const travelMinutes = Math.floor(Math.random() * 12) * 5; // кратно 5: 0, 5, 10, ...
+                
+                // Рассчитываем прибытие
+                let arrivalHour = departureHour + travelHours;
+                let arrivalMinute = departureMinute + travelMinutes;
+                
+                // Корректируем минуты, если > 60
+                if (arrivalMinute >= 60) {
+                    arrivalHour += Math.floor(arrivalMinute / 60);
+                    arrivalMinute = arrivalMinute % 60;
+                }
+                
+                // Корректируем часы, если > 24
+                if (arrivalHour >= 24) {
+                    arrivalHour = arrivalHour % 24;
+                }
+                
+                // Форматируем время в строки
+                const departureStr = `${departureHour.toString().padStart(2, '0')}.${departureMinute.toString().padStart(2, '0')}`;
+                const travelStr = `${travelHours} ч ${travelMinutes.toString().padStart(2, '0')} мин`;
+                const arrivalStr = `${arrivalHour.toString().padStart(2, '0')}.${arrivalMinute.toString().padStart(2, '0')}`;
+                
+                // Создаем объект строки
+                const row = {
+                    departure: emptyCol === 0 ? null : departureStr,
+                    travelTime: emptyCol === 1 ? null : travelStr,
+                    arrival: emptyCol === 2 ? null : arrivalStr,
+                    // Сохраняем исходные данные для решения
+                    departureObj: {hours: departureHour, minutes: departureMinute},
+                    travelTimeObj: {hours: travelHours, minutes: travelMinutes},
+                    arrivalObj: {hours: arrivalHour, minutes: arrivalMinute},
+                    emptyCol: emptyCol
+                };
+                
+                task.rows.push(row);
+            }
+            
+            currentTimeTask = task;
+            renderTimeTask();
+            timeSolution.classList.remove('active');
+            timeSvgPreview.classList.remove('active');
+        }
+        
+        // Отображение задачи на время
+        function renderTimeTask() {
+            timeTableBody.innerHTML = '';
+            
+            currentTimeTask.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                // Столбец "Отправление"
+                const td1 = document.createElement('td');
+                if (row.departure === null) {
+                    td1.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td1.textContent = row.departure;
+                }
+                
+                // Столбец "Время в пути"
+                const td2 = document.createElement('td');
+                if (row.travelTime === null) {
+                    td2.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td2.textContent = row.travelTime;
+                }
+                
+                // Столбец "Прибытие"
+                const td3 = document.createElement('td');
+                if (row.arrival === null) {
+                    td3.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td3.textContent = row.arrival;
+                }
+                
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                timeTableBody.appendChild(tr);
+            });
+        }
+        
+        // Показать решение задачи на время
+        function showTimeSolution() {
+            if (!currentTimeTask) return;
+            
+            timeSolutionSteps.innerHTML = '';
+            
+            currentTimeTask.rows.forEach((row, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'solution-step';
+                
+                let stepText = '';
+                let result = '';
+                
+                switch(row.emptyCol) {
+                    case 0: // Нужно найти отправление
+                        stepText = `Строка ${index+1}: Чтобы найти время отправления, нужно из времени прибытия вычесть время в пути.`;
+                        stepText += `<br>Прибытие: ${row.arrivalObj.hours.toString().padStart(2, '0')}:${row.arrivalObj.minutes.toString().padStart(2, '0')}`;
+                        stepText += `<br>Время в пути: ${row.travelTimeObj.hours} ч ${row.travelTimeObj.minutes.toString().padStart(2, '0')} мин`;
+                        
+                        // Вычисляем отправление
+                        let departureHour = row.arrivalObj.hours - row.travelTimeObj.hours;
+                        let departureMinute = row.arrivalObj.minutes - row.travelTimeObj.minutes;
+                        
+                        if (departureMinute < 0) {
+                            departureHour -= 1;
+                            departureMinute += 60;
+                        }
+                        
+                        if (departureHour < 0) {
+                            departureHour += 24;
+                        }
+                        
+                        result = `Отправление: ${departureHour.toString().padStart(2, '0')}:${departureMinute.toString().padStart(2, '0')}`;
+                        break;
+                        
+                    case 1: // Нужно найти время в пути
+                        stepText = `Строка ${index+1}: Чтобы найти время в пути, нужно из времени прибытия вычесть время отправления.`;
+                        stepText += `<br>Прибытие: ${row.arrivalObj.hours.toString().padStart(2, '0')}:${row.arrivalObj.minutes.toString().padStart(2, '0')}`;
+                        stepText += `<br>Отправление: ${row.departureObj.hours.toString().padStart(2, '0')}:${row.departureObj.minutes.toString().padStart(2, '0')}`;
+                        
+                        // Вычисляем время в пути
+                        let travelHour = row.arrivalObj.hours - row.departureObj.hours;
+                        let travelMinute = row.arrivalObj.minutes - row.departureObj.minutes;
+                        
+                        if (travelMinute < 0) {
+                            travelHour -= 1;
+                            travelMinute += 60;
+                        }
+                        
+                        if (travelHour < 0) {
+                            travelHour += 24;
+                        }
+                        
+                        result = `Время в пути: ${travelHour} ч ${travelMinute.toString().padStart(2, '0')} мин`;
+                        break;
+                        
+                    case 2: // Нужно найти прибытие
+                        stepText = `Строка ${index+1}: Чтобы найти время прибытия, нужно к времени отправления прибавить время в пути.`;
+                        stepText += `<br>Отправление: ${row.departureObj.hours.toString().padStart(2, '0')}:${row.departureObj.minutes.toString().padStart(2, '0')}`;
+                        stepText += `<br>Время в пути: ${row.travelTimeObj.hours} ч ${row.travelTimeObj.minutes.toString().padStart(2, '0')} мин`;
+                        
+                        // Вычисляем прибытие
+                        let arrivalHour = row.departureObj.hours + row.travelTimeObj.hours;
+                        let arrivalMinute = row.departureObj.minutes + row.travelTimeObj.minutes;
+                        
+                        if (arrivalMinute >= 60) {
+                            arrivalHour += Math.floor(arrivalMinute / 60);
+                            arrivalMinute = arrivalMinute % 60;
+                        }
+                        
+                        if (arrivalHour >= 24) {
+                            arrivalHour = arrivalHour % 24;
+                        }
+                        
+                        result = `Прибытие: ${arrivalHour.toString().padStart(2, '0')}:${arrivalMinute.toString().padStart(2, '0')}`;
+                        break;
+                }
+                
+                stepDiv.innerHTML = `${stepText}<br><span class="result">${result}</span>`;
+                timeSolutionSteps.appendChild(stepDiv);
+            });
+            
+            timeSolution.classList.add('active');
+        }
+        
+        // Экспорт задачи на время в SVG
+        function exportTimeToSvg() {
+            if (!currentTimeTask) return;
+            
+            // Создаем SVG
+            const svgWidth = 500;
+            const svgHeight = 250;
+            const cellWidth = svgWidth / 3;
+            const cellHeight = 50;
+            
+            let svgContent = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Фон
+            svgContent += `<rect width="100%" height="100%" fill="#f9fafb"/>`;
+            
+            // Заголовок
+            svgContent += `<text x="${svgWidth/2}" y="30" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#182848">Задача на время</text>`;
+            
+            // Таблица
+            // Заголовки таблицы
+            const headers = ["Отправление", "Время в пути", "Прибытие"];
+            for (let i = 0; i < headers.length; i++) {
+                const x = i * cellWidth;
+                // Фон заголовка
+                svgContent += `<rect x="${x}" y="50" width="${cellWidth}" height="${cellHeight}" fill="#4b6cb7"/>`;
+                // Текст заголовка
+                svgContent += `<text x="${x + cellWidth/2}" y="80" font-family="Arial" font-size="16" text-anchor="middle" fill="white">${headers[i]}</text>`;
+            }
+            
+            // Данные таблицы
+            currentTimeTask.rows.forEach((row, rowIndex) => {
+                const y = 100 + rowIndex * cellHeight;
+                
+                // Фон строки
+                if (rowIndex % 2 === 0) {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="white"/>`;
+                } else {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="#f0f2f5"/>`;
+                }
+                
+                // Разделительные линии
+                svgContent += `<line x1="0" y1="${y}" x2="${svgWidth}" y2="${y}" stroke="#ddd" stroke-width="1"/>`;
+                
+                // Ячейки
+                const cells = [row.departure, row.travelTime, row.arrival];
+                for (let i = 0; i < cells.length; i++) {
+                    const x = i * cellWidth;
+                    // Вертикальные линии
+                    if (i > 0) {
+                        svgContent += `<line x1="${x}" y1="50" x2="${x}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+                    }
+                    
+                    // Текст ячейки
+                    const cellText = cells[i] === null ? "?" : cells[i];
+                    const isQuestion = cells[i] === null;
+                    const textColor = isQuestion ? "#e74c3c" : "#333";
+                    const fontSize = isQuestion ? "18" : "16";
+                    const fontWeight = isQuestion ? "bold" : "normal";
+                    
+                    svgContent += `<text x="${x + cellWidth/2}" y="${y + cellHeight/2 + 5}" font-family="Arial" font-size="${fontSize}" font-weight="${fontWeight}" text-anchor="middle" fill="${textColor}">${cellText}</text>`;
+                }
+            });
+            
+            // Нижняя граница таблицы
+            svgContent += `<line x1="0" y1="${100 + 3 * cellHeight}" x2="${svgWidth}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+            
+            svgContent += `</svg>`;
+            
+            // Отображаем SVG
+            timeSvgContainer.innerHTML = svgContent;
+            timeSvgPreview.classList.add('active');
+            
+            // Настраиваем ссылку для скачивания
+            const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const svgUrl = URL.createObjectURL(svgBlob);
+            timeSvgDownload.href = svgUrl;
+            
+            // Прокручиваем к превью
+            timeSvgPreview.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Генерация задач на скорость, время, расстояние
+        function generateSpeedTask() {
+            const task = {
+                rows: []
+            };
+            
+            // Генерируем 3 строки для таблицы
+            for (let i = 0; i < 3; i++) {
+                // Случайно определяем, какой столбец будет пропущен (0, 1 или 2)
+                const emptyCol = Math.floor(Math.random() * 3);
+                
+                // Генерируем скорость (от 20 до 120 км/ч, кратно 5)
+                const speed = Math.floor(Math.random() * 21) * 5 + 20; // от 20 до 120, кратно 5
+                
+                // Генерируем время (целые часы и минуты, кратные 5)
+                const travelHours = Math.floor(Math.random() * 5) + 1; // от 1 до 5 часов
+                const travelMinutes = Math.floor(Math.random() * 12) * 5; // кратно 5: 0, 5, 10, ..., 55
+                const time = travelHours + travelMinutes / 60;
+                
+                // Рассчитываем расстояние
+                const distance = speed * time;
+                
+                // Форматируем значения
+                const speedStr = `${speed} км/ч`;
+                const timeStr = formatTime(time);
+                const distanceStr = `${distance} км`;
+                
+                // Создаем объект строки
+                const row = {
+                    speed: emptyCol === 0 ? null : speedStr,
+                    time: emptyCol === 1 ? null : timeStr,
+                    distance: emptyCol === 2 ? null : distanceStr,
+                    // Сохраняем исходные данные для решения
+                    speedValue: speed,
+                    timeValue: time,
+                    distanceValue: distance,
+                    emptyCol: emptyCol
+                };
+                
+                task.rows.push(row);
+            }
+            
+            currentSpeedTask = task;
+            renderSpeedTask();
+            speedSolution.classList.remove('active');
+            speedSvgPreview.classList.remove('active');
+        }
+        
+        // Отображение задачи на скорость, время, расстояние
+        function renderSpeedTask() {
+            speedTableBody.innerHTML = '';
+            
+            currentSpeedTask.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                // Столбец "Скорость"
+                const td1 = document.createElement('td');
+                if (row.speed === null) {
+                    td1.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td1.textContent = row.speed;
+                }
+                
+                // Столбец "Время"
+                const td2 = document.createElement('td');
+                if (row.time === null) {
+                    td2.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td2.textContent = row.time;
+                }
+                
+                // Столбец "Расстояние"
+                const td3 = document.createElement('td');
+                if (row.distance === null) {
+                    td3.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td3.textContent = row.distance;
+                }
+                
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                speedTableBody.appendChild(tr);
+            });
+        }
+        
+        // Показать решение задачи на скорость, время, расстояние
+        function showSpeedSolution() {
+            if (!currentSpeedTask) return;
+            
+            speedSolutionSteps.innerHTML = '';
+            
+            currentSpeedTask.rows.forEach((row, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'solution-step';
+                
+                let stepText = '';
+                let result = '';
+                
+                switch(row.emptyCol) {
+                    case 0: // Нужно найти скорость
+                        stepText = `Строка ${index+1}: Чтобы найти скорость, нужно расстояние разделить на время.`;
+                        stepText += `<br>Расстояние: ${row.distanceValue} км`;
+                        stepText += `<br>Время: ${formatTime(row.timeValue)}`;
+                        
+                        const speed = row.distanceValue / row.timeValue;
+                        result = `Скорость: ${speed.toFixed(1)} км/ч`;
+                        break;
+                        
+                    case 1: // Нужно найти время
+                        stepText = `Строка ${index+1}: Чтобы найти время, нужно расстояние разделить на скорость.`;
+                        stepText += `<br>Расстояние: ${row.distanceValue} км`;
+                        stepText += `<br>Скорость: ${row.speedValue} км/ч`;
+                        
+                        const time = row.distanceValue / row.speedValue;
+                        result = `Время: ${formatTime(time)}`;
+                        break;
+                        
+                    case 2: // Нужно найти расстояние
+                        stepText = `Строка ${index+1}: Чтобы найти расстояние, нужно скорость умножить на время.`;
+                        stepText += `<br>Скорость: ${row.speedValue} км/ч`;
+                        stepText += `<br>Время: ${formatTime(row.timeValue)}`;
+                        
+                        const distance = row.speedValue * row.timeValue;
+                        result = `Расстояние: ${distance.toFixed(1)} км`;
+                        break;
+                }
+                
+                stepDiv.innerHTML = `${stepText}<br><span class="formula">Расстояние = Скорость × Время</span><br><span class="result">${result}</span>`;
+                speedSolutionSteps.appendChild(stepDiv);
+            });
+            
+            speedSolution.classList.add('active');
+        }
+        
+        // Экспорт задачи на скорость в SVG
+        function exportSpeedToSvg() {
+            if (!currentSpeedTask) return;
+            
+            // Создаем SVG
+            const svgWidth = 500;
+            const svgHeight = 250;
+            const cellWidth = svgWidth / 3;
+            const cellHeight = 50;
+            
+            let svgContent = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Фон
+            svgContent += `<rect width="100%" height="100%" fill="#f9fafb"/>`;
+            
+            // Заголовок
+            svgContent += `<text x="${svgWidth/2}" y="30" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#182848">Задача: Скорость, время, расстояние</text>`;
+            
+            // Таблица
+            // Заголовки таблицы
+            const headers = ["Скорость (км/ч)", "Время (ч)", "Расстояние (км)"];
+            for (let i = 0; i < headers.length; i++) {
+                const x = i * cellWidth;
+                // Фон заголовка
+                svgContent += `<rect x="${x}" y="50" width="${cellWidth}" height="${cellHeight}" fill="#4b6cb7"/>`;
+                // Текст заголовка
+                svgContent += `<text x="${x + cellWidth/2}" y="80" font-family="Arial" font-size="16" text-anchor="middle" fill="white">${headers[i]}</text>`;
+            }
+            
+            // Данные таблицы
+            currentSpeedTask.rows.forEach((row, rowIndex) => {
+                const y = 100 + rowIndex * cellHeight;
+                
+                // Фон строки
+                if (rowIndex % 2 === 0) {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="white"/>`;
+                } else {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="#f0f2f5"/>`;
+                }
+                
+                // Разделительные линии
+                svgContent += `<line x1="0" y1="${y}" x2="${svgWidth}" y2="${y}" stroke="#ddd" stroke-width="1"/>`;
+                
+                // Ячейки
+                const cells = [row.speed, row.time, row.distance];
+                for (let i = 0; i < cells.length; i++) {
+                    const x = i * cellWidth;
+                    // Вертикальные линии
+                    if (i > 0) {
+                        svgContent += `<line x1="${x}" y1="50" x2="${x}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+                    }
+                    
+                    // Текст ячейки
+                    const cellText = cells[i] === null ? "?" : cells[i];
+                    const isQuestion = cells[i] === null;
+                    const textColor = isQuestion ? "#e74c3c" : "#333";
+                    const fontSize = isQuestion ? "18" : "16";
+                    const fontWeight = isQuestion ? "bold" : "normal";
+                    
+                    svgContent += `<text x="${x + cellWidth/2}" y="${y + cellHeight/2 + 5}" font-family="Arial" font-size="${fontSize}" font-weight="${fontWeight}" text-anchor="middle" fill="${textColor}">${cellText}</text>`;
+                }
+            });
+            
+            // Нижняя граница таблицы
+            svgContent += `<line x1="0" y1="${100 + 3 * cellHeight}" x2="${svgWidth}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+            
+            svgContent += `</svg>`;
+            
+            // Отображаем SVG
+            speedSvgContainer.innerHTML = svgContent;
+            speedSvgPreview.classList.add('active');
+            
+            // Настраиваем ссылку для скачивания
+            const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const svgUrl = URL.createObjectURL(svgBlob);
+            speedSvgDownload.href = svgUrl;
+            
+            // Прокручиваем к превью
+            speedSvgPreview.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Генерация задач на цену, количество, стоимость
+        function generatePriceTask() {
+            const task = {
+                rows: []
+            };
+            
+            // Генерируем 3 строки для таблицы
+            for (let i = 0; i < 3; i++) {
+                // Случайно определяем, какой столбец будет пропущен (0, 1 или 2)
+                const emptyCol = Math.floor(Math.random() * 3);
+                
+                // Генерируем цену (от 10 до 500 рублей, кратно 10)
+                const price = Math.floor(Math.random() * 50) * 10 + 10; // от 10 до 500, кратно 10
+                
+                // Генерируем количество (от 1 до 20)
+                const quantity = Math.floor(Math.random() * 20) + 1; // от 1 до 20
+                
+                // Рассчитываем стоимость
+                const cost = price * quantity;
+                
+                // Форматируем значения
+                const priceStr = `${price} руб.`;
+                const quantityStr = `${quantity} шт.`;
+                const costStr = `${cost} руб.`;
+                
+                // Создаем объект строки
+                const row = {
+                    price: emptyCol === 0 ? null : priceStr,
+                    quantity: emptyCol === 1 ? null : quantityStr,
+                    cost: emptyCol === 2 ? null : costStr,
+                    // Сохраняем исходные данные для решения
+                    priceValue: price,
+                    quantityValue: quantity,
+                    costValue: cost,
+                    emptyCol: emptyCol
+                };
+                
+                task.rows.push(row);
+            }
+            
+            currentPriceTask = task;
+            renderPriceTask();
+            priceSolution.classList.remove('active');
+            priceSvgPreview.classList.remove('active');
+        }
+        
+        // Отображение задачи на цену, количество, стоимость
+        function renderPriceTask() {
+            priceTableBody.innerHTML = '';
+            
+            currentPriceTask.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                // Столбец "Цена"
+                const td1 = document.createElement('td');
+                if (row.price === null) {
+                    td1.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td1.textContent = row.price;
+                }
+                
+                // Столбец "Количество"
+                const td2 = document.createElement('td');
+                if (row.quantity === null) {
+                    td2.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td2.textContent = row.quantity;
+                }
+                
+                // Столбец "Стоимость"
+                const td3 = document.createElement('td');
+                if (row.cost === null) {
+                    td3.innerHTML = '<div class="empty-cell">?</div>';
+                } else {
+                    td3.textContent = row.cost;
+                }
+                
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                priceTableBody.appendChild(tr);
+            });
+        }
+        
+        // Показать решение задачи на цену, количество, стоимость
+        function showPriceSolution() {
+            if (!currentPriceTask) return;
+            
+            priceSolutionSteps.innerHTML = '';
+            
+            currentPriceTask.rows.forEach((row, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'solution-step';
+                
+                let stepText = '';
+                let result = '';
+                
+                switch(row.emptyCol) {
+                    case 0: // Нужно найти цену
+                        stepText = `Строка ${index+1}: Чтобы найти цену, нужно стоимость разделить на количество.`;
+                        stepText += `<br>Стоимость: ${row.costValue} руб.`;
+                        stepText += `<br>Количество: ${row.quantityValue} шт.`;
+                        
+                        const price = row.costValue / row.quantityValue;
+                        result = `Цена: ${price.toFixed(0)} руб.`;
+                        break;
+                        
+                    case 1: // Нужно найти количество
+                        stepText = `Строка ${index+1}: Чтобы найти количество, нужно стоимость разделить на цену.`;
+                        stepText += `<br>Стоимость: ${row.costValue} руб.`;
+                        stepText += `<br>Цена: ${row.priceValue} руб.`;
+                        
+                        const quantity = row.costValue / row.priceValue;
+                        result = `Количество: ${quantity.toFixed(0)} шт.`;
+                        break;
+                        
+                    case 2: // Нужно найти стоимость
+                        stepText = `Строка ${index+1}: Чтобы найти стоимость, нужно цену умножить на количество.`;
+                        stepText += `<br>Цена: ${row.priceValue} руб.`;
+                        stepText += `<br>Количество: ${row.quantityValue} шт.`;
+                        
+                        const cost = row.priceValue * row.quantityValue;
+                        result = `Стоимость: ${cost.toFixed(0)} руб.`;
+                        break;
+                }
+                
+                stepDiv.innerHTML = `${stepText}<br><span class="formula">Стоимость = Цена × Количество</span><br><span class="result">${result}</span>`;
+                priceSolutionSteps.appendChild(stepDiv);
+            });
+            
+            priceSolution.classList.add('active');
+        }
+        
+        // Экспорт задачи на цену в SVG
+        function exportPriceToSvg() {
+            if (!currentPriceTask) return;
+            
+            // Создаем SVG
+            const svgWidth = 500;
+            const svgHeight = 250;
+            const cellWidth = svgWidth / 3;
+            const cellHeight = 50;
+            
+            let svgContent = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Фон
+            svgContent += `<rect width="100%" height="100%" fill="#f9fafb"/>`;
+            
+            // Заголовок
+            svgContent += `<text x="${svgWidth/2}" y="30" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#182848">Задача: Цена, количество, стоимость</text>`;
+            
+            // Таблица
+            // Заголовки таблицы
+            const headers = ["Цена (руб.)", "Количество", "Стоимость (руб.)"];
+            for (let i = 0; i < headers.length; i++) {
+                const x = i * cellWidth;
+                // Фон заголовка
+                svgContent += `<rect x="${x}" y="50" width="${cellWidth}" height="${cellHeight}" fill="#4b6cb7"/>`;
+                // Текст заголовка
+                svgContent += `<text x="${x + cellWidth/2}" y="80" font-family="Arial" font-size="16" text-anchor="middle" fill="white">${headers[i]}</text>`;
+            }
+            
+            // Данные таблицы
+            currentPriceTask.rows.forEach((row, rowIndex) => {
+                const y = 100 + rowIndex * cellHeight;
+                
+                // Фон строки
+                if (rowIndex % 2 === 0) {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="white"/>`;
+                } else {
+                    svgContent += `<rect x="0" y="${y}" width="${svgWidth}" height="${cellHeight}" fill="#f0f2f5"/>`;
+                }
+                
+                // Разделительные линии
+                svgContent += `<line x1="0" y1="${y}" x2="${svgWidth}" y2="${y}" stroke="#ddd" stroke-width="1"/>`;
+                
+                // Ячейки
+                const cells = [row.price, row.quantity, row.cost];
+                for (let i = 0; i < cells.length; i++) {
+                    const x = i * cellWidth;
+                    // Вертикальные линии
+                    if (i > 0) {
+                        svgContent += `<line x1="${x}" y1="50" x2="${x}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+                    }
+                    
+                    // Текст ячейки
+                    const cellText = cells[i] === null ? "?" : cells[i];
+                    const isQuestion = cells[i] === null;
+                    const textColor = isQuestion ? "#e74c3c" : "#333";
+                    const fontSize = isQuestion ? "18" : "16";
+                    const fontWeight = isQuestion ? "bold" : "normal";
+                    
+                    svgContent += `<text x="${x + cellWidth/2}" y="${y + cellHeight/2 + 5}" font-family="Arial" font-size="${fontSize}" font-weight="${fontWeight}" text-anchor="middle" fill="${textColor}">${cellText}</text>`;
+                }
+            });
+            
+            // Нижняя граница таблицы
+            svgContent += `<line x1="0" y1="${100 + 3 * cellHeight}" x2="${svgWidth}" y2="${100 + 3 * cellHeight}" stroke="#ddd" stroke-width="1"/>`;
+            
+            svgContent += `</svg>`;
+            
+            // Отображаем SVG
+            priceSvgContainer.innerHTML = svgContent;
+            priceSvgPreview.classList.add('active');
+            
+            // Настраиваем ссылку для скачивания
+            const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const svgUrl = URL.createObjectURL(svgBlob);
+            priceSvgDownload.href = svgUrl;
+            
+            // Прокручиваем к превью
+            priceSvgPreview.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            // Генерируем начальные задачи
+            generateTimeTask();
+            generateSpeedTask();
+            generatePriceTask();
+            
+            // Назначаем обработчики событий для вкладки "Время"
+            generateTimeBtn.addEventListener('click', generateTimeTask);
+            showTimeSolutionBtn.addEventListener('click', showTimeSolution);
+            newTimeTaskBtn.addEventListener('click', generateTimeTask);
+            exportTimeSvgBtn.addEventListener('click', exportTimeToSvg);
+            
+            // Назначаем обработчики событий для вкладки "Скорость"
+            generateSpeedBtn.addEventListener('click', generateSpeedTask);
+            showSpeedSolutionBtn.addEventListener('click', showSpeedSolution);
+            newSpeedTaskBtn.addEventListener('click', generateSpeedTask);
+            exportSpeedSvgBtn.addEventListener('click', exportSpeedToSvg);
+            
+            // Назначаем обработчики событий для вкладки "Цена"
+            generatePriceBtn.addEventListener('click', generatePriceTask);
+            showPriceSolutionBtn.addEventListener('click', showPriceSolution);
+            newPriceTaskBtn.addEventListener('click', generatePriceTask);
+            exportPriceSvgBtn.addEventListener('click', exportPriceToSvg);
+        });
+    </script>
+</body>
+</html>
