@@ -50,6 +50,6 @@
         
         { "title": "Генераторы примеров", "file": "materials/Generators/GeneratorPrimerov/index.html" },
         { "title": "Генератор задач на скорость", "file": "materials/Generators/GeneratorZadach/speedTascks" },
-        { "title": "Генератор задач (таблица, скорость, время, цена)", "file": "materials/Generators/GeneratorZadach/tablTascks" }
+        { "title": "Генератор задач (таблица, скорость, время, цена)", "file": "materials/Generators/GeneratorZadach/tablTascks/index_tabl_export.html" }
     ]
 }
