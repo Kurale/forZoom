@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор примеров А4</title>
+    <style>
+        /* --- Стили интерфейса (CSS) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Боковая панель настроек */
+        .sidebar {
+            width: 320px;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        h2 { margin-top: 0; color: #333; font-size: 1.2rem; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #555; }
+        
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Чтобы padding не ломал ширину */
+        }
+
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #45a049; }
+        button.secondary { background-color: #2196F3; }
+        button.secondary:hover { background-color: #1e88e5; }
+
+        /* Область предпросмотра */
+        .preview-area {
+            flex: 1;
+            padding: 40px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            background-color: #555; /* Темный фон, чтобы видеть лист */
+        }
+
+        /* Контейнер для SVG (визуально как лист бумаги) */
+        #svgContainer {
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            /* Размеры A4 будут заданы атрибутами SVG, здесь только отображение */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Настройки генератора</h2>
+
+        <div>
+            <label>Тип операции</label>
+            <select id="operationType">
+                <option value="mult">Умножение (·)</option>
+                <option value="div">Деление нацело (:)</option>
+                <option value="div_rem">Деление с остатком (:)</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label>Знаков (число 1)</label>
+                <input type="number" id="digits1" value="3" min="1" max="5">
+            </div>
+            <div class="col">
+                <label>Знаков (число 2)</label>
+                <input type="number" id="digits2" value="2" min="1" max="5">
+            </div>
+        </div>
+
+        <div>
+            <label>Количество примеров</label>
+            <input type="number" id="count" value="12" min="1" max="20">
+            <small style="color: #888; display:block; margin-top:2px;">Рекомендуется четное число</small>
+        </div>
+
+        <hr style="width: 100%; border: 0; border-top: 1px solid #eee;">
+
+        <button onclick="generateSheet()">🔄 Сгенерировать</button>
+        <button class="secondary" onclick="downloadSVG()">⬇ Скачать SVG (Figma)</button>
+        <button class="secondary" style="background-color: #ff9800;" onclick="downloadPNG()">⬇ Скачать PNG</button>
+    </div>
+
+    <div class="preview-area">
+        <div id="svgContainer"></div>
+    </div>
+
+    <script>
+        /**
+         * Утилита: Получение случайного целого числа в диапазоне [min, max]
+         */
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        /**
+         * Утилита: Получение диапазона чисел для заданного количества знаков.
+         * Пример: digits=2 -> min=10, max=99
+         */
+        function getRange(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return { min, max };
+        }
+
+        /**
+         * Основная функция логики: Создание одного математического примера
+         */
+        function createProblem(type, d1, d2) {
+            const r1 = getRange(d1); // range для первого числа
+            const r2 = getRange(d2); // range для второго числа
+            
+            let num1, num2, symbol;
+
+            // --- Логика Умножения ---
+            if (type === 'mult') {
+                num1 = getRandomInt(r1.min, r1.max);
+                num2 = getRandomInt(r2.min, r2.max);
+                symbol = '·';
+            } 
+            // --- Логика Деления (нацело) ---
+            else if (type === 'div') {
+                // Стратегия: Генерируем делитель и частное, потом находим делимое.
+                // Делитель (второе число в примере)
+                num2 = getRandomInt(r2.min, r2.max); 
+                
+                // Чтобы делимое (num1) попало в r1.min...r1.max, частное должно быть в пределах:
+                const minQuotient = Math.ceil(r1.min / num2);
+                const maxQuotient = Math.floor(r1.max / num2);
+
+                if (minQuotient > maxQuotient) {
+                    // Ситуация, когда невозможно создать пример с такими параметрами
+                    // (например 2 знака разделить на 4 знака)
+                    return { text: "Ошибка параметров", error: true };
+                }
+
+                const quotient = getRandomInt(minQuotient, maxQuotient);
+                num1 = num2 * quotient; // Делимое
+                symbol = ':';
+            } 
+            // --- Логика Деления (с остатком) ---
+            else if (type === 'div_rem') {
+                // Здесь num1 (делимое) просто должно быть больше num2
+                // И желательно не делиться нацело
+                let attempts = 0;
+                do {
+                    num1 = getRandomInt(r1.min, r1.max);
+                    num2 = getRandomInt(r2.min, r2.max);
+                    attempts++;
+                } while ( (num1 <= num2 || num1 % num2 === 0) && attempts < 50 );
+                
+                symbol = ':';
+            }
+
+            // Форматируем с пробелами (735 -> 735, 21252 -> 21 252)
+            // Используем Intl.NumberFormat для красивых пробелов
+            const f = new Intl.NumberFormat('ru-RU').format;
+            return {
+                text: `${f(num1)} ${symbol} ${f(num2)} =`,
+                n1: num1,
+                n2: num2
+            };
+        }
+
+        /**
+         * Генерация SVG-кода для сетки (явные линии)
+         * Рисуем линии, чтобы создать эффект тетрадного листа
+         * Совместимо с Figma
+         */
+        function getGridLines(x, y, width, height, step = 5) {
+            let lines = '';
+            
+            // Вертикальные линии
+            for (let i = 0; i <= width; i += step) {
+                lines += `<path d="M${x + i + 0.5} ${y + 0.5}V${y + height + 0.5}" stroke="#E1E1E1" stroke-width="0.5"/>`;
+            }
+            
+            // Горизонтальные линии
+            for (let i = 0; i <= height; i += step) {
+                lines += `<path d="M${x + 0.5} ${y + i + 0.5}H${x + width + 0.5}" stroke="#E1E1E1" stroke-width="0.5"/>`;
+            }
+            
+            return lines;
+        }
+
+        /**
+         * Главная функция: Генерация листа А4
+         */
+        function generateSheet() {
+            const operation = document.getElementById('operationType').value;
+            const digits1 = parseInt(document.getElementById('digits1').value);
+            const digits2 = parseInt(document.getElementById('digits2').value);
+            const count = parseInt(document.getElementById('count').value);
+            const container = document.getElementById('svgContainer');
+
+            // Параметры листа А4 (в мм)
+            const width = 210;
+            const height = 297;
+            const margin = 15; // Поля
+            
+            // Расчет колонок
+            // 2 колонки. 
+            const colWidth = (width - margin * 3) / 2; // (Ширина - 3 отступа) / 2
+            const startX_col1 = margin;
+            const startX_col2 = margin + colWidth + margin;
+
+            // Вертикальный шаг. Прикинем высоту блока примера.
+            // Примерно (297 - поля) / (count / 2)
+            const rowsCount = Math.ceil(count / 2);
+            const rowHeight = (height - margin * 2) / rowsCount;
+
+            // Формируем SVG строку
+            // xmlns="http://www.w3.org/2000/svg" обязателен для работы в файлах
+            let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}mm" height="${height}mm" viewBox="0 0 ${width} ${height}" style="background: white;">`;
+
+            let currentY = margin + 5; // Начальный Y отступ
+
+            for (let i = 0; i < count; i++) {
+                // Генерируем данные примера
+                const problem = createProblem(operation, digits1, digits2);
+                
+                // Определяем колонку (четные - 0 (левая), нечетные - 1 (правая))
+                const isSecondCol = i % 2 !== 0;
+                const x = isSecondCol ? startX_col2 : startX_col1;
+                
+                // Если начали новую строку (для левой колонки), не меняем Y, 
+                // меняем Y только когда переходим к следующей паре
+                // Но проще считать Y на основе индекса ряда
+                const rowIndex = Math.floor(i / 2);
+                const y = margin + (rowIndex * rowHeight);
+
+                // 1. Текст примера
+                // font-size 5 (примерно 14pt)
+                svgContent += `<text x="${x}" y="${y + 5}" font-family="Arial" font-size="5" fill="#000">${problem.text}</text>`;
+
+                // 2. Сетка для решения
+                // 4 клетки в высоту (20мм), 10 клеток в ширину (50мм)
+                const gridW = 50;
+                const gridH = 30;
+                const gridY = y + 6; // Отступ от текста примера
+
+                // Рисуем явные линии сетки (совместимо с Figma)
+                svgContent += getGridLines(x, gridY, gridW, gridH);
+            }
+
+            svgContent += `</svg>`;
+
+            // Вставляем в DOM
+            container.innerHTML = svgContent;
+        }
+
+        /**
+         * Функция скачивания SVG файла
+         */
+        function downloadSVG() {
+            const svgElement = document.querySelector('#svgContainer svg');
+            if (!svgElement) return;
+            
+            // Сериализуем SVG с сохранением всех атрибутов
+            const serializer = new XMLSerializer();
+            let svgString = serializer.serializeToString(svgElement);
+            
+            // Убеждаемся, что xmlns присутствует для корректного отображения паттернов
+            if (!svgString.includes('xmlns="http://www.w3.org/2000/svg"')) {
+                svgString = svgString.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            
+            const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "math_problems.svg";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        /**
+         * Функция скачивания PNG (через Canvas)
+         */
+        function downloadPNG() {
+            const svgElement = document.querySelector('#svgContainer svg');
+            if (!svgElement) return;
+
+            // Сериализуем SVG в строку
+            const serializer = new XMLSerializer();
+            let svgString = serializer.serializeToString(svgElement);
+            
+            // Убеждаемся, что xmlns присутствует для корректного отображения паттернов
+            if (!svgString.includes('xmlns="http://www.w3.org/2000/svg"')) {
+                svgString = svgString.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            
+            // Создаем Image
+            const img = new Image();
+            // Кодируем SVG в base64, чтобы canvas его "съел"
+            const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                // Важно: задаем размеры canvas в пикселях.
+                // Для хорошего качества (print) берем 300 DPI (примерно 11.8 px/mm)
+                // A4: 210mm * 11.8 = ~2480px width
+                const scale = 4; // Множитель качества
+                const viewBoxWidth = svgElement.viewBox.baseVal.width;
+                const viewBoxHeight = svgElement.viewBox.baseVal.height;
+                
+                canvas.width = viewBoxWidth * scale * 3.78; // 1mm ~= 3.78px
+                canvas.height = viewBoxHeight * scale * 3.78;
+                
+                const ctx = canvas.getContext('2d');
+                
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height); // Белый фон (иначе прозрачный)
+                
+                // Рисуем изображение на весь canvas без использования ctx.scale
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                const link = document.createElement('a');
+                link.download = "math_problems.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+        }
+
+        // Инициализация при старте
+        generateSheet();
+
+    </script>
+</body>
+</html>
