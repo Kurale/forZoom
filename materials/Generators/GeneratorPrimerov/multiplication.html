@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор: Умножение в столбик</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* --- Общие стили (как в прошлом проекте) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        select, input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #45a049; }
+        button.secondary { background-color: #2196F3; }
+
+        .back-button {
+            background-color: #607D8B;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #546E7A;
+        }
+
+        /* --- Тетрадный лист --- */
+        #notebook-sheet {
+            background-color: white;
+            padding: 50px;
+            width: 210mm;
+            min-height: 297mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 60px; /* Отступ между примерами побольше */
+        }
+
+        /* --- Контейнер примера --- */
+        .problem {
+            display: inline-grid;
+            /* Размеры ячеек */
+            grid-template-columns: repeat(var(--cols), 25px);
+            grid-auto-rows: 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            line-height: 25px;
+            color: #333;
+            /* Клетчатый фон для каждого примера отдельно */
+            background-image:
+                linear-gradient(#e1e1e1 1px, transparent 1px),
+                linear-gradient(90deg, #e1e1e1 1px, transparent 1px);
+            background-size: 25px 25px;
+            background-position: -1px -1px;
+            position: relative; /* Для абсолютного позиционирования знака */
+        }
+
+        .cell {
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Знак умножения (крестик) - позиционируется между строками */
+        .sign {
+            font-size: 16px;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Черта под вторым множителем */
+        .border-bottom {
+            border-bottom: 2px solid #333;
+        }
+
+        @media print {
+            .controls { display: none; }
+            body { background: white; padding: 0; }
+            #notebook-sheet { box-shadow: none; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <a href="index.html" class="back-button">В меню</a>
+        <div>
+            <label>1-й множитель (знаков):</label>
+            <select id="digits1">
+                <option value="2">2 знака</option>
+                <option value="3" selected>3 знака</option>
+                <option value="4">4 знака</option>
+            </select>
+        </div>
+        <div>
+            <label>2-й множитель (знаков):</label>
+            <select id="digits2">
+                <option value="1">1 знак</option>
+                <option value="2" selected>2 знака</option>
+                <option value="3">3 знака</option>
+            </select>
+        </div>
+        <div>
+            <label>Кол-во:</label>
+            <input type="number" id="count" value="6" min="1" max="20" style="width: 60px;">
+        </div>
+        <button onclick="generateMultiplication()">Сгенерировать</button>
+        <button class="secondary" onclick="downloadImage()">Скачать PNG</button>
+        <button class="secondary" onclick="exportToSVG()">Скачать SVG</button>
+    </div>
+
+    <div id="notebook-sheet"></div>
+
+    <script>
+        // --- 1. Математическая логика ---
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateNumber(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return getRandomInt(min, max);
+        }
+
+        // --- 2. Рендеринг (Отрисовка) ---
+
+        function generateMultiplication() {
+            const sheet = document.getElementById('notebook-sheet');
+            sheet.innerHTML = '';
+
+            const d1 = parseInt(document.getElementById('digits1').value);
+            const d2 = parseInt(document.getElementById('digits2').value);
+            const count = parseInt(document.getElementById('count').value);
+
+            for (let i = 0; i < count; i++) {
+                // Генерируем числа
+                const num1 = generateNumber(d1);
+                const num2 = generateNumber(d2);
+                
+                // Создаем HTML элемент
+                const problemEl = renderProblemHTML(num1, num2);
+                sheet.appendChild(problemEl);
+            }
+        }
+
+        function renderProblemHTML(num1, num2) {
+            const container = document.createElement('div');
+            container.className = 'problem';
+
+            const str1 = num1.toString();
+            const str2 = num2.toString();
+            const result = num1 * num2;
+            const strResult = result.toString();
+
+            // Рассчитываем ширину сетки.
+            // Ширина = макс(длина 1го, длина 2го + 1 знак, длина ответа)
+            // Добавляем +1 колонку слева для знака умножения
+            const width = Math.max(str1.length, str2.length, strResult.length) + 1;
+            
+            // Передаем переменную в CSS для grid-template-columns
+            container.style.setProperty('--cols', width);
+
+            // СТРОКА 1: Первый множитель (выравнивание вправо)
+            // Заполняем пустые клетки слева
+            for(let i=0; i < width - str1.length; i++) {
+                container.appendChild(createCell(''));
+            }
+            // Пишем цифры
+            for(let char of str1) {
+                container.appendChild(createCell(char));
+            }
+
+            // СТРОКА 2: Второй множитель
+            // Выравнивание вправо
+            const emptyBeforeSecond = width - str2.length;
+            
+            for(let i=0; i < emptyBeforeSecond; i++) {
+                container.appendChild(createCell(''));
+            }
+
+            // Цифры второго числа
+            for(let char of str2) {
+                const c = createCell(char);
+                c.classList.add('border-bottom'); // Подчеркивание
+                container.appendChild(c);
+            }
+
+            // Знак умножения - позиционируется между строками и чуть левее от верхнего множителя
+            const signCell = document.createElement('div');
+            signCell.className = 'sign';
+            signCell.textContent = '×';
+            // Позиция: по горизонтали - левее от первого числа на 1 клетку
+            // по вертикали - посередине между строкой 1 и строкой 2
+            const signX = (width - str1.length - 1) * 25 + 12.5; // центр клетки левее первого числа
+            const signY = 25; // посередине между строками (25px = 1 клетка)
+            signCell.style.left = signX + 'px';
+            signCell.style.top = signY + 'px';
+            container.appendChild(signCell);
+
+            // СТРОКИ ДЛЯ РЕШЕНИЯ
+            // Добавляем пустые строки вниз для промежуточных вычислений и ответа.
+            // Кол-во строк = кол-во цифр во втором множителе (промежуточные) + 1 (ответ) + запас
+            const rowsNeeded = str2.length + 3;
+            
+            for(let r=0; r < rowsNeeded; r++) {
+                for(let c=0; c < width; c++) {
+                    const empty = createCell('');
+                    empty.contentEditable = true; // Можно писать решение
+                    container.appendChild(empty);
+                }
+            }
+
+            // Сохраняем данные для SVG экспорта прямо в элемент
+            container.dataset.num1 = str1;
+            container.dataset.num2 = str2;
+            container.dataset.width = width; // Ширина в клетках
+
+            return container;
+        }
+
+        function createCell(text) {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.textContent = text;
+            return div;
+        }
+
+ // --- 3. Экспорт ---
+        
+        async function downloadImage() {
+            const sheet = document.getElementById('notebook-sheet');
+            
+            // html2canvas делает "снимок" DOM элемента
+            const canvas = await html2canvas(sheet, {
+                scale: 2, // Улучшаем качество (Retina like)
+                backgroundColor: null // Прозрачность или белый
+            });
+
+            const link = document.createElement('a');
+            link.download = 'math-examples.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // --- 3. SVG Экспорт ---
+
+        function exportToSVG() {
+            const problems = document.querySelectorAll('.problem');
+            if (problems.length === 0) return;
+
+            const cellSize = 25;
+            const padding = 50;
+            const gapX = 50; // Отступ между примерами по горизонтали (в SVG расположим в ряд)
+            const gapY = 50; // Отступ по вертикали
+
+            // Простая раскладка: 3 примера в ряд
+            const colsInRow = 3;
+            
+            // Рассчитываем примерные размеры холста
+            // Берем ширину первого примера как базовую (упрощение)
+            let maxW = 0;
+            let maxH = 0;
+            
+            problems.forEach(p => {
+                const w = parseInt(p.dataset.width);
+                if (w > maxW) maxW = w;
+            });
+            
+            // Ширина SVG
+            const svgWidth = (maxW * cellSize + gapX) * colsInRow + padding * 2;
+            // Высота SVG
+            const rowsCount = Math.ceil(problems.length / colsInRow);
+            // Высота одного блока (примерно 15 клеток вниз)
+            const blockHeight = 15 * cellSize; 
+            const svgHeight = rowsCount * blockHeight + padding * 2;
+
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+                <style>
+                    .txt { font: 20px 'Courier New', monospace; fill: #333; text-anchor: middle; dominant-baseline: central; }
+                    .line { stroke: #333; stroke-width: 2; }
+                    .grid { stroke: #e1e1e1; stroke-width: 1; }
+                </style>`;
+
+            problems.forEach((p, index) => {
+                const n1 = p.dataset.num1;
+                const n2 = p.dataset.num2;
+                const w = parseInt(p.dataset.width);
+
+                // Координаты блока
+                const colIndex = index % colsInRow;
+                const rowIndex = Math.floor(index / colsInRow);
+                
+                const startX = padding + colIndex * (maxW * cellSize + gapX);
+                const startY = padding + rowIndex * blockHeight;
+
+                // 1. Рисуем сетку для примера
+                const rowsForGrid = 12; // Сколько клеток вниз рисовать
+                // Вертикальные
+                for(let i=0; i<=w; i++) {
+                    svg += `<line x1="${startX + i*cellSize}" y1="${startY}" x2="${startX + i*cellSize}" y2="${startY + rowsForGrid*cellSize}" class="grid"/>`;
+                }
+                // Горизонтальные
+                for(let i=0; i<=rowsForGrid; i++) {
+                    svg += `<line x1="${startX}" y1="${startY + i*cellSize}" x2="${startX + w*cellSize}" y2="${startY + i*cellSize}" class="grid"/>`;
+                }
+
+                // 2. Цифры первого числа (Row 0)
+                // Сдвиг вправо: width - n1.length
+                const offset1 = w - n1.length;
+                for(let i=0; i<n1.length; i++) {
+                    const cx = startX + (offset1 + i)*cellSize + cellSize/2;
+                    const cy = startY + cellSize/2;
+                    svg += `<text x="${cx}" y="${cy}" class="txt">${n1[i]}</text>`;
+                }
+
+                // 3. Цифры второго числа (Row 1)
+                const offset2 = w - n2.length;
+                for(let i=0; i<n2.length; i++) {
+                    const cx = startX + (offset2 + i)*cellSize + cellSize/2;
+                    const cy = startY + cellSize*1.5; // 2-я строка
+                    svg += `<text x="${cx}" y="${cy}" class="txt">${n2[i]}</text>`;
+                }
+
+                // 4. Знак умножения - между строками и чуть левее от верхнего множителя
+                const signX = startX + (offset1 - 1)*cellSize + cellSize/2;
+                const signY = startY + cellSize; // Посередине между строками
+                svg += `<text x="${signX}" y="${signY}" class="txt">×</text>`;
+
+                // 5. Черта
+                // Под вторым множителем
+                const lineX1 = startX + (offset2)*cellSize; // От начала цифр второго числа
+                const lineX2 = startX + w*cellSize;
+                const lineY = startY + cellSize*2;
+                svg += `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" class="line"/>`;
+
+            });
+
+            svg += '</svg>';
+
+            const blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'multiplication.svg';
+            link.click();
+        }
+
+        // Запуск при старте
+        generateMultiplication();
+    </script>
+</body>
+</html>

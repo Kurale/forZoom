@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор заданий: Математика</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #4CAF50;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Цветовые акценты */
+        .card.div .icon { color: #FF9800; }
+        .card.mul .icon { color: #2196F3; }
+        .card.nam .icon { color: #9C27B0; }
+        
+    </style>
+</head>
+<body>
+
+    <h1>🧮 Генератор школьных примеров</h1>
+
+    <div class="grid-container">
+        <a href="divide.html" class="card div">
+            <span class="icon">➗</span>
+            <span class="title">Деление уголком</span>
+            <span class="desc">Генерация примеров на деление без остатка. Настройка разрядности.</span>
+        </a>
+
+        <a href="multiplication.html" class="card mul">
+            <span class="icon">✖️</span>
+            <span class="title">Умножение</span>
+            <span class="desc">Умножение в столбик. Настройка количества знаков множителей.</span>
+        </a>
+
+        <a href="named_units.html" class="card nam">
+            <span class="icon">⚖️</span>
+            <span class="title">Время и Вес</span>
+            <span class="desc">Действия с именованными числами (часы, минуты, тонны, килограммы).</span>
+        </a>
+    </div>
+
+</body>
+</html>

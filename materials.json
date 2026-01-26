@@ -45,5 +45,9 @@
         { "title": "Читаем слова, фотографируем", "file": "materials/gamification/FOTOinteractive/index.html" },
         { "title": "Читаем слова, выбираем, что прочли", "file": "materials/gamification/VesiolaiaPochitaika/index.html" },
         { "title": "Карточки", "file": "materials/gamification/Card/index.html" }
+    ],
+        "Generators": [
+        
+        { "title": "Генераторы примеров", "file": "materials/Generators/GeneratorPrimerov/index.html" }
     ]
 }

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор: Именованные числа (Время и Вес)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* --- Общие стили --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            max-width: 900px;
+        }
+
+        select, input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover { background-color: #45a049; }
+        button.secondary { background-color: #2196F3; }
+
+        .back-button {
+            background-color: #607D8B;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #546E7A;
+        }
+
+        /* --- Лист --- */
+        #notebook-sheet {
+            background-color: white;
+            background-image: 
+                linear-gradient(#e1e1e1 1px, transparent 1px),
+                linear-gradient(90deg, #e1e1e1 1px, transparent 1px);
+            background-size: 25px 25px;
+            background-position: -1px -1px;
+            padding: 50px;
+            width: 210mm;
+            min-height: 297mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 50px 80px; /* Отступы между примерами */
+        }
+
+        /* --- Структура примера --- */
+        .problem {
+            display: inline-grid;
+            /* Сетка:
+               [Знак] [Число1 старш.] [Ед1] [Число1 младш.] [Ед2] 
+            */
+            /* Размеры будут задаваться динамически, но база 25px */
+            grid-auto-rows: 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            line-height: 25px;
+            color: #333;
+        }
+
+        .cell {
+            width: 25px;
+            height: 25px;
+            text-align: center; /* Цифры по центру клетки */
+            vertical-align: middle;
+        }
+
+        /* Текстовые метки (ч, мин, кг) - выравнивание влево с отступом или по центру */
+        .unit-label {
+            text-align: left;
+            padding-left: 2px;
+            font-size: 18px; 
+            /* Если название длинное (мин), оно может занимать > 1 клетки, 
+               но мы будем выделять под него 2-3 клетки в grid-template */
+        }
+
+        .border-bottom {
+            border-bottom: 2px solid #333;
+        }
+        
+        /* Для SVG экспорта */
+        @media print {
+            .controls { display: none; }
+            #notebook-sheet { box-shadow: none; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <a href="index.html" class="back-button">В меню</a>
+        <div>
+            <label>Тип:</label>
+            <select id="typeSelector">
+                <option value="time_hm">Время (Часы / Минуты)</option>
+                <option value="time_ms">Время (Минуты / Секунды)</option>
+                <option value="weight_tkg">Вес (Тонны / Кг)</option>
+                <option value="weight_kgg">Вес (Кг / Граммы)</option>
+            </select>
+        </div>
+        <div>
+            <label>Действие:</label>
+            <select id="operation">
+                <option value="mix">Смешанное</option>
+                <option value="+">Сложение (+)</option>
+                <option value="-">Вычитание (-)</option>
+            </select>
+        </div>
+        <div>
+            <label>Кол-во:</label>
+            <input type="number" id="count" value="6" min="1" max="12" style="width: 50px;">
+        </div>
+        <button onclick="generateNamedTasks()">Сгенерировать</button>
+        <button class="secondary" onclick="downloadImage()">Скачать PNG</button>
+        <button class="secondary" onclick="exportToSVG()">Скачать SVG</button>
+    </div>
+
+    <div id="notebook-sheet"></div>
+
+    <script>
+        // --- Конфигурация единиц ---
+        const UNITS_CONFIG = {
+            'time_hm': { 
+                major: 'ч', minor: 'мин', 
+                base: 60, // В 1 часе 60 минут
+                maxMajor: 23, // Ограничим часы разумными числами (можно и больше, но пусть будет как сутки)
+                maxMinor: 59 
+            },
+            'time_ms': { 
+                major: 'мин', minor: 'с', 
+                base: 60, 
+                maxMajor: 59, 
+                maxMinor: 59 
+            },
+            'weight_tkg': { 
+                major: 'т', minor: 'кг', 
+                base: 1000, // В 1 тонне 1000 кг
+                maxMajor: 99, 
+                maxMinor: 999 
+            },
+            'weight_kgg': { 
+                major: 'кг', minor: 'г', 
+                base: 1000, 
+                maxMajor: 99, 
+                maxMinor: 999 
+            }
+        };
+
+        // --- 1. Логика генерации ---
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateProblemData(config, operation) {
+            let major1, minor1, major2, minor2;
+            let op = operation;
+
+            // Если выбрано "Смешанное", случайно выбираем + или -
+            if (op === 'mix') {
+                op = Math.random() > 0.5 ? '+' : '-';
+            }
+
+            // Генерируем два составных числа
+            // A = major1 * base + minor1 (абсолютное значение)
+            // B = major2 * base + minor2
+            
+            // Чтобы примеры были интересными, генерируем так, чтобы младшие разряды
+            // "мешали" друг другу (требовали переноса или занимания).
+            
+            major1 = getRandomInt(1, config.maxMajor);
+            minor1 = getRandomInt(0, config.maxMinor);
+            
+            // Второе число поменьше или сопоставимое
+            major2 = getRandomInt(1, Math.max(1, major1 - 1)); // чуть меньше первого
+            minor2 = getRandomInt(0, config.maxMinor);
+
+            // Если вычитание, убеждаемся, что Первое > Второго
+            if (op === '-') {
+                const val1 = major1 * config.base + minor1;
+                const val2 = major2 * config.base + minor2;
+                
+                if (val2 > val1) {
+                    // Меняем местами, если второе больше
+                    [major1, minor1, major2, minor2] = [major2, minor2, major1, minor1];
+                }
+                // Если равны, чуть увеличим первое
+                if (val1 === val2) minor1 += 1;
+            }
+
+            return {
+                major1, minor1,
+                major2, minor2,
+                op,
+                config // Передаем конфиг (базу и названия), чтобы рендер знал, что рисовать
+            };
+        }
+
+        // --- 2. Рендеринг (HTML) ---
+
+        function generateNamedTasks() {
+            const sheet = document.getElementById('notebook-sheet');
+            sheet.innerHTML = '';
+
+            const typeKey = document.getElementById('typeSelector').value;
+            const opKey = document.getElementById('operation').value;
+            const count = parseInt(document.getElementById('count').value);
+            const config = UNITS_CONFIG[typeKey];
+
+            for(let i=0; i<count; i++) {
+                const data = generateProblemData(config, opKey);
+                sheet.appendChild(renderProblemHTML(data));
+            }
+        }
+
+        function renderProblemHTML(data) {
+            const container = document.createElement('div');
+            container.className = 'problem';
+
+            // Преобразуем числа в строки
+            const m1 = data.major1.toString();
+            const min1 = data.minor1.toString(); // Для веса можно добавлять padStart(3, '0'), но в учебниках обычно пишут 5 кг 20 г (без нуля)
+            
+            const m2 = data.major2.toString();
+            const min2 = data.minor2.toString();
+
+            // Определяем ширину колонок для Grid
+            // Нам нужно 5 логических колонок:
+            // 1. Знак
+            // 2. Старшее число (выравнивание вправо)
+            // 3. Метка старшего (ч/т)
+            // 4. Младшее число (выравнивание вправо)
+            // 5. Метка младшего (мин/кг)
+            
+            const colWidthMajor = Math.max(m1.length, m2.length);
+            const colWidthMinor = Math.max(min1.length, min2.length);
+            // Для веса (база 1000) младшая колонка должна быть пошире (3 знака), 
+            // даже если число "5". В примере Frame 76 "23 ч 55 мин" - выравнивание плотное.
+            // Сделаем адаптивную ширину.
+
+            const labelMajor = data.config.major;
+            const labelMinor = data.config.minor;
+            
+            // Длина меток (в клетках). "мин" - 3 буквы = 2 клетки (влезет?), лучше 3.
+            const labelW_Major = Math.ceil(labelMajor.length * 0.8); // грубая оценка
+            const labelW_Minor = Math.ceil(labelMinor.length * 0.8) + 1; // +1 запас
+
+            // Формируем CSS Grid Template
+            // repeat(N, 25px) ...
+            // Но нам проще просто накидать ячеек, а ширину задать стилем контейнера.
+            // Структура:
+            // Col 1: 1 cell (Sign)
+            // Col 2: colWidthMajor cells
+            // Col 3: labelW_Major cells
+            // Col 4: colWidthMinor cells
+            // Col 5: labelW_Minor cells
+            
+            const totalCols = 1 + colWidthMajor + labelW_Major + colWidthMinor + labelW_Minor;
+            container.style.gridTemplateColumns = `repeat(${totalCols}, 25px)`;
+
+            // --- Хелпер для создания пустых клеток ---
+            const addEmpty = (n) => {
+                for(let k=0; k<n; k++) container.appendChild(createCell(''));
+            };
+            // --- Хелпер для создания цифр ---
+            const addDigits = (numStr, width, border = false) => {
+                const emptyCount = width - numStr.length;
+                for(let k=0; k<emptyCount; k++) {
+                     let c = createCell('');
+                     if(border) c.classList.add('border-bottom');
+                     container.appendChild(c);
+                }
+                for(let char of numStr) {
+                    let c = createCell(char);
+                    if(border) c.classList.add('border-bottom');
+                    container.appendChild(c);
+                }
+            };
+            // --- Хелпер для текста (меток) ---
+            const addLabel = (text, width, border = false) => {
+                // Метка занимает несколько ячеек, но мы сделаем одну широкую?
+                // Нет, CSS Grid лучше работает с единичными клетками.
+                // Сделаем первую клетку с текстом, остальные пустые.
+                // Или используем grid-column-start (сложно в цикле).
+                // Проще: 1-я клетка содержит текст, overflow visible (или span).
+                // ВАРИАНТ ПРОЩЕ: разбиваем текст по буквам? Нет.
+                // Вставим текст в первую клетку и дадим ей span?
+                // Давайте просто вставим текст в 1-ю клетку, а следующие оставим пустыми.
+                
+                const div = document.createElement('div');
+                div.className = 'cell unit-label';
+                if(border) div.classList.add('border-bottom');
+                div.textContent = text;
+                // Растянем на width клеток
+                div.style.gridColumn = `span ${width}`;
+                div.style.width = 'auto'; // переопределяем 25px
+                container.appendChild(div);
+            };
+
+            // === СТРОКА 1 ===
+            addEmpty(1); // Место под знак
+            addDigits(m1, colWidthMajor);
+            addLabel(labelMajor, labelW_Major);
+            addDigits(min1, colWidthMinor);
+            addLabel(labelMinor, labelW_Minor);
+
+            // === СТРОКА 2 ===
+            // Знак
+            const signCell = createCell(data.op);
+            signCell.classList.add('border-bottom');
+            container.appendChild(signCell);
+            
+            // Числа с подчеркиванием
+            addDigits(m2, colWidthMajor, true);
+            addLabel(labelMajor, labelW_Major, true);
+            addDigits(min2, colWidthMinor, true);
+            addLabel(labelMinor, labelW_Minor, true);
+
+            // === СТРОКА 3 (Ответ - заготовка) ===
+            // Пусто, Пусто, Метка, Пусто, Метка
+            
+            // Знак (пусто)
+            addEmpty(1);
+            
+            // Поле для ответа (старшее)
+            for(let k=0; k<colWidthMajor; k++) {
+                let c = createCell('');
+                c.contentEditable = true; // Можно писать
+                container.appendChild(c);
+            }
+            // Метка старшая
+            addLabel(labelMajor, labelW_Major);
+            
+            // Поле для ответа (младшее)
+            for(let k=0; k<colWidthMinor; k++) {
+                let c = createCell('');
+                c.contentEditable = true; 
+                container.appendChild(c);
+            }
+            // Метка младшая
+            addLabel(labelMinor, labelW_Minor);
+
+            // === СТРОКА 4 (Запас для решения/черновика) ===
+            // Просто пустая строка, чтобы отделить примеры
+            // addEmpty(totalCols);
+
+            // Сохраняем данные для SVG
+            container.dataset.json = JSON.stringify(data);
+            
+            return container;
+        }
+
+        function createCell(text) {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.textContent = text;
+            return div;
+        }
+
+        // --- 3. Экспорт ---
+        
+        async function downloadImage() {
+            const sheet = document.getElementById('notebook-sheet');
+            
+            // html2canvas делает "снимок" DOM элемента
+            const canvas = await html2canvas(sheet, {
+                scale: 2, // Улучшаем качество (Retina like)
+                backgroundColor: null // Прозрачность или белый
+            });
+
+            const link = document.createElement('a');
+            link.download = 'math-examples.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // --- 4. SVG Экспорт ---
+
+        function exportToSVG() {
+            const problems = document.querySelectorAll('.problem');
+            if (problems.length === 0) return;
+
+            const cellSize = 25;
+            const padding = 40;
+            const gapX = 80; 
+            const gapY = 60;
+            const colsInRow = 3; // По 3 примера в ряд
+
+            // Расчет размеров
+            let maxW_cells = 0;
+            problems.forEach(p => {
+                // Считаем колонки из стиля (грязный хак, но рабочий)
+                const template = p.style.gridTemplateColumns; // "repeat(10, 25px)"
+                // Извлекаем число
+                const match = template.match(/repeat\((\d+)/);
+                if(match) {
+                    const w = parseInt(match[1]);
+                    if(w > maxW_cells) maxW_cells = w;
+                }
+            });
+
+            // Высота блока: 3 строки + 1 запас
+            const blockHeight = 4 * cellSize;
+            
+            const svgWidth = (maxW_cells * cellSize + gapX) * colsInRow + padding;
+            const rowsCount = Math.ceil(problems.length / colsInRow);
+            const svgHeight = rowsCount * (blockHeight + gapY) + padding;
+
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+                <style>
+                    .txt { font: 20px 'Courier New', monospace; fill: #333; text-anchor: middle; dominant-baseline: central; }
+                    .label { font: 18px 'Segoe UI', sans-serif; fill: #333; text-anchor: start; dominant-baseline: central; }
+                    .line { stroke: #333; stroke-width: 2; }
+                    .grid { stroke: #e6e6e6; stroke-width: 1; }
+                </style>`;
+
+            problems.forEach((p, index) => {
+                const data = JSON.parse(p.dataset.json);
+                const colIndex = index % colsInRow;
+                const rowIndex = Math.floor(index / colsInRow);
+                
+                // Пересчитываем ширины для конкретного примера (как в HTML)
+                const m1 = data.major1.toString();
+                const min1 = data.minor1.toString();
+                const m2 = data.major2.toString();
+                const min2 = data.minor2.toString();
+
+                const wMajor = Math.max(m1.length, m2.length);
+                const wMinor = Math.max(min1.length, min2.length);
+                // Ширина меток в пикселях (примерно)
+                const wLabelMajorCells = Math.ceil(data.config.major.length * 0.8);
+                const wLabelMinorCells = Math.ceil(data.config.minor.length * 0.8) + 1;
+
+                const totalW = (1 + wMajor + wLabelMajorCells + wMinor + wLabelMinorCells) * cellSize;
+
+                const startX = padding + colIndex * (maxW_cells * cellSize + gapX);
+                const startY = padding + rowIndex * (blockHeight + gapY);
+
+                // --- Сетка (фон) ---
+                // Рисуем рамку сетки на 3 строки
+                for(let r=0; r<=3; r++) {
+                     svg += `<line x1="${startX}" y1="${startY + r*cellSize}" x2="${startX + totalW}" y2="${startY + r*cellSize}" class="grid"/>`;
+                }
+                for(let c=0; c<=(totalW/cellSize); c++) {
+                    svg += `<line x1="${startX + c*cellSize}" y1="${startY}" x2="${startX + c*cellSize}" y2="${startY + 3*cellSize}" class="grid"/>`;
+                }
+
+                // --- Функция отрисовки текста ---
+                const drawText = (txt, cellX, cellY, isLabel=false) => {
+                    const cx = startX + cellX * cellSize + (isLabel ? 2 : cellSize/2);
+                    const cy = startY + cellY * cellSize + cellSize/2;
+                    const style = isLabel ? "label" : "txt";
+                    svg += `<text x="${cx}" y="${cy}" class="${style}">${txt}</text>`;
+                };
+
+                // --- ROW 1 ---
+                let curX = 1; // Пропускаем знак
+                // Major 1 (выравнивание вправо внутри блока wMajor)
+                const off1 = wMajor - m1.length;
+                for(let i=0; i<m1.length; i++) drawText(m1[i], curX + off1 + i, 0);
+                curX += wMajor;
+                
+                // Label Major
+                drawText(data.config.major, curX, 0, true);
+                curX += wLabelMajorCells;
+
+                // Minor 1
+                const off2 = wMinor - min1.length;
+                for(let i=0; i<min1.length; i++) drawText(min1[i], curX + off2 + i, 0);
+                curX += wMinor;
+
+                // Label Minor
+                drawText(data.config.minor, curX, 0, true);
+
+                // --- ROW 2 ---
+                curX = 0;
+                // Sign
+                drawText(data.op, curX, 1);
+                curX = 1;
+
+                // Major 2
+                const off3 = wMajor - m2.length;
+                for(let i=0; i<m2.length; i++) drawText(m2[i], curX + off3 + i, 1);
+                curX += wMajor;
+
+                // Label Major
+                drawText(data.config.major, curX, 1, true);
+                curX += wLabelMajorCells;
+
+                // Minor 2
+                const off4 = wMinor - min2.length;
+                for(let i=0; i<min2.length; i++) drawText(min2[i], curX + off4 + i, 1);
+                curX += wMinor;
+
+                // Label Minor
+                drawText(data.config.minor, curX, 1, true);
+
+                // --- LINE (Черта) ---
+                // Рисуем жирную черту под всей второй строкой (кроме знака?)
+                // В примере Frame 76 черта под всем выражением.
+                svg += `<line x1="${startX + cellSize}" y1="${startY + 2*cellSize}" x2="${startX + totalW}" y2="${startY + 2*cellSize}" class="line"/>`;
+
+                // --- ROW 3 (Ответ - метки) ---
+                curX = 1 + wMajor;
+                drawText(data.config.major, curX, 2, true);
+                curX += wLabelMajorCells + wMinor;
+                drawText(data.config.minor, curX, 2, true);
+            });
+
+            svg += '</svg>';
+
+            const blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'named_numbers.svg';
+            link.href = url;
+            link.click();
+        }
+    </script>
+</body>
+</html>
