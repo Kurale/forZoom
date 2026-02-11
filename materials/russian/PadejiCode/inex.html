@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Тренажер Падежей</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app">
+        <div id="menu-screen" class="screen active">
+            <h1>Определи падеж</h1>
+            <div class="settings">
+                <label class="switch-label">
+                    <input type="checkbox" id="timer-toggle" checked>
+                    <span>Таймер</span>
+                </label>
+                <label class="switch-label">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span>Звук</span>
+                </label>
+            </div>
+            <button id="start-btn" class="main-btn">Начать игру</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="header">
+                <div id="timer-display">00:00</div>
+                <div class="score">Верно: <span id="score-val">0</span></div>
+            </div>
+            
+            <div class="game-area">
+                <div id="wheel" class="wheel"></div>
+                <div id="word-bubble" class="word-bubble">Загрузка...</div>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2>Результат</h2>
+            <div class="stats">
+                <p>Верно: <span id="final-score">0</span></p>
+                <p>Ошибок: <span id="final-errors">0</span></p>
+                <p>Время: <span id="final-time">00:00</span></p>
+            </div>
+            <button id="restart-btn" class="main-btn">Пройти заново</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

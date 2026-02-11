@@ -29,6 +29,7 @@
         { "title": "Словарный диктант", "file": "materials/russian/DiktantSlovarni/index.html" },
         { "title": "Собери словарное слово из слогов", "file": "https://kurale.github.io/SlovarnieSlova3-4klass/" },
         { "title": "Словарные слова, 4 класс, ч.2", "file": "materials/russian/SlovarnieSlovaGame/SlovarnieSlova4_1klassGK.html" },
+        { "title": "По падежам, 4 класс", "file": "materials/russian/PadejiCode/inex.html" },
         { "title": "Вставить пропущенные буквы в предложениях", "file": "materials/russian/interactivVstavliaemBukvi/index.html" }
     ],
     "belarusian": [
