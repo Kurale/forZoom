@@ -248,6 +248,7 @@ function checkAnswer(x, y) {
         score++;
         scoreDisplay.textContent = score;
         wordBubble.classList.add('correct');
+        playSound('correct');
         // Небольшая задержка перед следующим словом
         setTimeout(() => {
             currentQuestionIndex++;
@@ -257,17 +258,32 @@ function checkAnswer(x, y) {
         // ОШИБКА
         errors++;
         wordBubble.classList.add('wrong');
-        if (isSoundEnabled) {
-            // Можно добавить звук ошибки здесь
-            // console.log("Sound: Error");
-        }
+        playSound('incorrect');
         // Возвращаем в центр, даем попробовать еще раз (или пропускаем, зависит от правил)
         // В данном варианте - возвращаем, пусть исправляет
         setTimeout(resetBubble, 500);
     }
 }
 
-// --- 5. Вспомогательные функции ---
+// --- 5. Звуковые эффекты ---
+
+function playSound(soundName) {
+    if (!isSoundEnabled) return;
+
+    const soundFiles = {
+        correct: 'sound/bubbleCorrect.wav',
+        incorrect: 'sound/bubbleIncorrect.wav',
+        endGame: 'sound/endGame.wav'
+    };
+
+    const soundFile = soundFiles[soundName];
+    if (soundFile) {
+        const audio = new Audio(soundFile);
+        audio.play().catch(err => console.log('Ошибка воспроизведения звука:', err));
+    }
+}
+
+// --- 6. Вспомогательные функции ---
 
 function updateTimer() {
     const now = Date.now();
@@ -283,6 +299,7 @@ function endGame() {
     document.getElementById('final-errors').textContent = errors;
     document.getElementById('final-time').textContent = timerDisplay.textContent;
     showScreen('result');
+    playSound('endGame');
 }
 
 function showScreen(id) {
