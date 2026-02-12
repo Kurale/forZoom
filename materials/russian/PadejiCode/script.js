@@ -126,7 +126,6 @@ function startGame() {
 }
 
 function showNextWord() {
-    // Сбрасываем стили (цвет, позицию)
     resetBubble();
 
     if (currentQuestionIndex >= questions.length) {
@@ -135,9 +134,15 @@ function showNextWord() {
     }
 
     const q = questions[currentQuestionIndex];
-    // Можно добавить выделение жирным ключевых слов, если нужно
-    wordBubble.innerHTML = q.text.replace(" ", "<br>"); 
-    // Записываем правильный ответ в атрибут элемента (для проверки)
+    
+    // --- ТИПОГРАФ (Исправление предлогов) ---
+    // Логика: ищем пробел, за которым идет 1-3 буквы (предлог), пробел и тег <b>
+    // Меняем последний пробел на &nbsp; (неразрывный пробел)
+    let formattedText = q.text.replace(/ (\S{1,3}) <b>/g, ' $1&nbsp;<b>');
+    
+    // Вставляем обработанный текст
+    wordBubble.innerHTML = formattedText; 
+    
     wordBubble.dataset.correct = q.correctCase;
 }
 
